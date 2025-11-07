@@ -42,27 +42,28 @@
     background: linear-gradient(135deg, #ff1493, #ff66cc);
   }
 
-  .mensaje {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #ffd1dc;
-    font-size: 1.8em;
-    font-weight: bold;
-    text-shadow: 0 0 20px #ff7b00, 0 0 40px #ff1493;
-    text-align: center;
-    animation: latido 3s ease-in-out infinite;
-    pointer-events: none;
-    display: none;
-    width: 80%;
-    max-width: 800px;
-    line-height: 1.4em;
-  }
-  @keyframes latido {
-    0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1;}
-    50%{transform:translate(-50%,-50%) scale(1.05);opacity:0.9;}
-  }
+ .mensaje {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffccd5; /* rosa claro para contraste */
+  font-family: "Playfair Display", serif;
+  font-size: 1.2em; /* más pequeño */
+  font-weight: 500;
+  text-shadow: 0 0 15px #ff7b00, 0 0 30px #ff1493; /* sutil y elegante */
+  text-align: center;
+  animation: latido 6s ease-in-out infinite; /* más lenta y elegante */
+  pointer-events: none;
+  display: none;
+  width: 70%;
+  max-width: 700px;
+  line-height: 1.5em;
+}
+@keyframes latido {
+  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1;}
+  50%{transform:translate(-50%,-50%) scale(1.03);opacity:0.95;}
+}
 
   .nav-btn {
     position: absolute;
