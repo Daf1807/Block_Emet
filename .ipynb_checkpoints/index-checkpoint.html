@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Espacio 3D de Amor</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    font-family: "Poppins", sans-serif;
+  }
+  canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  #galaxy { display: none; }
+
+  #loveButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 18px 40px;
+    background: linear-gradient(135deg, #ff66cc, #ff1493);
+    color: white;
+    border: none;
+    border-radius: 40px;
+    font-size: 1.3em;
+    cursor: pointer;
+    box-shadow: 0 0 20px #ff69b4, 0 0 40px #ff1493;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+  #loveButton:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    background: linear-gradient(135deg, #ff1493, #ff66cc);
+  }
+
+ .mensaje {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffccd5; /* rosa claro para contraste */
+  font-family: "Playfair Display", serif;
+  font-size: 1.2em; /* más pequeño */
+  font-weight: 500;
+  text-shadow: 0 0 15px #ff7b00, 0 0 30px #ff1493; /* sutil y elegante */
+  text-align: center;
+  animation: latido 6s ease-in-out infinite; /* más lenta y elegante */
+  pointer-events: none;
+  display: none;
+  width: 70%;
+  max-width: 700px;
+  line-height: 1.5em;
+}
+@keyframes latido {
+  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1;}
+  50%{transform:translate(-50%,-50%) scale(1.03);opacity:0.95;}
+}
+
+  .nav-btn {
+    position: absolute;
+    bottom: 10%;
+    background: rgba(255, 105, 180, 0.8);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 25px;
+    font-size: 1em;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s;
+  }
+  .nav-btn:hover {
+    background: rgba(255, 20, 147, 1);
+  }
+  #prevBtn { left: 20%; display: none; }
+  #nextBtn { right: 20%; display: none; }
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<canvas id="galaxy"></canvas>
+
+<button id="loveButton">💞 Click aquí mi amor 💞</button>
+
+<div id="mensaje1" class="mensaje">
+  Toda raba al Eterno por permitir que un día como hoy una pequeña lucesita naciera en el inmenso cosmos.  
+  Una estrellita cuya iluminaria proviene del Avino Shebashamain. Aunque al principio andaba perdidita fue encontrada y amada.  
+  Ahora resplandece con tanto fulgor porque su vida honra las palabras del Adon.  
+  Que cada año sigas brillando con esa fuerza incomparable, con esa shalom, con ese gozo, con esa simja, con esos dones que solo el Eterno puede dar.
+</div>
+
+<div id="mensaje2" class="mensaje">
+  “Que el Eterno, Dios de Abraham, de Isaac y de Jacob, te bendiga en tu día.<br>
+  Que te rodee con Su luz y te conceda años de vida, amor y propósito.<br>
+  Que tu camino florezca como el desierto que renace,<br>
+  y que cada amanecer te recuerde cuánto eres amado💖.”
+</div>
+
+<button id="prevBtn" class="nav-btn">⬅ Anterior</button>
+<button id="nextBtn" class="nav-btn">Siguiente ➡</button>
+
+<script type="module">
+import * as THREE from "https://cdn.skypack.dev/three@0.149.0";
+
+// ==== MATRIX ====
+const matrixCanvas = document.getElementById("matrix");
+const ctx = matrixCanvas.getContext("2d");
+matrixCanvas.height = window.innerHeight;
+matrixCanvas.width = window.innerWidth;
+const chars = "01💖ששלםאבאהבה".split("");
+const fontSize = 16;
+const columns = matrixCanvas.width / fontSize;
+const drops = Array(Math.floor(columns)).fill(1);
+
+function drawMatrix() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+  ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+  ctx.fillStyle = "#ff1493";
+  ctx.font = fontSize + "px monospace";
+  for (let i = 0; i < drops.length; i++) {
+    const text = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975)
+      drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(drawMatrix, 40);
+
+// ==== GALAXIA ====
+const galaxyCanvas = document.getElementById("galaxy");
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(65, window.innerWidth/window.innerHeight, 0.1, 100);
+camera.position.set(0,2,10);
+scene.add(camera);
+scene.add(new THREE.AmbientLight(0xffffff,0.6));
+
+// Estrellas de fondo
+const starGeo = new THREE.BufferGeometry();
+const starCount = 8000;
+const starPos = new Float32Array(starCount*3);
+for(let i=0;i<starCount*3;i++) starPos[i]=(Math.random()-0.5)*200;
+starGeo.setAttribute("position", new THREE.BufferAttribute(starPos,3));
+const starMat = new THREE.PointsMaterial({size:0.5,color:0xffffff,transparent:true,opacity:0.8});
+const stars = new THREE.Points(starGeo,starMat);
+scene.add(stars);
+
+// Galaxia centrada
+const params={counts:100000,size:0.01,radius:5,branches:6,spin:1.2,randomness:2,inside:"#ffd1dc",mid:"#ff7b00",outside:"#4b0082"};
+const colorInside=new THREE.Color(params.inside);
+const midColor=new THREE.Color(params.mid);
+const colorOutside=new THREE.Color(params.outside);
+
+const galaxyGeo=new THREE.BufferGeometry();
+const pos=new Float32Array(params.counts*3);
+const col=new Float32Array(params.counts*3);
+
+for(let i=0;i<params.counts;i++){
+  const i3=i*3;
+  const radius=Math.random()*params.radius;
+  const branchAngle=((i%params.branches)/params.branches)*Math.PI*2;
+  const spinAngle=radius*params.spin;
+  const randomX=(Math.random()-0.5)*params.randomness;
+  const randomY=(Math.random()-0.5)*params.randomness*0.3;
+  const randomZ=(Math.random()-0.5)*params.randomness;
+  pos[i3]=Math.cos(branchAngle+spinAngle)*radius+randomX;
+  pos[i3+1]=randomY;
+  pos[i3+2]=Math.sin(branchAngle+spinAngle)*radius+randomZ;
+  const mix=colorInside.clone();
+  mix.lerpColors(midColor,colorOutside,radius/params.radius);
+  col[i3]=mix.r; col[i3+1]=mix.g; col[i3+2]=mix.b;
+}
+
+galaxyGeo.setAttribute("position", new THREE.BufferAttribute(pos,3));
+galaxyGeo.setAttribute("color", new THREE.BufferAttribute(col,3));
+
+const galaxyMat=new THREE.PointsMaterial({
+  size:params.size,
+  vertexColors:true,
+  blending:THREE.AdditiveBlending,
+  transparent:true,
+  depthWrite:false
+});
+
+const galaxyPoints=new THREE.Points(galaxyGeo,galaxyMat);
+scene.add(galaxyPoints);
+
+const renderer=new THREE.WebGLRenderer({canvas:galaxyCanvas});
+renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setPixelRatio(devicePixelRatio);
+
+const clock=new THREE.Clock();
+function animateGalaxy(){
+  const t=clock.getElapsedTime();
+  galaxyPoints.rotation.y=t*0.05;
+  stars.rotation.y+=0.0001;
+  renderer.render(scene,camera);
+  requestAnimationFrame(animateGalaxy);
+}
+
+// ==== INTERACCIÓN ====
+const loveButton=document.getElementById("loveButton");
+const mensajes=[document.getElementById("mensaje1"),document.getElementById("mensaje2")];
+const nextBtn=document.getElementById("nextBtn");
+const prevBtn=document.getElementById("prevBtn");
+let current=0;
+
+function mostrarMensaje(index){
+  mensajes.forEach(m=>m.style.display="none");
+  mensajes[index].style.display="block";
+  prevBtn.style.display=index===0?"none":"block";
+  nextBtn.style.display=index===mensajes.length-1?"none":"block";
+}
+
+loveButton.addEventListener("click",()=>{
+  loveButton.style.display="none";
+  matrixCanvas.style.display="none";
+  galaxyCanvas.style.display="block";
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  animateGalaxy();
+  mostrarMensaje(0);
+});
+
+nextBtn.addEventListener("click",()=>{
+  if(current<mensajes.length-1){ current++; mostrarMensaje(current); }
+});
+
+prevBtn.addEventListener("click",()=>{
+  if(current>0){ current--; mostrarMensaje(current); }
+});
+
+window.addEventListener("resize",()=>{
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+</script>
+</body>
+</html>
