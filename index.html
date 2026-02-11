@@ -475,7 +475,6 @@ crearItems(envases,"envases");
 mostrar();
 
 
-
 async function descargarWord(){
 
   if(pedidos.length===0){
@@ -493,7 +492,7 @@ async function descargarWord(){
     WidthType
   } = docx;
 
-  const COLUMNAS = 5; // 🔥 CAMBIA AQUÍ (5 columnas)
+  const COLUMNAS = 6; // 🔥 +1 columna extra
 
   let filas=[];
   let rowCells=[];
@@ -531,27 +530,27 @@ async function descargarWord(){
 
     lineas.push(`TOTAL: S/ ${p.total.toFixed(2)}`);
 
-    const texto=lineas.join("\n");
-
     const celda=new TableCell({
-  width:{
-    size:100/COLUMNAS,
-    type:WidthType.PERCENTAGE
-  },
-  children: lineas.map(l => new Paragraph(l)) // 🔥 ARREGLO
-});
-
+      width:{
+        size:100/COLUMNAS,
+        type:WidthType.PERCENTAGE
+      },
+      children: lineas.map(l =>
+        new Paragraph({
+          text:l,
+          spacing:{ after:40 } // 🔥 compacto
+        })
+      )
+    });
 
     rowCells.push(celda);
 
-    // 🔥 cada 5 → nueva fila
     if(rowCells.length===COLUMNAS){
       filas.push(new TableRow({children:rowCells}));
       rowCells=[];
     }
   });
 
-  // completar fila si faltan celdas
   if(rowCells.length>0){
     while(rowCells.length<COLUMNAS){
       rowCells.push(new TableCell({children:[new Paragraph("")]}));
@@ -565,7 +564,20 @@ async function descargarWord(){
   });
 
   const doc=new Document({
-    sections:[{children:[tabla]}]
+    sections:[{
+      // 🔥 MÁRGENES ESTRECHOS
+      properties:{
+        page:{
+          margin:{
+            top:300,
+            right:300,
+            bottom:300,
+            left:300
+          }
+        }
+      },
+      children:[tabla]
+    }]
   });
 
   const blob=await Packer.toBlob(doc);
@@ -575,6 +587,7 @@ async function descargarWord(){
   link.download="Pedidos-ElMisti.docx";
   link.click();
 }
+
 
 
 </script>
