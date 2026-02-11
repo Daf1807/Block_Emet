@@ -121,6 +121,7 @@ Tipo:
   <option value="mesa">Mesa</option>
   <option value="llevar">Llevar</option>
   <option value="delivery">Delivery</option>
+  <option value="reserva">Reserva</option>
 </select>
 <br><br>
 Mesa / Nombre:
@@ -162,10 +163,18 @@ Costo adicional:
 
 <button class="big" onclick="registrarPedido()">✅ Registrar pedido</button>
 
+<button class="big" onclick="descargarWord()">
+📄 Descargar pedidos (Word)
+</button>
+
+
 <h2>📋 Pedidos del día</h2>
 <div id="listaPedidos"></div>
 
 </section>
+
+<script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+
 
 <script>
 /* =================================================
@@ -464,6 +473,110 @@ crearItems(extrasComida,"extrasComida");
 crearItems(envases,"envases");
 
 mostrar();
+
+
+
+async function descargarWord(){
+
+  if(pedidos.length===0){
+    alert("No hay pedidos");
+    return;
+  }
+
+  const {
+    Document,
+    Packer,
+    Paragraph,
+    Table,
+    TableRow,
+    TableCell,
+    WidthType
+  } = docx;
+
+  const COLUMNAS = 5; // 🔥 CAMBIA AQUÍ (5 columnas)
+
+  let filas=[];
+  let rowCells=[];
+
+  pedidos.forEach((p,i)=>{
+
+    const lineas=[];
+
+    lineas.push(`#${i+1} | ${p.tipo.toUpperCase()} | ${p.mesa || "-"}`);
+    lineas.push("");
+
+    if(p.detalleEntradas.length){
+      lineas.push("Entradas:");
+      lineas.push(...p.detalleEntradas);
+      lineas.push("");
+    }
+
+    if(p.detalleSegundos.length){
+      lineas.push("Segundos:");
+      lineas.push(...p.detalleSegundos);
+      lineas.push("");
+    }
+
+    if(p.detalleExtras.length){
+      lineas.push("Extras:");
+      lineas.push(...p.detalleExtras);
+      lineas.push("");
+    }
+
+    if(p.detalleEnvases.length){
+      lineas.push("Envases:");
+      lineas.push(...p.detalleEnvases);
+      lineas.push("");
+    }
+
+    lineas.push(`TOTAL: S/ ${p.total.toFixed(2)}`);
+
+    const texto=lineas.join("\n");
+
+    const celda=new TableCell({
+  width:{
+    size:100/COLUMNAS,
+    type:WidthType.PERCENTAGE
+  },
+  children: lineas.map(l => new Paragraph(l)) // 🔥 ARREGLO
+});
+
+
+    rowCells.push(celda);
+
+    // 🔥 cada 5 → nueva fila
+    if(rowCells.length===COLUMNAS){
+      filas.push(new TableRow({children:rowCells}));
+      rowCells=[];
+    }
+  });
+
+  // completar fila si faltan celdas
+  if(rowCells.length>0){
+    while(rowCells.length<COLUMNAS){
+      rowCells.push(new TableCell({children:[new Paragraph("")]}));
+    }
+    filas.push(new TableRow({children:rowCells}));
+  }
+
+  const tabla=new Table({
+    width:{size:100,type:WidthType.PERCENTAGE},
+    rows:filas
+  });
+
+  const doc=new Document({
+    sections:[{children:[tabla]}]
+  });
+
+  const blob=await Packer.toBlob(doc);
+
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download="Pedidos-ElMisti.docx";
+  link.click();
+}
+
+
 </script>
 
 
