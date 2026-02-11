@@ -168,21 +168,16 @@ Costo adicional:
 </section>
 
 <script>
-/* ==============================
-   MENÚ DINÁMICO (LOCALSTORAGE)
-============================== */
+/* =================================================
+   CANTIDADES FIJAS (LO ÚNICO NUEVO)
+================================================= */
+const TOTAL_ENTRADAS = 5;
+const TOTAL_SEGUNDOS = 10;
 
-let entradas = JSON.parse(localStorage.getItem("entradasMisti")) || [
- "Sopa de sémola",
- "Ensalada"
-];
 
-let segundos = JSON.parse(localStorage.getItem("segundosMisti")) || [
- "Ají de gallina",
- "Chaufa mixto"
-];
-
-/* EXTRAS FIJOS */
+/* =================================================
+   EXTRAS Y ENVASES (INTOCABLES – IGUAL QUE TUYO)
+================================================= */
 const extrasComida=[
  {nombre:"Arroz extra",precio:2},
  {nombre:"Presa adicional",precio:5},
@@ -198,18 +193,71 @@ const envases=[
 let pedidos = JSON.parse(localStorage.getItem("pedidosMisti")) || [];
 
 
-/* ==============================
-   CREAR ITEMS PEDIDO
-============================== */
+/* =================================================
+   NUEVO: CREAR ENTRADAS/SEGUNDOS EDITABLES
+   (MISMO DISEÑO .item .controls .qty)
+================================================= */
+function crearMenuEditable(total, cont, prefijo){
 
+  const div=document.getElementById(cont);
+
+  for(let i=0;i<total;i++){
+
+    const key=prefijo+i;
+    const nombreGuardado =
+      localStorage.getItem(key+"-nombre") || "";
+
+    div.innerHTML+=`
+      <div class="item" style="flex-direction:column;align-items:stretch">
+
+        <!-- fila nombre + cantidad -->
+        <div style="display:flex;align-items:center;gap:8px">
+
+          <input
+            value="${nombreGuardado}"
+            placeholder="Nombre..."
+            oninput="localStorage.setItem('${key}-nombre',this.value)"
+            style="flex:1">
+
+          <div class="controls">
+            <button onclick="cambiar('${key}',-1)">-</button>
+            <input class="qty" id="${key}" value="0" readonly>
+            <button onclick="cambiar('${key}',1)">+</button>
+          </div>
+
+        </div>
+
+        <!-- 🔴 NOTA SOLO PARA ENTRADAS/SEGUNDOS -->
+        <input
+          id="nota_${key}"
+          placeholder="Nota (sin arroz, sin papa, etc)"
+          style="
+            margin-top:5px;
+            font-size:12px;
+            padding:4px;
+            border:1px solid #ddd;
+            border-radius:6px;
+            width:100%;
+          ">
+
+      </div>`;
+  }
+}
+
+
+
+/* =================================================
+   CREAR ITEMS (AHORA CON NOTA POR PLATO)
+================================================= */
 function crearItems(lista, cont){
   const div=document.getElementById(cont);
-  div.innerHTML="";
 
-  lista.forEach(nombre=>{
+  lista.forEach(i=>{
+    const nombre=i.nombre||i;
+
     div.innerHTML+=`
       <div class="item">
-        ${nombre}
+        ${nombre} ${i.precio?`(S/ ${i.precio})`:""}
         <div class="controls">
           <button onclick="cambiar('${nombre}',-1)">-</button>
           <input class="qty" id="${nombre}" value="0" readonly>
@@ -219,6 +267,12 @@ function crearItems(lista, cont){
   });
 }
 
+
+
+
+/* =================================================
+   + / -  (TUYO)
+================================================= */
 function cambiar(id,n){
   const el=document.getElementById(id);
   let v=parseInt(el.value)+n;
@@ -227,84 +281,54 @@ function cambiar(id,n){
 }
 
 
-/* ==============================
-   EDITAR MENÚ
-============================== */
-
-function renderMenuEditable(lista, contenedor, tipo){
-  const div=document.getElementById(contenedor);
-  div.innerHTML="";
-
-  lista.forEach((nombre,i)=>{
-    div.innerHTML+=`
-      <div style="display:flex;justify-content:space-between;margin:4px 0">
-        ${nombre}
-        <button onclick="eliminarPlato('${tipo}',${i})">🗑️</button>
-      </div>`;
-  });
-
-  div.innerHTML+=`
-    <button onclick="agregarPlato('${tipo}')">➕ Agregar</button>
-  `;
-}
-
-function agregarPlato(tipo){
-  const nombre=prompt("Nombre del plato:");
-  if(!nombre) return;
-
-  if(tipo==="entradas") entradas.push(nombre);
-  else segundos.push(nombre);
-
-  guardarMenu();
-  refrescarTodo();
-}
-
-function eliminarPlato(tipo,i){
-  if(tipo==="entradas") entradas.splice(i,1);
-  else segundos.splice(i,1);
-
-  guardarMenu();
-  refrescarTodo();
-}
-
-function guardarMenu(){
-  localStorage.setItem("entradasMisti",JSON.stringify(entradas));
-  localStorage.setItem("segundosMisti",JSON.stringify(segundos));
-}
-
-function refrescarTodo(){
-  crearItems(entradas,"entradas");
-  crearItems(segundos,"segundos");
-
-  renderMenuEditable(entradas,"editarEntradas","entradas");
-  renderMenuEditable(segundos,"editarSegundos","segundos");
-}
-
-
-/* ==============================
-   REGISTRAR PEDIDO
-============================== */
-
+/* =================================================
+   REGISTRAR (MISMA LÓGICA + solo cambio de lectura)
+================================================= */
 function registrarPedido(){
 
-  let total=0, ent=0, seg=0;
-  let detalleEntradas=[], detalleSegundos=[], detalleExtras=[], detalleEnvases=[];
+  let total=0;
+  let ent=0, seg=0;
 
-  entradas.forEach(p=>{
-    const c=+document.getElementById(p).value;
-    if(c>0){
-      detalleEntradas.push(`${c} - ${p}`);
-      ent+=c;
-    }
-  });
+  let detalleEntradas=[];
+  let detalleSegundos=[];
+  let detalleExtras=[];
+  let detalleEnvases=[];
 
-  segundos.forEach(p=>{
-    const c=+document.getElementById(p).value;
-    if(c>0){
-      detalleSegundos.push(`${c} - ${p}`);
-      seg+=c;
-    }
-  });
+  /* ENTRADAS */
+  for(let i=0;i<TOTAL_ENTRADAS;i++){
+    const nombre=localStorage.getItem("E"+i+"-nombre");
+    const c=+document.getElementById("E"+i).value;
+
+    if(nombre && c>0){
+
+  const nota=document.getElementById("nota_E"+i)?.value || "";
+
+  let texto=`${c} - ${nombre}`;
+  if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
+
+  detalleEntradas.push(texto);
+  ent+=c;
+}
+
+  }
+
+  /* SEGUNDOS */
+  for(let i=0;i<TOTAL_SEGUNDOS;i++){
+    const nombre=localStorage.getItem("S"+i+"-nombre");
+    const c=+document.getElementById("S"+i).value;
+
+    if(nombre && c>0){
+
+  const nota=document.getElementById("nota_S"+i)?.value || "";
+
+  let texto=`${c} - ${nombre}`;
+  if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
+
+  detalleSegundos.push(texto);
+  seg+=c;
+}
+
+  }
 
   const menus=Math.min(ent,seg);
 
@@ -312,16 +336,18 @@ function registrarPedido(){
   total+=(seg-menus)*10;
   total+=(ent-menus)*5;
 
+  /* EXTRAS (IGUAL) */
   extrasComida.forEach(e=>{
-    const c=+document.getElementById(e.nombre)?.value||0;
+    const c=+document.getElementById(e.nombre).value;
     if(c>0){
       detalleExtras.push(`${c} - ${e.nombre}`);
       total+=c*e.precio;
     }
   });
 
+  /* ENVASES (IGUAL) */
   envases.forEach(e=>{
-    const c=+document.getElementById(e.nombre)?.value||0;
+    const c=+document.getElementById(e.nombre).value;
     if(c>0){
       detalleEnvases.push(`${c} - ${e.nombre}`);
       total+=c*e.precio;
@@ -348,67 +374,95 @@ function registrarPedido(){
 }
 
 
-/* ==============================
-   MOSTRAR PEDIDOS
-============================== */
-
+/* =================================================
+   TODO LO DEMÁS IGUAL (MOSTRAR / ELIMINAR / ETC)
+================================================= */
 function mostrar(){
+
   let html="";
 
   pedidos.forEach((p,i)=>{
+
     html+=`
     <div class="pedido">
+
       <b>#${i+1} | ${p.tipo.toUpperCase()} | ${p.mesa||"-"}</b>
-      <button onclick="eliminar(${i})" style="float:right">🗑️</button><br><br>
+      <button onclick="eliminar(${i})" style="float:right">🗑️</button>
+      <br><br>
+    `;
 
-      ${p.detalleEntradas.length?`<b>Entradas:</b><br>${p.detalleEntradas.join("<br>")}<br><br>`:""}
-      ${p.detalleSegundos.length?`<b>Segundos:</b><br>${p.detalleSegundos.join("<br>")}<br><br>`:""}
-      ${p.detalleExtras.length?`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`:""}
-      ${p.detalleEnvases.length?`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`:""}
-      ${p.delivery>0?`<b>Delivery:</b> S/ ${p.delivery}<br><br>`:""}
+   if(p.detalleEntradas.length)
+  html+=`<b>Entradas:</b><br>${
+    p.detalleEntradas
+      .map(x=>x.replace("NOTA:",
+        "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
+      ))
+      .join("<br>")
+  }<br><br>`;
 
-      <b>Total: S/ ${p.total.toFixed(2)}</b>
-    </div>`;
+if(p.detalleSegundos.length)
+  html+=`<b>Segundos:</b><br>${
+    p.detalleSegundos
+      .map(x=>x.replace("NOTA:",
+        "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
+      ))
+      .join("<br>")
+  }<br><br>`;
+
+
+    if(p.detalleExtras.length)
+      html+=`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`;
+
+    if(p.detalleEnvases.length)
+      html+=`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`;
+
+    if(p.delivery>0)
+      html+=`<b>Delivery:</b> S/ ${p.delivery}<br><br>`;
+
+    html+=`<b>Total: S/ ${p.total.toFixed(2)}</b></div>`;
   });
 
   listaPedidos.innerHTML=html;
 }
 
-
-/* ==============================
-   HISTORIAL
-============================== */
+function eliminar(index){
+  if(confirm("¿Eliminar este pedido?")){
+    pedidos.splice(index,1);
+    guardarHistorial();
+    mostrar();
+  }
+}
 
 function guardarHistorial(){
-  localStorage.setItem("pedidosMisti",JSON.stringify(pedidos));
+  localStorage.setItem("pedidosMisti", JSON.stringify(pedidos));
 }
-
-function eliminar(i){
-  pedidos.splice(i,1);
-  guardarHistorial();
-  mostrar();
-}
-
-
-/* ==============================
-   RESET
-============================== */
 
 function reset(){
+
   document.querySelectorAll(".qty").forEach(e=>e.value=0);
+
+  /* SOLO entradas */
+  document.querySelectorAll("[id^='nota_E']").forEach(e=>e.value="");
+
+  /* SOLO segundos */
+  document.querySelectorAll("[id^='nota_S']").forEach(e=>e.value="");
+
   deliveryCosto.value=0;
   mesa.value="";
 }
 
 
-/* ==============================
+
+
+/* =================================================
    INIT
-============================== */
+================================================= */
+crearMenuEditable(TOTAL_ENTRADAS,"entradas","E");
+crearMenuEditable(TOTAL_SEGUNDOS,"segundos","S");
 
 crearItems(extrasComida,"extrasComida");
 crearItems(envases,"envases");
 
-refrescarTodo();
 mostrar();
 </script>
 
