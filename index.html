@@ -1,188 +1,345 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Registro Diario de Pedidos</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Registro Pedidos - El Misti</title>
 
 <style>
-body { font-family: Arial; background:#f4f4f4; padding:20px }
-h2 { background:#333; color:#fff; padding:6px }
-.plato, .extra {
-  background:#fff; padding:6px; margin:4px 0;
-  display:flex; justify-content:space-between;
+:root{
+  --rojo:#9e1c1c;
+  --amarillo:#f5b400;
+  --bg:#f2f2f2;
 }
-input[type=number] { width:60px }
-button { margin:4px; padding:6px 10px }
 
-.pedido {
-  background:#fff;
-  padding:10px;
-  margin-top:10px;
-  border-left:5px solid #333;
+body{
+  font-family:system-ui, Arial;
+  margin:0;
+  background:var(--bg);
 }
-.detalle { margin-left:10px; font-size:14px }
+
+/* HEADER */
+header{
+  background:var(--rojo);
+  color:white;
+  padding:14px;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+}
+
+/* SECCIONES */
+section{ padding:12px }
+
+.card{
+  background:white;
+  border-radius:12px;
+  padding:10px;
+  margin-bottom:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+h2{
+  color:var(--rojo);
+  margin:8px 0;
+}
+
+/* PLATOS */
+.item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 0;
+  border-bottom:1px solid #eee;
+}
+
+.controls{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.qty{
+  width:35px;
+  text-align:center;
+  font-weight:bold;
+  border:none;
+  font-size:16px;
+}
+
+/* BOTONES */
+button{
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.btn{
+  background:var(--rojo);
+  color:white;
+}
+
+.big{
+  width:100%;
+  padding:14px;
+  background:var(--amarillo);
+  font-weight:bold;
+  font-size:18px;
+}
+
+/* PEDIDOS */
+.pedido{
+  background:white;
+  border-left:6px solid var(--rojo);
+  padding:10px;
+  margin-bottom:10px;
+  border-radius:8px;
+}
+
+/* GRID PC */
+@media(min-width:700px){
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+}
 </style>
 </head>
 
 <body>
 
-<h1>🍽️ Registro Diario de Pedidos</h1>
+<header>🍽️ EL MISTI - Registro de Pedidos</header>
 
-<label>Tipo:</label>
+<section>
+
+<div class="card">
+Tipo:
 <select id="tipo">
   <option value="mesa">Mesa</option>
-  <option value="llevar">Llevar / Recoge</option>
+  <option value="llevar">Llevar</option>
   <option value="delivery">Delivery</option>
 </select>
-
 <br><br>
+Mesa / Nombre:
+<input id="mesa" style="width:100%">
+</div>
 
-<label>Mesa / Nombre:</label>
-<input type="text" id="mesa">
+<div class="grid">
 
+<div class="card">
 <h2>Entradas</h2>
 <div id="entradas"></div>
+</div>
 
+<div class="card">
 <h2>Segundos</h2>
 <div id="segundos"></div>
-
-<h2>Extras</h2>
-<div class="extra">Arroz extra
-  <input type="number" id="arroz" value="0" min="0">
-</div>
-<div class="extra">Tapers
-  <input type="number" id="taper" value="0" min="0">
-</div>
-<div class="extra">Taper pequeño arroz
-  <input type="number" id="taperArroz" value="0" min="0">
 </div>
 
-<br>
-<button onclick="registrarPedido()">✅ Registrar pedido</button>
+</div>
+
+<!-- EXTRAS COMIDA -->
+<div class="card">
+<h2>🍳 Extras comida</h2>
+<div id="extrasComida"></div>
+</div>
+
+<!-- ENVASES -->
+<div class="card">
+<h2>🥡 Envases para llevar</h2>
+<div id="envases"></div>
+</div>
+
+<!-- DELIVERY -->
+<div class="card">
+<h2>🚚 Delivery</h2>
+Costo adicional:
+<input type="number" id="deliveryCosto" value="0" min="0" step="0.5" style="width:80px"> soles
+</div>
+
+<button class="big" onclick="registrarPedido()">✅ Registrar pedido</button>
 
 <h2>📋 Pedidos del día</h2>
 <div id="listaPedidos"></div>
 
+</section>
+
 <script>
-// ========= MENÚ =========
-const entradas = [
- "Sopa de sémola",
- "Salpicón de pollo",
- "Ceviche mixto",
- "Ensalada"
+const entradas=["Sopa de sémola","Salpicón de pollo","Ceviche mixto","Ensalada"];
+const segundos=["Ají de gallina","Chaufa mixto","Pollo al horno","Milanesa","Pescado frito"];
+
+const extrasComida=[
+ {nombre:"Arroz extra",precio:2},
+ {nombre:"Presa adicional",precio:5},
+ {nombre:"Vaso adicional",precio:1},
+ {nombre:"Medio vaso refresco",precio:0.5}
 ];
 
-const segundos = [
- "Ají de gallina",
- "Chaufa mixto",
- "Pollo al horno",
- "Milanesa",
- "Pescado frito"
+const envases=[
+ {nombre:"Taper grande",precio:1},
+ {nombre:"Taper chico",precio:0.5}
 ];
 
-let pedidosDia = [];
+let pedidos=[];
 
-// ========= CREAR LISTAS =========
-function crearPlatos(lista, contenedor) {
-  const div = document.getElementById(contenedor);
-  lista.forEach(p => {
-    div.innerHTML += `
-      <div class="plato">
-        ${p}
-        <input type="number" id="${p}" value="0" min="0">
-      </div>`;
-  });
-}
 
-// ========= REGISTRAR =========
-function registrarPedido() {
-  const tipo = document.getElementById("tipo").value;
-  const mesa = document.getElementById("mesa").value;
+/* ========= CREAR ITEMS ========= */
+function crearItems(lista, cont){
+  const div=document.getElementById(cont);
 
-  let detallePlatos = [];
-  let totalEntradas = 0;
-  let totalSegundos = 0;
+  lista.forEach(i=>{
+    const nombre=i.nombre||i;
 
-  entradas.forEach(p => {
-    const c = Number(document.getElementById(p).value);
-    if (c > 0) {
-      detallePlatos.push(`${c} - ${p}`);
-      totalEntradas += c;
-    }
-  });
-
-  segundos.forEach(p => {
-    const c = Number(document.getElementById(p).value);
-    if (c > 0) {
-      detallePlatos.push(`${c} - ${p}`);
-      totalSegundos += c;
-    }
-  });
-
-  const menus = Math.min(totalEntradas, totalSegundos);
-  const segundosSolos = totalSegundos - menus;
-  const entradasSolas = totalEntradas - menus;
-
-  const arroz = Number(document.getElementById("arroz").value);
-  const taper = Number(document.getElementById("taper").value);
-  const taperArroz = Number(document.getElementById("taperArroz").value);
-
-  let total =
-    menus * 13 +
-    segundosSolos * 10 +
-    entradasSolas * 5 +
-    arroz * 2 +
-    taper * 3 +
-    taperArroz * 0.5;
-
-  pedidosDia.push({
-    tipo,
-    mesa,
-    resumen: {
-      menus,
-      segundosSolos,
-      entradasSolas
-    },
-    detallePlatos,
-    extras: { arroz, taper, taperArroz },
-    total
-  });
-
-  mostrarPedidos();
-  resetearFormulario();
-}
-
-// ========= MOSTRAR =========
-function mostrarPedidos() {
-  let html = "";
-  pedidosDia.forEach((p, i) => {
-    html += `
-      <div class="pedido">
-        <b>#${i+1} | ${p.tipo.toUpperCase()} | ${p.mesa || "-"}</b><br>
-        <b>Total:</b> S/ ${p.total.toFixed(2)}
-        <div class="detalle">
-          <b>Detalle:</b><br>
-          Menús: ${p.resumen.menus}<br>
-          Segundos solos: ${p.resumen.segundosSolos}<br>
-          Entradas solas: ${p.resumen.entradasSolas}<br><br>
-          ${p.detallePlatos.join("<br>")}
-          ${p.extras.arroz ? `<br>${p.extras.arroz} - Arroz extra` : ""}
+    div.innerHTML+=`
+      <div class="item">
+        ${nombre} ${i.precio?`(S/ ${i.precio})`:""}
+        <div class="controls">
+          <button onclick="cambiar('${nombre}',-1)">-</button>
+          <input class="qty" id="${nombre}" value="0" readonly>
+          <button onclick="cambiar('${nombre}',1)">+</button>
         </div>
       </div>`;
   });
-  document.getElementById("listaPedidos").innerHTML = html;
 }
 
-// ========= RESET =========
-function resetearFormulario() {
-  document.querySelectorAll("input[type=number]").forEach(i => i.value = 0);
-  document.getElementById("mesa").value = "";
+function cambiar(id,n){
+  const el=document.getElementById(id);
+  let v=parseInt(el.value)+n;
+  if(v<0)v=0;
+  el.value=v;
 }
 
-// INICIO
-crearPlatos(entradas, "entradas");
-crearPlatos(segundos, "segundos");
+
+/* ========= REGISTRAR ========= */
+function registrarPedido(){
+
+  let total=0;
+
+  let detalleEntradas=[];
+  let detalleSegundos=[];
+  let detalleExtras=[];
+  let detalleEnvases=[];
+
+  let ent=0, seg=0;
+
+  /* ENTRADAS */
+  entradas.forEach(p=>{
+    const c=+document.getElementById(p).value;
+    if(c>0){
+      detalleEntradas.push(`${c} - ${p}`);
+      ent+=c;
+    }
+  });
+
+  /* SEGUNDOS */
+  segundos.forEach(p=>{
+    const c=+document.getElementById(p).value;
+    if(c>0){
+      detalleSegundos.push(`${c} - ${p}`);
+      seg+=c;
+    }
+  });
+
+  const menus=Math.min(ent,seg);
+
+  total+=menus*13;
+  total+=(seg-menus)*10;
+  total+=(ent-menus)*5;
+
+  /* EXTRAS */
+  extrasComida.forEach(e=>{
+    const c=+document.getElementById(e.nombre).value;
+    if(c>0){
+      detalleExtras.push(`${c} - ${e.nombre}`);
+      total+=c*e.precio;
+    }
+  });
+
+  /* ENVASES */
+  envases.forEach(e=>{
+    const c=+document.getElementById(e.nombre).value;
+    if(c>0){
+      detalleEnvases.push(`${c} - ${e.nombre}`);
+      total+=c*e.precio;
+    }
+  });
+
+  const delivery=+deliveryCosto.value;
+  total+=delivery;
+
+  pedidos.push({
+    tipo:tipo.value,
+    mesa:mesa.value,
+    detalleEntradas,
+    detalleSegundos,
+    detalleExtras,
+    detalleEnvases,
+    delivery,
+    total
+  });
+
+  mostrar();
+  reset();
+}
+
+
+/* ========= MOSTRAR DETALLE COMPLETO ========= */
+function mostrar(){
+
+  let html="";
+
+  pedidos.forEach((p,i)=>{
+
+    html+=`
+    <div class="pedido">
+      <b>#${i+1} | ${p.tipo.toUpperCase()} | ${p.mesa||"-"}</b><br><br>
+    `;
+
+    if(p.detalleEntradas.length){
+      html+=`<b>Entradas:</b><br>${p.detalleEntradas.join("<br>")}<br><br>`;
+    }
+
+    if(p.detalleSegundos.length){
+      html+=`<b>Segundos:</b><br>${p.detalleSegundos.join("<br>")}<br><br>`;
+    }
+
+    if(p.detalleExtras.length){
+      html+=`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`;
+    }
+
+    if(p.detalleEnvases.length){
+      html+=`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`;
+    }
+
+    if(p.delivery>0){
+      html+=`<b>Delivery:</b> S/ ${p.delivery}<br><br>`;
+    }
+
+    html+=`<b>Total: S/ ${p.total.toFixed(2)}</b></div>`;
+  });
+
+  listaPedidos.innerHTML=html;
+}
+
+
+/* ========= RESET ========= */
+function reset(){
+  document.querySelectorAll(".qty").forEach(e=>e.value=0);
+  deliveryCosto.value=0;
+  mesa.value="";
+}
+
+
+/* INIT */
+crearItems(entradas,"entradas");
+crearItems(segundos,"segundos");
+crearItems(extrasComida,"extrasComida");
+crearItems(envases,"envases");
 </script>
+
 
 </body>
 </html>
