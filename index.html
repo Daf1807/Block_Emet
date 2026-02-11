@@ -168,9 +168,21 @@ Costo adicional:
 </section>
 
 <script>
-const entradas=["Sopa de sémola","Salpicón de pollo","Ceviche mixto","Ensalada"];
-const segundos=["Ají de gallina","Chaufa mixto","Pollo al horno","Milanesa","Pescado frito"];
+/* ==============================
+   MENÚ DINÁMICO (LOCALSTORAGE)
+============================== */
 
+let entradas = JSON.parse(localStorage.getItem("entradasMisti")) || [
+ "Sopa de sémola",
+ "Ensalada"
+];
+
+let segundos = JSON.parse(localStorage.getItem("segundosMisti")) || [
+ "Ají de gallina",
+ "Chaufa mixto"
+];
+
+/* EXTRAS FIJOS */
 const extrasComida=[
  {nombre:"Arroz extra",precio:2},
  {nombre:"Presa adicional",precio:5},
@@ -186,16 +198,18 @@ const envases=[
 let pedidos = JSON.parse(localStorage.getItem("pedidosMisti")) || [];
 
 
-/* ========= CREAR ITEMS ========= */
+/* ==============================
+   CREAR ITEMS PEDIDO
+============================== */
+
 function crearItems(lista, cont){
   const div=document.getElementById(cont);
+  div.innerHTML="";
 
-  lista.forEach(i=>{
-    const nombre=i.nombre||i;
-
+  lista.forEach(nombre=>{
     div.innerHTML+=`
       <div class="item">
-        ${nombre} ${i.precio?`(S/ ${i.precio})`:""}
+        ${nombre}
         <div class="controls">
           <button onclick="cambiar('${nombre}',-1)">-</button>
           <input class="qty" id="${nombre}" value="0" readonly>
@@ -213,16 +227,68 @@ function cambiar(id,n){
 }
 
 
-/* ========= REGISTRAR ========= */
+/* ==============================
+   EDITAR MENÚ
+============================== */
+
+function renderMenuEditable(lista, contenedor, tipo){
+  const div=document.getElementById(contenedor);
+  div.innerHTML="";
+
+  lista.forEach((nombre,i)=>{
+    div.innerHTML+=`
+      <div style="display:flex;justify-content:space-between;margin:4px 0">
+        ${nombre}
+        <button onclick="eliminarPlato('${tipo}',${i})">🗑️</button>
+      </div>`;
+  });
+
+  div.innerHTML+=`
+    <button onclick="agregarPlato('${tipo}')">➕ Agregar</button>
+  `;
+}
+
+function agregarPlato(tipo){
+  const nombre=prompt("Nombre del plato:");
+  if(!nombre) return;
+
+  if(tipo==="entradas") entradas.push(nombre);
+  else segundos.push(nombre);
+
+  guardarMenu();
+  refrescarTodo();
+}
+
+function eliminarPlato(tipo,i){
+  if(tipo==="entradas") entradas.splice(i,1);
+  else segundos.splice(i,1);
+
+  guardarMenu();
+  refrescarTodo();
+}
+
+function guardarMenu(){
+  localStorage.setItem("entradasMisti",JSON.stringify(entradas));
+  localStorage.setItem("segundosMisti",JSON.stringify(segundos));
+}
+
+function refrescarTodo(){
+  crearItems(entradas,"entradas");
+  crearItems(segundos,"segundos");
+
+  renderMenuEditable(entradas,"editarEntradas","entradas");
+  renderMenuEditable(segundos,"editarSegundos","segundos");
+}
+
+
+/* ==============================
+   REGISTRAR PEDIDO
+============================== */
+
 function registrarPedido(){
 
-  let total=0;
-  let ent=0, seg=0;
-
-  let detalleEntradas=[];
-  let detalleSegundos=[];
-  let detalleExtras=[];
-  let detalleEnvases=[];
+  let total=0, ent=0, seg=0;
+  let detalleEntradas=[], detalleSegundos=[], detalleExtras=[], detalleEnvases=[];
 
   entradas.forEach(p=>{
     const c=+document.getElementById(p).value;
@@ -247,7 +313,7 @@ function registrarPedido(){
   total+=(ent-menus)*5;
 
   extrasComida.forEach(e=>{
-    const c=+document.getElementById(e.nombre).value;
+    const c=+document.getElementById(e.nombre)?.value||0;
     if(c>0){
       detalleExtras.push(`${c} - ${e.nombre}`);
       total+=c*e.precio;
@@ -255,7 +321,7 @@ function registrarPedido(){
   });
 
   envases.forEach(e=>{
-    const c=+document.getElementById(e.nombre).value;
+    const c=+document.getElementById(e.nombre)?.value||0;
     if(c>0){
       detalleEnvases.push(`${c} - ${e.nombre}`);
       total+=c*e.precio;
@@ -282,68 +348,52 @@ function registrarPedido(){
 }
 
 
-/* ========= MOSTRAR ========= */
-function mostrar(){
+/* ==============================
+   MOSTRAR PEDIDOS
+============================== */
 
+function mostrar(){
   let html="";
 
   pedidos.forEach((p,i)=>{
-
     html+=`
     <div class="pedido">
-
       <b>#${i+1} | ${p.tipo.toUpperCase()} | ${p.mesa||"-"}</b>
-      <button onclick="eliminar(${i})" style="float:right">🗑️</button>
-      <br><br>
-    `;
+      <button onclick="eliminar(${i})" style="float:right">🗑️</button><br><br>
 
-    if(p.detalleEntradas.length)
-      html+=`<b>Entradas:</b><br>${p.detalleEntradas.join("<br>")}<br><br>`;
+      ${p.detalleEntradas.length?`<b>Entradas:</b><br>${p.detalleEntradas.join("<br>")}<br><br>`:""}
+      ${p.detalleSegundos.length?`<b>Segundos:</b><br>${p.detalleSegundos.join("<br>")}<br><br>`:""}
+      ${p.detalleExtras.length?`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`:""}
+      ${p.detalleEnvases.length?`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`:""}
+      ${p.delivery>0?`<b>Delivery:</b> S/ ${p.delivery}<br><br>`:""}
 
-    if(p.detalleSegundos.length)
-      html+=`<b>Segundos:</b><br>${p.detalleSegundos.join("<br>")}<br><br>`;
-
-    if(p.detalleExtras.length)
-      html+=`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`;
-
-    if(p.detalleEnvases.length)
-      html+=`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`;
-
-    if(p.delivery>0)
-      html+=`<b>Delivery:</b> S/ ${p.delivery}<br><br>`;
-
-    html+=`<b>Total: S/ ${p.total.toFixed(2)}</b></div>`;
+      <b>Total: S/ ${p.total.toFixed(2)}</b>
+    </div>`;
   });
 
   listaPedidos.innerHTML=html;
 }
 
 
-/* ========= ELIMINAR ========= */
-function eliminar(index){
-  if(confirm("¿Eliminar este pedido?")){
-    pedidos.splice(index,1);
-    guardarHistorial();
-    mostrar();
-  }
-}
+/* ==============================
+   HISTORIAL
+============================== */
 
-
-/* ========= HISTORIAL ========= */
 function guardarHistorial(){
-  localStorage.setItem("pedidosMisti", JSON.stringify(pedidos));
+  localStorage.setItem("pedidosMisti",JSON.stringify(pedidos));
 }
 
-function limpiarHistorial(){
-  if(confirm("¿Borrar TODO el historial del día?")){
-    pedidos=[];
-    localStorage.removeItem("pedidosMisti");
-    mostrar();
-  }
+function eliminar(i){
+  pedidos.splice(i,1);
+  guardarHistorial();
+  mostrar();
 }
 
 
-/* ========= RESET ========= */
+/* ==============================
+   RESET
+============================== */
+
 function reset(){
   document.querySelectorAll(".qty").forEach(e=>e.value=0);
   deliveryCosto.value=0;
@@ -351,14 +401,17 @@ function reset(){
 }
 
 
-/* INIT */
-crearItems(entradas,"entradas");
-crearItems(segundos,"segundos");
+/* ==============================
+   INIT
+============================== */
+
 crearItems(extrasComida,"extrasComida");
 crearItems(envases,"envases");
 
+refrescarTodo();
 mostrar();
 </script>
+
 
 
 
