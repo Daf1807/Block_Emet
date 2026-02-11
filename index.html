@@ -183,7 +183,7 @@ const envases=[
  {nombre:"Taper chico",precio:0.5}
 ];
 
-let pedidos=[];
+let pedidos = JSON.parse(localStorage.getItem("pedidosMisti")) || [];
 
 
 /* ========= CREAR ITEMS ========= */
@@ -217,15 +217,13 @@ function cambiar(id,n){
 function registrarPedido(){
 
   let total=0;
+  let ent=0, seg=0;
 
   let detalleEntradas=[];
   let detalleSegundos=[];
   let detalleExtras=[];
   let detalleEnvases=[];
 
-  let ent=0, seg=0;
-
-  /* ENTRADAS */
   entradas.forEach(p=>{
     const c=+document.getElementById(p).value;
     if(c>0){
@@ -234,7 +232,6 @@ function registrarPedido(){
     }
   });
 
-  /* SEGUNDOS */
   segundos.forEach(p=>{
     const c=+document.getElementById(p).value;
     if(c>0){
@@ -249,7 +246,6 @@ function registrarPedido(){
   total+=(seg-menus)*10;
   total+=(ent-menus)*5;
 
-  /* EXTRAS */
   extrasComida.forEach(e=>{
     const c=+document.getElementById(e.nombre).value;
     if(c>0){
@@ -258,7 +254,6 @@ function registrarPedido(){
     }
   });
 
-  /* ENVASES */
   envases.forEach(e=>{
     const c=+document.getElementById(e.nombre).value;
     if(c>0){
@@ -281,12 +276,13 @@ function registrarPedido(){
     total
   });
 
+  guardarHistorial();
   mostrar();
   reset();
 }
 
 
-/* ========= MOSTRAR DETALLE COMPLETO ========= */
+/* ========= MOSTRAR ========= */
 function mostrar(){
 
   let html="";
@@ -295,33 +291,55 @@ function mostrar(){
 
     html+=`
     <div class="pedido">
-      <b>#${i+1} | ${p.tipo.toUpperCase()} | ${p.mesa||"-"}</b><br><br>
+
+      <b>#${i+1} | ${p.tipo.toUpperCase()} | ${p.mesa||"-"}</b>
+      <button onclick="eliminar(${i})" style="float:right">🗑️</button>
+      <br><br>
     `;
 
-    if(p.detalleEntradas.length){
+    if(p.detalleEntradas.length)
       html+=`<b>Entradas:</b><br>${p.detalleEntradas.join("<br>")}<br><br>`;
-    }
 
-    if(p.detalleSegundos.length){
+    if(p.detalleSegundos.length)
       html+=`<b>Segundos:</b><br>${p.detalleSegundos.join("<br>")}<br><br>`;
-    }
 
-    if(p.detalleExtras.length){
+    if(p.detalleExtras.length)
       html+=`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`;
-    }
 
-    if(p.detalleEnvases.length){
+    if(p.detalleEnvases.length)
       html+=`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`;
-    }
 
-    if(p.delivery>0){
+    if(p.delivery>0)
       html+=`<b>Delivery:</b> S/ ${p.delivery}<br><br>`;
-    }
 
     html+=`<b>Total: S/ ${p.total.toFixed(2)}</b></div>`;
   });
 
   listaPedidos.innerHTML=html;
+}
+
+
+/* ========= ELIMINAR ========= */
+function eliminar(index){
+  if(confirm("¿Eliminar este pedido?")){
+    pedidos.splice(index,1);
+    guardarHistorial();
+    mostrar();
+  }
+}
+
+
+/* ========= HISTORIAL ========= */
+function guardarHistorial(){
+  localStorage.setItem("pedidosMisti", JSON.stringify(pedidos));
+}
+
+function limpiarHistorial(){
+  if(confirm("¿Borrar TODO el historial del día?")){
+    pedidos=[];
+    localStorage.removeItem("pedidosMisti");
+    mostrar();
+  }
 }
 
 
@@ -338,7 +356,10 @@ crearItems(entradas,"entradas");
 crearItems(segundos,"segundos");
 crearItems(extrasComida,"extrasComida");
 crearItems(envases,"envases");
+
+mostrar();
 </script>
+
 
 
 </body>
