@@ -232,15 +232,29 @@ function crearMenuEditable(total, cont, prefijo){
             <button onclick="cambiar('${key}',-1)">-</button>
             <input class="qty" id="${key}" value="0" readonly>
             <button onclick="cambiar('${key}',1)">+</button>
+
+            <!-- 🔥 BOTÓN NOTA -->
+            <button 
+              type="button"
+              onclick="toggleNota('${key}')"
+              style="
+                background:#eee;
+                padding:6px 8px;
+                border-radius:6px;
+                font-size:12px;
+              ">
+              📝
+            </button>
           </div>
 
         </div>
 
-        <!-- 🔴 NOTA SOLO PARA ENTRADAS/SEGUNDOS -->
+        <!-- 🔥 NOTA OCULTA -->
         <input
           id="nota_${key}"
           placeholder="Nota (sin arroz, sin papa, etc)"
           style="
+            display:none;
             margin-top:5px;
             font-size:12px;
             padding:4px;
@@ -252,6 +266,8 @@ function crearMenuEditable(total, cont, prefijo){
       </div>`;
   }
 }
+
+
 
 
 
@@ -287,6 +303,19 @@ function cambiar(id,n){
   let v=parseInt(el.value)+n;
   if(v<0)v=0;
   el.value=v;
+}
+
+function toggleNota(id){
+
+  const campo = document.getElementById("nota_"+id);
+
+  if(campo.style.display === "none"){
+    campo.style.display = "block";
+    campo.focus();
+  }else{
+    campo.style.display = "none";
+  }
+
 }
 
 
@@ -474,7 +503,6 @@ crearItems(envases,"envases");
 
 mostrar();
 
-
 async function descargarWord(){
 
   if(pedidos.length===0){
@@ -486,107 +514,123 @@ async function descargarWord(){
     Document,
     Packer,
     Paragraph,
+    TextRun,
     Table,
     TableRow,
     TableCell,
-    WidthType
+    WidthType,
+    BorderStyle
   } = docx;
 
-  const COLUMNAS = 6; // 🔥 +1 columna extra
+  const COLUMNAS = 6;
 
-  let filas=[];
-  let rowCells=[];
+  // 🔥 Repartir pedidos verticalmente
+  let columnasPedidos = Array.from({length:COLUMNAS},()=>[]);
 
   pedidos.forEach((p,i)=>{
-
-    const lineas=[];
-
-    lineas.push(`#${i+1} | ${p.tipo.toUpperCase()} | ${p.mesa || "-"}`);
-    lineas.push("");
-
-    if(p.detalleEntradas.length){
-      lineas.push("Entradas:");
-      lineas.push(...p.detalleEntradas);
-      lineas.push("");
-    }
-
-    if(p.detalleSegundos.length){
-      lineas.push("Segundos:");
-      lineas.push(...p.detalleSegundos);
-      lineas.push("");
-    }
-
-    if(p.detalleExtras.length){
-      lineas.push("Extras:");
-      lineas.push(...p.detalleExtras);
-      lineas.push("");
-    }
-
-    if(p.detalleEnvases.length){
-      lineas.push("Envases:");
-      lineas.push(...p.detalleEnvases);
-      lineas.push("");
-    }
-
-    lineas.push(`TOTAL: S/ ${p.total.toFixed(2)}`);
-
-    const celda=new TableCell({
-      width:{
-        size:100/COLUMNAS,
-        type:WidthType.PERCENTAGE
-      },
-      children: lineas.map(l =>
-        new Paragraph({
-          text:l,
-          spacing:{ after:40 } // 🔥 compacto
-        })
-      )
-    });
-
-    rowCells.push(celda);
-
-    if(rowCells.length===COLUMNAS){
-      filas.push(new TableRow({children:rowCells}));
-      rowCells=[];
-    }
+    columnasPedidos[i % COLUMNAS].push(p);
   });
 
-  if(rowCells.length>0){
-    while(rowCells.length<COLUMNAS){
-      rowCells.push(new TableCell({children:[new Paragraph("")]}));
+  // 🔥 Convertimos cada columna en un bloque vertical
+  const filas = [];
+  const maxFilas = Math.max(...columnasPedidos.map(c=>c.length));
+
+  for(let f=0; f<maxFilas; f++){
+
+    const rowCells = [];
+
+    for(let c=0; c<COLUMNAS; c++){
+
+      const pedido = columnasPedidos[c][f];
+
+      if(pedido){
+
+        const contenido = [];
+
+        contenido.push(
+          new Paragraph({
+            children:[
+              new TextRun({
+                text:(pedido.mesa||"SIN NOMBRE").toUpperCase(),
+                bold:true,
+                size:30
+              })
+            ],
+            spacing:{ after:100 }
+          })
+        );
+
+        pedido.detalleEntradas.forEach(l=>{
+          contenido.push(
+            new Paragraph({
+              children:[ new TextRun({ text:l, size:24 }) ]
+            })
+          );
+        });
+
+        pedido.detalleSegundos.forEach(l=>{
+          contenido.push(
+            new Paragraph({
+              children:[ new TextRun({ text:l, size:24 }) ]
+            })
+          );
+        });
+
+        rowCells.push(
+          new TableCell({
+            width:{ size:100/COLUMNAS, type:WidthType.PERCENTAGE },
+            margins:{ top:100, bottom:100, left:150, right:150 },
+            borders:{
+              left:{style:BorderStyle.SINGLE, size:4, color:"cccccc"},
+              right:{style:BorderStyle.SINGLE, size:4, color:"cccccc"},
+              top:{style:BorderStyle.NONE},
+              bottom:{style:BorderStyle.NONE}
+            },
+            children:contenido
+          })
+        );
+
+      } else {
+        rowCells.push(
+          new TableCell({
+            width:{ size:100/COLUMNAS, type:WidthType.PERCENTAGE },
+            children:[new Paragraph("")]
+          })
+        );
+      }
+
     }
-    filas.push(new TableRow({children:rowCells}));
+
+    filas.push(new TableRow({ children: rowCells }));
+
   }
 
-  const tabla=new Table({
-    width:{size:100,type:WidthType.PERCENTAGE},
-    rows:filas
+  const tabla = new Table({
+    width:{ size:100, type:WidthType.PERCENTAGE },
+    rows: filas
   });
 
-  const doc=new Document({
+  const doc = new Document({
     sections:[{
-      // 🔥 MÁRGENES ESTRECHOS
       properties:{
         page:{
-          margin:{
-            top:300,
-            right:300,
-            bottom:300,
-            left:300
-          }
+          size:{ orientation:"landscape" },
+          margin:{ top:250, right:250, bottom:250, left:250 }
         }
       },
       children:[tabla]
     }]
   });
 
-  const blob=await Packer.toBlob(doc);
+  const blob = await Packer.toBlob(doc);
 
   const link=document.createElement("a");
   link.href=URL.createObjectURL(blob);
   link.download="Pedidos-ElMisti.docx";
   link.click();
 }
+
+
 
 
 
