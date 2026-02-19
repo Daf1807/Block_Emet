@@ -117,12 +117,12 @@ button{
 
 <div class="card">
 Tipo:
-<select id="tipo">
+<select id="tipo" onchange="guardarTipo()">
   <option value="mesa">Mesa</option>
   <option value="llevar">Llevar</option>
-  <option value="delivery">Delivery</option>
   <option value="reserva">Reserva</option>
 </select>
+
 <br><br>
 Mesa / Nombre:
 <input id="mesa" style="width:100%">
@@ -132,11 +132,42 @@ Mesa / Nombre:
 
 <div class="card">
 <h2>Entradas</h2>
+
+<div style="display:flex;align-items:center;gap:6px;font-weight:bold;margin-bottom:6px">
+
+  <button onclick="toggleIni('entradas')" 
+          style="padding:2px 6px;border-radius:6px">
+    👁
+  </button>
+
+  <div class="colIni" style="width:60px">Ini</div>
+  <div style="width:80px">Disp</div>
+  <div style="flex:1">Entradas</div>
+
+</div>
+
+
 <div id="entradas"></div>
 </div>
 
+
 <div class="card">
 <h2>Segundos</h2>
+
+<div style="display:flex;align-items:center;gap:6px;font-weight:bold;margin-bottom:6px">
+
+  <button onclick="toggleIni('segundos')" 
+          style="padding:2px 6px;border-radius:6px">
+    👁
+  </button>
+
+  <div class="colIni" style="width:60px">Ini</div>
+  <div style="width:80px">Disp</div>
+  <div style="flex:1">Segundos</div>
+
+</div>
+
+
 <div id="segundos"></div>
 </div>
 
@@ -161,15 +192,53 @@ Costo adicional:
 <input type="number" id="deliveryCosto" value="0" min="0" step="0.5" style="width:80px"> soles
 </div>
 
+<div class="card" style="text-align:center;font-size:20px">
+  💰 Total actual: <b id="totalPreview">S/ 0.00</b>
+</div>
+
+
 <button class="big" onclick="registrarPedido()">✅ Registrar pedido</button>
 
-<button class="big" onclick="descargarWord()">
-📄 Descargar pedidos (Word)
-</button>
+
+
 
 
 <h2>📋 Pedidos del día</h2>
-<div id="listaPedidos"></div>
+
+<!-- MESA -->
+<div class="card">
+  <h3>
+    🍽️ Mesa 
+    <button class="btn" onclick="descargarWordTipo('mesa')">
+      📄 Imprimir
+    </button>
+  </h3>
+  <div id="seccion_mesa"></div>
+</div>
+
+<!-- RESERVA -->
+<div class="card">
+  <h3>
+    📅 Reserva 
+    <button class="btn" onclick="descargarWordTipo('reserva')">
+      📄 Imprimir
+    </button>
+  </h3>
+  <div id="seccion_reserva"></div>
+</div>
+
+<!-- LLEVAR -->
+<div class="card">
+  <h3>
+    🥡 Llevar 
+    <button class="btn" onclick="descargarWordTipo('llevar')">
+      📄 Imprimir
+    </button>
+  </h3>
+  <div id="seccion_llevar"></div>
+</div>
+
+
 
 </section>
 
@@ -215,55 +284,84 @@ function crearMenuEditable(total, cont, prefijo){
     const key=prefijo+i;
     const nombreGuardado =
       localStorage.getItem(key+"-nombre") || "";
+    const inicialGuardado = localStorage.getItem(key+"-inicial") || 0;
+    const vendidoGuardado = localStorage.getItem(key+"-vendido") || 0;
+    const disponible = inicialGuardado - vendidoGuardado;
 
     div.innerHTML+=`
-      <div class="item" style="flex-direction:column;align-items:stretch">
+  <div class="item" style="display:flex;align-items:center;gap:10px">
 
-        <!-- fila nombre + cantidad -->
-        <div style="display:flex;align-items:center;gap:8px">
+    <!-- INICIAL -->
+    <input
+      class="colIni"
+      type="number"
+      value="${inicialGuardado}"
+      min="0"
+      style="width:60px"
+      oninput="
+        localStorage.setItem('${key}-inicial',this.value);
+        actualizarDisponible('${key}');
+      "
+    >
 
-          <input
-            value="${nombreGuardado}"
-            placeholder="Nombre..."
-            oninput="localStorage.setItem('${key}-nombre',this.value)"
-            style="flex:1">
 
-          <div class="controls">
-            <button onclick="cambiar('${key}',-1)">-</button>
-            <input class="qty" id="${key}" value="0" readonly>
-            <button onclick="cambiar('${key}',1)">+</button>
+    <!-- DISPONIBLE -->
+    <span
+      id="disp_${key}"
+      style="width:60px;text-align:center;font-weight:bold;color:${disponible<=0?'red':'black'}">
+      ${disponible}
+    </span>
 
-            <!-- 🔥 BOTÓN NOTA -->
-            <button 
-              type="button"
-              onclick="toggleNota('${key}')"
-              style="
-                background:#eee;
-                padding:6px 8px;
-                border-radius:6px;
-                font-size:12px;
-              ">
-              📝
-            </button>
-          </div>
 
-        </div>
+    <!-- NOMBRE -->
+    <input
+      value="${nombreGuardado}"
+      placeholder="Nombre..."
+      oninput="localStorage.setItem('${key}-nombre',this.value)"
+      style="flex:1"
+    >
 
-        <!-- 🔥 NOTA OCULTA -->
-        <input
-          id="nota_${key}"
-          placeholder="Nota (sin arroz, sin papa, etc)"
-          style="
-            display:none;
-            margin-top:5px;
-            font-size:12px;
-            padding:4px;
-            border:1px solid #ddd;
-            border-radius:6px;
-            width:100%;
-          ">
+    <!-- CONTROLES -->
+    <div class="controls">
 
-      </div>`;
+      <button onclick="cambiar('${key}',-1)">-</button>
+
+      <input class="qty" id="${key}" value="0" readonly>
+
+      <button onclick="cambiar('${key}',1)">+</button>
+
+      <!-- BOTÓN NOTA -->
+      <button 
+        type="button"
+        onclick="toggleNota('${key}')"
+        style="
+          background:#eee;
+          padding:6px 8px;
+          border-radius:6px;
+          font-size:12px;
+        ">
+        📝
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- NOTA OCULTA -->
+  <input
+    id="nota_${key}"
+    placeholder="Nota (sin arroz, sin papa, etc)"
+    style="
+      display:none;
+      margin-top:5px;
+      font-size:12px;
+      padding:4px;
+      border:1px solid #ddd;
+      border-radius:6px;
+      width:100%;
+    ">
+`;
+
   }
 }
 
@@ -303,6 +401,45 @@ function cambiar(id,n){
   let v=parseInt(el.value)+n;
   if(v<0)v=0;
   el.value=v;
+  calcularPreview(); // 👈 agregado
+}
+
+
+function calcularPreview(){
+
+  let total=0;
+  let ent=0, seg=0;
+
+  // contar entradas
+  for(let i=0;i<TOTAL_ENTRADAS;i++){
+    ent += +document.getElementById("E"+i).value;
+  }
+
+  // contar segundos
+  for(let i=0;i<TOTAL_SEGUNDOS;i++){
+    seg += +document.getElementById("S"+i).value;
+  }
+
+  const menus=Math.min(ent,seg);
+
+  total+=menus*13;
+  total+=(seg-menus)*10;
+  total+=(ent-menus)*5;
+
+  // extras
+  extrasComida.forEach(e=>{
+    total += +document.getElementById(e.nombre).value * e.precio;
+  });
+
+  // envases
+  envases.forEach(e=>{
+    total += +document.getElementById(e.nombre).value * e.precio;
+  });
+
+  // delivery
+  total += +deliveryCosto.value;
+
+  totalPreview.innerText="S/ "+total.toFixed(2);
 }
 
 function toggleNota(id){
@@ -312,11 +449,59 @@ function toggleNota(id){
   if(campo.style.display === "none"){
     campo.style.display = "block";
     campo.focus();
-  }else{
+  } else {
     campo.style.display = "none";
   }
 
 }
+
+function actualizarDisponible(key){
+
+  const inicial = +localStorage.getItem(key+"-inicial") || 0;
+  const vendido = +localStorage.getItem(key+"-vendido") || 0;
+
+  let disponible = inicial - vendido;
+  if(disponible < 0) disponible = 0;
+
+  const span = document.getElementById("disp_"+key);
+  if(span){
+    span.innerText = disponible;
+    span.style.color = disponible <= 0 ? "red" : "black";
+  }
+
+  // bloquear botón +
+  const btnMas = document.querySelector(
+    `button[onclick="cambiar('${key}',1)"]`
+  );
+
+  if(btnMas){
+    btnMas.disabled = disponible <= 0;
+    btnMas.style.opacity = disponible <= 0 ? 0.3 : 1;
+  }
+}
+
+/* 🔥 FUNCIÓN PARA MOSTRAR / OCULTAR COLUMNA INI */
+function toggleIni(seccion){
+
+  const container = document.getElementById(seccion);
+  const card = container.closest(".card");
+  const columnas = card.querySelectorAll(".colIni");
+
+  let oculto = columnas[0].style.display !== "none";
+
+  columnas.forEach(col=>{
+    col.style.display = oculto ? "none" : "";
+  });
+
+  // 🔥 guardar estado
+  localStorage.setItem("iniOculto_"+seccion, oculto ? "1" : "0");
+}
+
+function guardarTipo(){
+  const selectTipo = document.getElementById("tipo");
+  localStorage.setItem("tipoSeleccionado", selectTipo.value);
+}
+
 
 
 /* =================================================
@@ -339,14 +524,18 @@ function registrarPedido(){
 
     if(nombre && c>0){
 
-  const nota=document.getElementById("nota_E"+i)?.value || "";
+      const nota=document.getElementById("nota_E"+i)?.value || "";
 
-  let texto=`${c} - ${nombre}`;
-  if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
+      let texto=`${c} - ${nombre}`;
+      let vendidoActual = +localStorage.getItem("E"+i+"-vendido") || 0;
+      localStorage.setItem("E"+i+"-vendido", vendidoActual + c);
+      actualizarDisponible("E"+i);
 
-  detalleEntradas.push(texto);
-  ent+=c;
-}
+      if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
+
+      detalleEntradas.push(texto);
+      ent+=c;
+    }
 
   }
 
@@ -357,14 +546,18 @@ function registrarPedido(){
 
     if(nombre && c>0){
 
-  const nota=document.getElementById("nota_S"+i)?.value || "";
+      const nota=document.getElementById("nota_S"+i)?.value || "";
 
-  let texto=`${c} - ${nombre}`;
-  if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
+      let texto=`${c} - ${nombre}`;
+      let vendidoActual = +localStorage.getItem("S"+i+"-vendido") || 0;
+      localStorage.setItem("S"+i+"-vendido", vendidoActual + c);
+      actualizarDisponible("S"+i);
 
-  detalleSegundos.push(texto);
-  seg+=c;
-}
+      if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
+
+      detalleSegundos.push(texto);
+      seg+=c;
+    }
 
   }
 
@@ -395,16 +588,24 @@ function registrarPedido(){
   const delivery=+deliveryCosto.value;
   total+=delivery;
 
-  pedidos.push({
-    tipo:tipo.value,
-    mesa:mesa.value,
-    detalleEntradas,
-    detalleSegundos,
-    detalleExtras,
-    detalleEnvases,
-    delivery,
-    total
+if(detalleEntradas.length===0 && detalleSegundos.length===0){
+  alert("No hay platos en el pedido");
+  return;
+}
+
+
+
+ pedidos.push({
+    tipo: document.getElementById("tipo").value,
+    mesa: document.getElementById("mesa").value,
+    detalleEntradas: detalleEntradas,
+    detalleSegundos: detalleSegundos,
+    detalleExtras: detalleExtras,
+    detalleEnvases: detalleEnvases,
+    total: total,
   });
+
+
 
   guardarHistorial();
   mostrar();
@@ -417,51 +618,57 @@ function registrarPedido(){
 ================================================= */
 function mostrar(){
 
-  let html="";
+  let htmlMesa="";
+  let htmlReserva="";
+  let htmlLlevar="";
 
   pedidos.forEach((p,i)=>{
 
-    html+=`
+    let bloque=`
     <div class="pedido">
-
-      <b>#${i+1} | ${p.tipo.toUpperCase()} | ${p.mesa||"-"}</b>
-      <button onclick="eliminar(${i})" style="float:right">🗑️</button>
-      <br><br>
+    <b>#${i+1} | ${p.tipo.toUpperCase()} | ${(p.mesa||"-").toUpperCase()}</b>
+    <button onclick="eliminar(${i})" style="float:right">🗑️</button>
+    <br><br>
     `;
 
-   if(p.detalleEntradas.length)
-  html+=`<b>Entradas:</b><br>${
-    p.detalleEntradas
-      .map(x=>x.replace("NOTA:",
-        "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
-      ))
-      .join("<br>")
-  }<br><br>`;
 
-if(p.detalleSegundos.length)
-  html+=`<b>Segundos:</b><br>${
-    p.detalleSegundos
-      .map(x=>x.replace("NOTA:",
-        "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
-      ))
-      .join("<br>")
-  }<br><br>`;
+    if(p.detalleEntradas.length)
+      bloque+=`<b>Entradas:</b><br>${
+        p.detalleEntradas
+        .map(x=>x.replace("NOTA:",
+          "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
+        ))
+        .join("<br>")
+      }<br><br>`;
 
+    if(p.detalleSegundos.length)
+      bloque+=`<b>Segundos:</b><br>${
+        p.detalleSegundos
+        .map(x=>x.replace("NOTA:",
+          "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
+        ))
+        .join("<br>")
+      }<br><br>`;
 
     if(p.detalleExtras.length)
-      html+=`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`;
+      bloque+=`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`;
 
     if(p.detalleEnvases.length)
-      html+=`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`;
+      bloque+=`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`;
 
-    if(p.delivery>0)
-      html+=`<b>Delivery:</b> S/ ${p.delivery}<br><br>`;
+    bloque+=`<b>Total: S/ ${p.total.toFixed(2)}</b></div>`;
 
-    html+=`<b>Total: S/ ${p.total.toFixed(2)}</b></div>`;
+    if(p.tipo==="mesa") htmlMesa+=bloque;
+    if(p.tipo==="reserva") htmlReserva+=bloque;
+    if(p.tipo==="llevar") htmlLlevar+=bloque;
+
   });
 
-  listaPedidos.innerHTML=html;
+  document.getElementById("seccion_mesa").innerHTML=htmlMesa;
+  document.getElementById("seccion_reserva").innerHTML=htmlReserva;
+  document.getElementById("seccion_llevar").innerHTML=htmlLlevar;
 }
+
 
 function eliminar(index){
   if(confirm("¿Eliminar este pedido?")){
@@ -487,7 +694,12 @@ function reset(){
 
   deliveryCosto.value=0;
   mesa.value="";
+  calcularPreview();
+
 }
+
+
+
 
 
 
@@ -497,16 +709,44 @@ function reset(){
 ================================================= */
 crearMenuEditable(TOTAL_ENTRADAS,"entradas","E");
 crearMenuEditable(TOTAL_SEGUNDOS,"segundos","S");
+// 🔥 aplicar estado guardado
+["entradas","segundos"].forEach(seccion=>{
+  const oculto = localStorage.getItem("iniOculto_"+seccion);
+  if(oculto === "1"){
+    toggleIni(seccion);
+  }
+});
+
 
 crearItems(extrasComida,"extrasComida");
 crearItems(envases,"envases");
 
 mostrar();
 
-async function descargarWord(){
 
-  if(pedidos.length===0){
-    alert("No hay pedidos");
+// 🔥 restaurar tipo guardado
+const tipoGuardado = localStorage.getItem("tipoSeleccionado");
+if(tipoGuardado){
+  document.getElementById("tipo").value = tipoGuardado;
+}
+
+
+
+for(let i=0;i<TOTAL_ENTRADAS;i++){
+  actualizarDisponible("E"+i);
+}
+for(let i=0;i<TOTAL_SEGUNDOS;i++){
+  actualizarDisponible("S"+i);
+}
+
+deliveryCosto.addEventListener("input",calcularPreview);
+
+async function descargarWordTipo(tipoFiltrado){
+
+  const pedidosFiltrados = pedidos.filter(p=>p.tipo===tipoFiltrado);
+
+  if(pedidosFiltrados.length===0){
+    alert("No hay pedidos en esta sección");
     return;
   }
 
@@ -524,14 +764,12 @@ async function descargarWord(){
 
   const COLUMNAS = 6;
 
-  // 🔥 Repartir pedidos verticalmente
   let columnasPedidos = Array.from({length:COLUMNAS},()=>[]);
 
-  pedidos.forEach((p,i)=>{
+  pedidosFiltrados.forEach((p,i)=>{
     columnasPedidos[i % COLUMNAS].push(p);
   });
 
-  // 🔥 Convertimos cada columna en un bloque vertical
   const filas = [];
   const maxFilas = Math.max(...columnasPedidos.map(c=>c.length));
 
@@ -591,12 +829,14 @@ async function descargarWord(){
         );
 
       } else {
+
         rowCells.push(
           new TableCell({
             width:{ size:100/COLUMNAS, type:WidthType.PERCENTAGE },
             children:[new Paragraph("")]
           })
         );
+
       }
 
     }
@@ -626,10 +866,9 @@ async function descargarWord(){
 
   const link=document.createElement("a");
   link.href=URL.createObjectURL(blob);
-  link.download="Pedidos-ElMisti.docx";
+  link.download="Pedidos-"+tipoFiltrado+"-ElMisti.docx";
   link.click();
 }
-
 
 
 
