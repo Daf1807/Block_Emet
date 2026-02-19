@@ -435,8 +435,28 @@ style="margin-top:10px;width:100%;background:black">
 
 <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 
 <script>
+
+  // 🔥 CONFIG FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyCakBN0YRTOGCKVQ7A5iLKksNh0cjF-JOg",
+  authDomain: "el-misti-pedidos.firebaseapp.com",
+  projectId: "el-misti-pedidos",
+  storageBucket: "el-misti-pedidos.firebasestorage.app",
+  messagingSenderId: "337950171428",
+  appId: "1:337950171428:web:7a8124d45ec9e44fbe13b1",
+  measurementId: "G-3VSKDP2KF9"
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 /* =================================================
    CANTIDADES FIJAS (LO ÚNICO NUEVO)
 ================================================= */
@@ -459,8 +479,15 @@ const envases=[
  {nombre:"Taper chico",precio:0.5}
 ];
 
-let pedidos = JSON.parse(localStorage.getItem("pedidosMisti")) || [];
+let pedidos = [];
 
+db.collection("pedidos").doc("diaActual")
+.onSnapshot((doc) => {
+  if(doc.exists){
+    pedidos = doc.data().lista || [];
+    mostrar();
+  }
+});
 
 /* =================================================
    NUEVO: CREAR ENTRADAS/SEGUNDOS EDITABLES
@@ -1031,7 +1058,9 @@ function eliminar(index){
 }
 
 function guardarHistorial(){
-  localStorage.setItem("pedidosMisti", JSON.stringify(pedidos));
+  db.collection("pedidos").doc("diaActual").set({
+    lista: pedidos
+  });
 }
 
 function reset(){
