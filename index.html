@@ -106,6 +106,53 @@ button{
     gap:10px;
   }
 }
+
+.timer-box{
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:8px;
+  font-weight:bold;
+  font-size:16px;
+  transition:all .3s ease;
+}
+
+.timer-green{
+  background:#d4edda;
+  color:#155724;
+}
+
+.timer-orange{
+  background:#fff3cd;
+  color:#856404;
+}
+
+.timer-red{
+  background:#f8d7da;
+  color:#721c24;
+  animation:parpadeo 1s infinite;
+}
+
+@keyframes parpadeo{
+  0%{opacity:1}
+  50%{opacity:.5}
+  100%{opacity:1}
+}
+
+.progress-bar{
+  height:6px;
+  background:#eee;
+  border-radius:4px;
+  margin-top:6px;
+  overflow:hidden;
+}
+
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:#28a745;
+  transition:width .5s linear;
+}
+
 </style>
 </head>
 
@@ -199,7 +246,14 @@ Costo adicional:
 
 <button class="big" onclick="registrarPedido()">✅ Registrar pedido</button>
 
+<button class="btn" onclick="resetearDisponibles()" style="margin-top:10px;width:100%">
+🔄 Resetear DISP
+</button>
 
+<button class="btn" onclick="eliminarTodo()" 
+style="margin-top:10px;width:100%;background:black">
+🗑️ Eliminar TODOS los pedidos
+</button>
 
 
 
@@ -503,6 +557,19 @@ function guardarTipo(){
 }
 
 
+function eliminarTodo(){
+
+  if(!confirm("¿Eliminar TODOS los pedidos del día?")) return;
+
+  pedidos = [];
+  localStorage.removeItem("pedidosMisti");
+
+  mostrar();
+
+  alert("Todos los pedidos fueron eliminados");
+}
+
+
 
 /* =================================================
    REGISTRAR (MISMA LÓGICA + solo cambio de lectura)
@@ -594,16 +661,39 @@ if(detalleEntradas.length===0 && detalleSegundos.length===0){
 }
 
 
+const tipoActual = document.getElementById("tipo").value;
 
- pedidos.push({
-    tipo: document.getElementById("tipo").value,
-    mesa: document.getElementById("mesa").value,
-    detalleEntradas: detalleEntradas,
-    detalleSegundos: detalleSegundos,
-    detalleExtras: detalleExtras,
-    detalleEnvases: detalleEnvases,
-    total: total,
+let horaExacta = null;
+let timestamp = null;
+
+if(tipoActual === "mesa"){
+  const ahora = new Date();
+
+  // Hora bonita para mostrar
+  horaExacta = ahora.toLocaleTimeString("es-PE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
   });
+
+  // Tiempo real en milisegundos (para el temporizador)
+  timestamp = Date.now();
+}
+
+
+pedidos.push({
+  tipo: tipoActual,
+  mesa: document.getElementById("mesa").value,
+  hora: horaExacta, // solo tendrá valor si es mesa
+  horaRegistro: timestamp, // ⬅️ NUEVO (para el temporizador)
+  atendido: false, // ⬅️ NUEVO (para saber si ya se completó)
+  detalleEntradas: detalleEntradas,
+  detalleSegundos: detalleSegundos,
+  detalleExtras: detalleExtras,
+  detalleEnvases: detalleEnvases,
+  total: total,
+});
+
 
 
 
@@ -618,6 +708,9 @@ if(detalleEntradas.length===0 && detalleSegundos.length===0){
 ================================================= */
 function mostrar(){
 
+    console.log("Array pedidos actual:", pedidos); // 👈 aquí
+
+
   let htmlMesa="";
   let htmlReserva="";
   let htmlLlevar="";
@@ -625,8 +718,30 @@ function mostrar(){
   pedidos.forEach((p,i)=>{
 
     let bloque=`
-    <div class="pedido">
-    <b>#${i+1} | ${p.tipo.toUpperCase()} | ${(p.mesa||"-").toUpperCase()}</b>
+    <div class="pedido" id="pedido_${i}">
+
+    <b>
+    #${i+1} | ${p.tipo.toUpperCase()} | ${(p.mesa||"-").toUpperCase()}
+    ${p.tipo === "mesa" && p.hora ? ` | 🕒 ${p.hora}` : ""}
+    </b>
+
+    ${p.tipo === "mesa" ? `
+    <br>
+    ⏱ Tiempo: 
+    <span id="timer_${i}" style="font-weight:bold;color:#c40000">
+     ${p.atendido ? p.tiempoFinal : "00:00"}
+    </span>
+
+    ${!p.atendido ? `
+    <button onclick="marcarAtendido(${i})" 
+      style="margin-left:10px;background:green;color:white">
+      ✅ ATENDIDO
+    </button>
+    ` : `<span style="color:green;font-weight:bold"> ✔ FINALIZADO</span>`}
+    <br><br>
+    ` : ""}
+
+
     <button onclick="eliminar(${i})" style="float:right">🗑️</button>
     <br><br>
     `;
@@ -698,10 +813,65 @@ function reset(){
 
 }
 
+function resetearDisponibles(){
+
+  if(!confirm("¿Resetear todos los DISPONIBLES a cero?")) return;
+
+  // reset entradas
+  for(let i=0;i<TOTAL_ENTRADAS;i++){
+    localStorage.setItem("E"+i+"-vendido", 0);
+    actualizarDisponible("E"+i);
+  }
+
+  // reset segundos
+  for(let i=0;i<TOTAL_SEGUNDOS;i++){
+    localStorage.setItem("S"+i+"-vendido", 0);
+    actualizarDisponible("S"+i);
+  }
+
+  alert("Disponibles reiniciados correctamente");
+}
 
 
 
+function calcularTiempoFinal(inicio){
 
+  const ahora = Date.now();
+  const diff = ahora - inicio;
+
+  const minutos = Math.floor(diff / 60000);
+  const segundos = Math.floor((diff % 60000) / 1000);
+
+  return `${minutos.toString().padStart(2,"0")}:${segundos.toString().padStart(2,"0")}`;
+}
+
+function marcarAtendido(index){
+
+  pedidos[index].atendido = true;
+  guardarHistorial();
+  mostrar();
+
+}
+
+function marcarAtendido(index){
+
+  const ahora = Date.now();
+  const inicio = pedidos[index].horaRegistro;
+
+  const diff = ahora - inicio;
+
+  const minutos = Math.floor(diff / 60000);
+  const segundos = Math.floor((diff % 60000) / 1000);
+
+  pedidos[index].tiempoFinal =
+    `${minutos.toString().padStart(2,"0")}:`+
+    `${segundos.toString().padStart(2,"0")}`;
+
+  pedidos[index].atendido = true;
+
+  guardarHistorial();
+  mostrar();
+}
 
 
 /* =================================================
@@ -722,6 +892,56 @@ crearItems(extrasComida,"extrasComida");
 crearItems(envases,"envases");
 
 mostrar();
+
+// 🔥 TEMPORIZADOR GLOBAL (actualiza cada segundo)
+setInterval(()=>{
+
+  pedidos.forEach((p,i)=>{
+
+    if(p.tipo === "mesa" && p.horaRegistro && !p.atendido){
+
+
+      const span = document.getElementById("timer_"+i);
+      const pedidoBox = document.getElementById("pedido_"+i);
+
+      if(!span || !pedidoBox) return;
+
+      const ahora = Date.now();
+      const diff = ahora - p.horaRegistro;
+
+      const minutos = Math.floor(diff / 60000);
+      const segundos = Math.floor((diff % 60000) / 1000);
+
+      span.innerText =
+        `${minutos.toString().padStart(2,"0")}:`+
+        `${segundos.toString().padStart(2,"0")}`;
+
+      // 🎨 CAMBIO VISUAL DEL BLOQUE COMPLETO
+      if(p.atendido){
+        pedidoBox.style.background = "#f8f9fa";
+        pedidoBox.style.borderLeft = "6px solid gray";
+        return;
+      }
+
+      if(minutos < 5){
+        pedidoBox.style.background = "#e9f7ef";
+        pedidoBox.style.borderLeft = "6px solid #28a745";
+      }
+      else if(minutos < 10){
+        pedidoBox.style.background = "#fff8e1";
+        pedidoBox.style.borderLeft = "6px solid #ff9800";
+      }
+      else{
+        pedidoBox.style.background = "#fdecea";
+        pedidoBox.style.borderLeft = "6px solid #dc3545";
+      }
+
+    }
+
+  });
+
+},1000);
+
 
 
 // 🔥 restaurar tipo guardado
