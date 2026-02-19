@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -7,16 +8,20 @@
 
 <style>
 :root{
-  --rojo:#9e1c1c;
-  --amarillo:#f5b400;
-  --bg:#f2f2f2;
+  --rojo:#8B0000;
+  --amarillo:#FFC107;
+  --bg:#f4f6f9;
+  --card:#ffffff;
+  --gris-suave:#f8f9fa;
 }
 
+
 body{
-  font-family:system-ui, Arial;
+  font-family: 'Poppins', sans-serif;
   margin:0;
-  background:var(--bg);
+  background: linear-gradient(135deg,#f4f6f9,#e9edf3);
 }
+
 
 /* HEADER */
 header{
@@ -32,12 +37,19 @@ header{
 section{ padding:12px }
 
 .card{
-  background:white;
-  border-radius:12px;
-  padding:10px;
-  margin-bottom:12px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
+  background:var(--card);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  transition:transform .2s ease, box-shadow .2s ease;
 }
+
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 25px rgba(0,0,0,.12);
+}
+
 
 h2{
   color:var(--rojo);
@@ -70,10 +82,17 @@ h2{
 /* BOTONES */
 button{
   border:none;
-  padding:8px 12px;
-  border-radius:8px;
+  padding:8px 14px;
+  border-radius:10px;
   cursor:pointer;
-  font-size:16px;
+  font-size:14px;
+  font-weight:600;
+  transition:all .2s ease;
+}
+
+button:hover{
+  transform:scale(1.05);
+  opacity:.9;
 }
 
 .btn{
@@ -93,10 +112,17 @@ button{
 .pedido{
   background:white;
   border-left:6px solid var(--rojo);
-  padding:10px;
-  margin-bottom:10px;
-  border-radius:8px;
+  padding:14px;
+  margin-bottom:14px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.06);
+  transition:all .2s ease;
 }
+
+.pedido:hover{
+  transform:scale(1.01);
+}
+
 
 /* GRID PC */
 @media(min-width:700px){
@@ -153,6 +179,109 @@ button{
   transition:width .5s linear;
 }
 
+.colIni{
+  width:75px;
+  padding:8px;
+  border-radius:10px;
+  border:2px solid #e0e0e0;
+  font-weight:600;
+  text-align:center;
+  background:#f8f9fa;
+  font-size:15px;
+  transition:all .25s ease;
+  outline:none;
+}
+
+/* Hover */
+.colIni:hover{
+  border-color:#bdbdbd;
+  transform:scale(1.05);
+}
+
+/* Cuando está activo */
+.colIni:focus{
+  border-color:#4CAF50;
+  box-shadow:0 0 0 3px rgba(76,175,80,.2);
+  background:white;
+  transform:scale(1.07);
+}
+
+/* Cuando tiene número diferente de 0 */
+.colIni:not([value="0"]){
+  border-color:#4CAF50;
+  background:#f1fff4;
+}
+
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button{
+    opacity:1;
+  }
+
+.nombrePlato{
+  flex:1;
+  padding:10px 12px;
+  font-size:17px;
+  font-weight:600;
+  border-radius:12px;
+  border:2px solid #e0e0e0;
+  background:#ffffff;
+  transition:all .25s ease;
+  outline:none;
+}
+
+/* Hover */
+.nombrePlato:hover{
+  border-color:#bdbdbd;
+}
+
+/* Cuando escribes */
+.nombrePlato:focus{
+  border-color:#2196F3;
+  box-shadow:0 0 0 3px rgba(33,150,243,.2);
+  background:#fff;
+}
+
+.filaMenu{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+#tipo{
+  display:none;
+}
+
+.tipoSelector{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.tipoSelector button{
+  flex:1;
+  padding:10px;
+  font-size:16px;
+  font-weight:600;
+  border-radius:12px;
+  border:2px solid #e0e0e0;
+  background:#ffffff;
+  cursor:pointer;
+  transition:all .25s ease;
+}
+
+.tipoSelector button:hover{
+  border-color:#bdbdbd;
+  transform:scale(1.03);
+}
+
+.tipoSelector button.activo{
+  background:#4CAF50;
+  color:white;
+  border-color:#4CAF50;
+  box-shadow:0 0 0 3px rgba(76,175,80,.2);
+}
+
+
 </style>
 </head>
 
@@ -170,9 +299,17 @@ Tipo:
   <option value="reserva">Reserva</option>
 </select>
 
-<br><br>
+<div class="tipoSelector">
+  <button type="button" onclick="cambiarTipo('mesa')" id="btnMesa">Mesa</button>
+  <button type="button" onclick="cambiarTipo('llevar')" id="btnLlevar">Llevar</button>
+  <button type="button" onclick="cambiarTipo('reserva')" id="btnReserva">Reserva</button>
+</div>
+
+
 Mesa / Nombre:
 <input id="mesa" style="width:100%">
+<div id="mesasBotones" style="margin-top:10px;display:none;"></div>
+
 </div>
 
 <div class="grid">
@@ -239,7 +376,7 @@ Costo adicional:
 <input type="number" id="deliveryCosto" value="0" min="0" step="0.5" style="width:80px"> soles
 </div>
 
-<div class="card" style="text-align:center;font-size:20px">
+<div class="card" style="text-align:center;font-size:22px;font-weight:700;color:#2c3e50">
   💰 Total actual: <b id="totalPreview">S/ 0.00</b>
 </div>
 
@@ -351,12 +488,13 @@ function crearMenuEditable(total, cont, prefijo){
       type="number"
       value="${inicialGuardado}"
       min="0"
-      style="width:60px"
       oninput="
         localStorage.setItem('${key}-inicial',this.value);
         actualizarDisponible('${key}');
       "
     >
+
+
 
 
     <!-- DISPONIBLE -->
@@ -369,6 +507,7 @@ function crearMenuEditable(total, cont, prefijo){
 
     <!-- NOMBRE -->
     <input
+      class="nombrePlato"
       value="${nombreGuardado}"
       placeholder="Nombre..."
       oninput="localStorage.setItem('${key}-nombre',this.value)"
@@ -552,8 +691,48 @@ function toggleIni(seccion){
 }
 
 function guardarTipo(){
+
   const selectTipo = document.getElementById("tipo");
-  localStorage.setItem("tipoSeleccionado", selectTipo.value);
+  const tipo = selectTipo.value;
+
+  localStorage.setItem("tipoSeleccionado", tipo);
+
+  const contenedor = document.getElementById("mesasBotones");
+
+  if(tipo === "mesa"){
+    contenedor.style.display = "block";
+    generarBotonesMesas();
+  }else{
+    contenedor.style.display = "none";
+  }
+}
+
+
+function generarBotonesMesas(){
+
+  const contenedor = document.getElementById("mesasBotones");
+  contenedor.innerHTML = "";
+
+  for(let i=1;i<=25;i++){
+
+    contenedor.innerHTML += `
+      <button 
+        type="button"
+        onclick="seleccionarMesa(${i})"
+        style="
+          margin:4px;
+          padding:8px 12px;
+          border-radius:8px;
+          background:#eee;
+        ">
+        ${i}
+      </button>
+    `;
+  }
+}
+
+function seleccionarMesa(numero){
+  document.getElementById("mesa").value = numero;
 }
 
 
@@ -568,6 +747,30 @@ function eliminarTodo(){
 
   alert("Todos los pedidos fueron eliminados");
 }
+
+function cambiarTipo(valor){
+
+  const select = document.getElementById("tipo");
+  select.value = valor;
+
+  // dispara tu función original
+  guardarTipo();
+
+  actualizarBotonesTipo();
+}
+
+function actualizarBotonesTipo(){
+
+  const valor = document.getElementById("tipo").value;
+
+  document.querySelectorAll(".tipoSelector button")
+    .forEach(btn => btn.classList.remove("activo"));
+
+  if(valor === "mesa") document.getElementById("btnMesa").classList.add("activo");
+  if(valor === "llevar") document.getElementById("btnLlevar").classList.add("activo");
+  if(valor === "reserva") document.getElementById("btnReserva").classList.add("activo");
+}
+
 
 
 
@@ -687,6 +890,7 @@ pedidos.push({
   hora: horaExacta, // solo tendrá valor si es mesa
   horaRegistro: timestamp, // ⬅️ NUEVO (para el temporizador)
   atendido: false, // ⬅️ NUEVO (para saber si ya se completó)
+  colapsado: false, // 👈 NUEVO
   detalleEntradas: detalleEntradas,
   detalleSegundos: detalleSegundos,
   detalleExtras: detalleExtras,
@@ -706,16 +910,24 @@ pedidos.push({
 /* =================================================
    TODO LO DEMÁS IGUAL (MOSTRAR / ELIMINAR / ETC)
 ================================================= */
+
 function mostrar(){
 
-    console.log("Array pedidos actual:", pedidos); // 👈 aquí
-
+  console.log("Array pedidos actual:", pedidos);
 
   let htmlMesa="";
   let htmlReserva="";
   let htmlLlevar="";
 
-  pedidos.forEach((p,i)=>{
+  // 🔥 ORDEN VISUAL SEGURO (sin tocar el array)
+  const ordenIndices = [
+    ...pedidos.map((p,i)=> !p.atendido ? i : null).filter(i=>i!==null),
+    ...pedidos.map((p,i)=> p.atendido ? i : null).filter(i=>i!==null)
+  ];
+
+  ordenIndices.forEach((i)=>{
+
+    const p = pedidos[i];
 
     let bloque=`
     <div class="pedido" id="pedido_${i}">
@@ -724,54 +936,77 @@ function mostrar(){
     #${i+1} | ${p.tipo.toUpperCase()} | ${(p.mesa||"-").toUpperCase()}
     ${p.tipo === "mesa" && p.hora ? ` | 🕒 ${p.hora}` : ""}
     </b>
-
-    ${p.tipo === "mesa" ? `
-    <br>
-    ⏱ Tiempo: 
-    <span id="timer_${i}" style="font-weight:bold;color:#c40000">
-     ${p.atendido ? p.tiempoFinal : "00:00"}
-    </span>
-
-    ${!p.atendido ? `
-    <button onclick="marcarAtendido(${i})" 
-      style="margin-left:10px;background:green;color:white">
-      ✅ ATENDIDO
-    </button>
-    ` : `<span style="color:green;font-weight:bold"> ✔ FINALIZADO</span>`}
-    <br><br>
-    ` : ""}
-
-
-    <button onclick="eliminar(${i})" style="float:right">🗑️</button>
-    <br><br>
     `;
 
+    if(p.tipo === "mesa"){
 
-    if(p.detalleEntradas.length)
-      bloque+=`<b>Entradas:</b><br>${
-        p.detalleEntradas
-        .map(x=>x.replace("NOTA:",
-          "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
-        ))
-        .join("<br>")
-      }<br><br>`;
+      bloque += `
+      <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
 
-    if(p.detalleSegundos.length)
-      bloque+=`<b>Segundos:</b><br>${
-        p.detalleSegundos
-        .map(x=>x.replace("NOTA:",
-          "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
-        ))
-        .join("<br>")
-      }<br><br>`;
+        ⏱ Tiempo: 
+        <span id="timer_${i}" style="font-weight:bold;color:#c40000">
+        ${p.atendido ? p.tiempoFinal : "00:00"}
+        </span>
 
-    if(p.detalleExtras.length)
-      bloque+=`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`;
+        ${!p.atendido ? `
+        <button onclick="marcarAtendido(${i})" 
+          style="background:green;color:white">
+          ✅ ATENDIDO
+        </button>
+        ` : `
+        <button onclick="toggleColapsado(${i})"
+          style="background:#6c757d;color:white">
+          ${p.colapsado ? "🔽 Ver" : "🔼 Ocultar"}
+        </button>
+        `}
 
-    if(p.detalleEnvases.length)
-      bloque+=`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`;
+        <button onclick="eliminar(${i})"
+          style="background:black;color:white">
+          🗑️
+        </button>
 
-    bloque+=`<b>Total: S/ ${p.total.toFixed(2)}</b></div>`;
+      </div>
+      <br>
+      `;
+
+    } else {
+
+      bloque += `
+      <button onclick="eliminar(${i})" style="float:right">🗑️</button>
+      <br><br>
+      `;
+    }
+
+    if(!p.colapsado){
+
+      if(p.detalleEntradas.length)
+        bloque+=`<b>Entradas:</b><br>${
+          p.detalleEntradas
+          .map(x=>x.replace("NOTA:",
+            "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
+          ))
+          .join("<br>")
+        }<br><br>`;
+
+      if(p.detalleSegundos.length)
+        bloque+=`<b>Segundos:</b><br>${
+          p.detalleSegundos
+          .map(x=>x.replace("NOTA:",
+            "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
+          ))
+          .join("<br>")
+        }<br><br>`;
+
+      if(p.detalleExtras.length)
+        bloque+=`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`;
+
+      if(p.detalleEnvases.length)
+        bloque+=`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`;
+
+      bloque+=`<b>Total: S/ ${p.total.toFixed(2)}</b>`;
+    }
+
+    bloque+=`</div>`;
 
     if(p.tipo==="mesa") htmlMesa+=bloque;
     if(p.tipo==="reserva") htmlReserva+=bloque;
@@ -783,6 +1018,8 @@ function mostrar(){
   document.getElementById("seccion_reserva").innerHTML=htmlReserva;
   document.getElementById("seccion_llevar").innerHTML=htmlLlevar;
 }
+
+
 
 
 function eliminar(index){
@@ -847,14 +1084,6 @@ function calcularTiempoFinal(inicio){
 
 function marcarAtendido(index){
 
-  pedidos[index].atendido = true;
-  guardarHistorial();
-  mostrar();
-
-}
-
-function marcarAtendido(index){
-
   const ahora = Date.now();
   const inicio = pedidos[index].horaRegistro;
 
@@ -868,10 +1097,26 @@ function marcarAtendido(index){
     `${segundos.toString().padStart(2,"0")}`;
 
   pedidos[index].atendido = true;
+  pedidos[index].colapsado = true;
+
+  // mover al final
+  const pedidoFinalizado = pedidos.splice(index,1)[0];
+  pedidos.push(pedidoFinalizado);
 
   guardarHistorial();
   mostrar();
 }
+
+
+
+
+
+function toggleColapsado(index){
+  pedidos[index].colapsado = !pedidos[index].colapsado;
+  guardarHistorial();
+  mostrar();
+}
+
 
 
 /* =================================================
@@ -892,6 +1137,8 @@ crearItems(extrasComida,"extrasComida");
 crearItems(envases,"envases");
 
 mostrar();
+actualizarBotonesTipo();
+
 
 // 🔥 TEMPORIZADOR GLOBAL (actualiza cada segundo)
 setInterval(()=>{
@@ -950,7 +1197,8 @@ if(tipoGuardado){
   document.getElementById("tipo").value = tipoGuardado;
 }
 
-
+guardarTipo();
+actualizarBotonesTipo();
 
 for(let i=0;i<TOTAL_ENTRADAS;i++){
   actualizarDisponible("E"+i);
