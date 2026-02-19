@@ -59,8 +59,9 @@ h2{
 /* PLATOS */
 .item{
   display:flex;
-  justify-content:space-between;
+  flex-wrap:wrap; /* 🔥 permite bajar línea */
   align-items:center;
+  gap:8px;
   padding:8px 0;
   border-bottom:1px solid #eee;
 }
@@ -279,6 +280,19 @@ button:hover{
   color:white;
   border-color:#4CAF50;
   box-shadow:0 0 0 3px rgba(76,175,80,.2);
+}
+
+@media(max-width:600px){
+
+  .nombrePlato{
+    width:100%;
+  }
+
+  .controls{
+    width:100%;
+    justify-content:flex-end;
+  }
+
 }
 
 
