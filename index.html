@@ -472,6 +472,48 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 /* =================================================
+   🔥 STOCK EN TIEMPO REAL DESDE FIRESTORE
+================================================= */
+
+function escucharStock(seccion, total, prefijo){
+
+  db.collection("stock")
+    .doc(seccion)
+    .collection("items")
+    .onSnapshot(snapshot => {
+
+      snapshot.forEach(doc => {
+
+        const data = doc.data();
+        const id = doc.id;
+
+        const inicial = data.inicial || 0;
+        const vendido = data.vendido || 0;
+        const disponible = Math.max(inicial - vendido, 0);
+
+        // actualizar input INI
+        const inputIni = document.querySelector(
+          `input[data-stock='${id}']`
+        );
+        if(inputIni){
+          inputIni.value = inicial;
+        }
+
+        // actualizar DISP
+        const span = document.getElementById("disp_"+id);
+        if(span){
+          span.innerText = disponible;
+          span.style.color = disponible<=0 ? "red" : "black";
+        }
+
+      });
+
+    });
+
+}
+
+
+/* =================================================
    CANTIDADES FIJAS (LO ÚNICO NUEVO)
 ================================================= */
 const TOTAL_ENTRADAS = 5;
@@ -527,13 +569,11 @@ function crearMenuEditable(total, cont, prefijo){
     <input
       class="colIni"
       type="number"
-      value="${inicialGuardado}"
       min="0"
-      oninput="
-        localStorage.setItem('${key}-inicial',this.value);
-        actualizarDisponible('${key}');
-      "
+      data-stock="${key}"
+      oninput="actualizarInicialFirestore('${prefijo}','${key}',this.value)"
     >
+
 
 
 
@@ -838,9 +878,14 @@ function registrarPedido(){
       const nota=document.getElementById("nota_E"+i)?.value || "";
 
       let texto=`${c} - ${nombre}`;
-      let vendidoActual = +localStorage.getItem("E"+i+"-vendido") || 0;
-      localStorage.setItem("E"+i+"-vendido", vendidoActual + c);
-      actualizarDisponible("E"+i);
+      db.collection("stock")
+        .doc("entradas")
+        .collection("items")
+        .doc("E"+i)
+        .set({
+          vendido: firebase.firestore.FieldValue.increment(c)
+        }, { merge:true });
+
 
       if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
 
@@ -860,9 +905,14 @@ function registrarPedido(){
       const nota=document.getElementById("nota_S"+i)?.value || "";
 
       let texto=`${c} - ${nombre}`;
-      let vendidoActual = +localStorage.getItem("S"+i+"-vendido") || 0;
-      localStorage.setItem("S"+i+"-vendido", vendidoActual + c);
-      actualizarDisponible("S"+i);
+      db.collection("stock")
+        .doc("segundos")
+        .collection("items")
+        .doc("S"+i)
+        .set({
+          vendido: firebase.firestore.FieldValue.increment(c)
+        }, { merge:true });
+
 
       if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
 
@@ -1095,22 +1145,26 @@ function reset(){
 
 function resetearDisponibles(){
 
-  if(!confirm("¿Resetear todos los DISPONIBLES a cero?")) return;
+  if(!confirm("¿Resetear todos los DISPONIBLES?")) return;
 
-  // reset entradas
   for(let i=0;i<TOTAL_ENTRADAS;i++){
-    localStorage.setItem("E"+i+"-vendido", 0);
-    actualizarDisponible("E"+i);
+    db.collection("stock")
+      .doc("entradas")
+      .collection("items")
+      .doc("E"+i)
+      .set({ vendido:0 }, { merge:true });
   }
 
-  // reset segundos
   for(let i=0;i<TOTAL_SEGUNDOS;i++){
-    localStorage.setItem("S"+i+"-vendido", 0);
-    actualizarDisponible("S"+i);
+    db.collection("stock")
+      .doc("segundos")
+      .collection("items")
+      .doc("S"+i)
+      .set({ vendido:0 }, { merge:true });
   }
 
-  alert("Disponibles reiniciados correctamente");
 }
+
 
 
 
@@ -1162,11 +1216,33 @@ function toggleColapsado(index){
 
 
 
+
+function actualizarInicialFirestore(prefijo,id,valor){
+
+  const seccion = prefijo === "E" ? "entradas" : "segundos";
+
+  db.collection("stock")
+    .doc(seccion)
+    .collection("items")
+    .doc(id)
+    .set({
+      inicial: parseInt(valor) || 0
+    }, { merge:true });
+
+}
+
+
+
+
 /* =================================================
    INIT
 ================================================= */
 crearMenuEditable(TOTAL_ENTRADAS,"entradas","E");
 crearMenuEditable(TOTAL_SEGUNDOS,"segundos","S");
+
+escucharStock("entradas", TOTAL_ENTRADAS, "E");
+escucharStock("segundos", TOTAL_SEGUNDOS, "S");
+
 // 🔥 aplicar estado guardado
 ["entradas","segundos"].forEach(seccion=>{
   const oculto = localStorage.getItem("iniOculto_"+seccion);
