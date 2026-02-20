@@ -477,47 +477,61 @@ const db = firebase.firestore();
 
 function escucharStock(seccion, total, prefijo){
 
-  db.collection("stock")
-    .doc(seccion)
-    .collection("items")
-    .onSnapshot(snapshot => {
+  for(let i=0;i<total;i++){
 
-      snapshot.forEach(doc => {
+    const id = prefijo+i;
 
-        const data = doc.data();
-        const id = doc.id;
+    const ref = db.collection("stock")
+      .doc(seccion)
+      .collection("items")
+      .doc(id);
 
-        const inicial = data.inicial || 0;
-        const vendido = data.vendido || 0;
-        const disponible = Math.max(inicial - vendido, 0);
+    // 🔥 crear documento si no existe
+    ref.set({
+      inicial: 0,
+      vendido: 0,
+      nombre: ""
+    }, { merge:true });
 
-        // 🔥 actualizar nombre en tiempo real
-        const inputNombre = document.querySelector(
-          `input[data-nombre='${id}']`
-        );
-        if(inputNombre && data.nombre !== undefined){
-          inputNombre.value = data.nombre;
-        }
+    // 🔥 escuchar individualmente
+    ref.onSnapshot(doc=>{
 
+      if(!doc.exists) return;
 
-        // actualizar input INI
-        const inputIni = document.querySelector(
-          `input[data-stock='${id}']`
-        );
-        if(inputIni){
-          inputIni.value = inicial;
-        }
+      const data = doc.data();
 
-        // actualizar DISP
-        const span = document.getElementById("disp_"+id);
-        if(span){
-          span.innerText = disponible;
-          span.style.color = disponible<=0 ? "red" : "black";
-        }
+      const inicial = data.inicial || 0;
+      const vendido = data.vendido || 0;
+      const nombre = data.nombre || "";
 
-      });
+      const disponible = Math.max(inicial - vendido, 0);
+
+      // actualizar nombre
+      const inputNombre = document.querySelector(
+        `input[data-nombre='${id}']`
+      );
+      if(inputNombre){
+        inputNombre.value = nombre;
+      }
+
+      // actualizar INI
+      const inputIni = document.querySelector(
+        `input[data-stock='${id}']`
+      );
+      if(inputIni){
+        inputIni.value = inicial;
+      }
+
+      // actualizar DISP
+      const span = document.getElementById("disp_"+id);
+      if(span){
+        span.innerText = disponible;
+        span.style.color = disponible<=0 ? "red" : "black";
+      }
 
     });
+
+  }
 
 }
 
