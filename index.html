@@ -303,1177 +303,1591 @@ button:hover{
 
 <header>🍽️ EL MISTI - Registro de Pedidos</header>
 
-<section>
+<div style="display:flex;gap:10px;padding:10px;justify-content:center">
 
-<div class="card">
-Tipo:
-<select id="tipo" onchange="guardarTipo()">
-  <option value="mesa">Mesa</option>
-  <option value="llevar">Llevar</option>
-  <option value="reserva">Reserva</option>
-</select>
-
-<div class="tipoSelector">
-  <button type="button" onclick="cambiarTipo('mesa')" id="btnMesa">Mesa</button>
-  <button type="button" onclick="cambiarTipo('llevar')" id="btnLlevar">Llevar</button>
-  <button type="button" onclick="cambiarTipo('reserva')" id="btnReserva">Reserva</button>
-</div>
-
-
-Mesa / Nombre:
-<input id="mesa" style="width:100%">
-<div id="mesasBotones" style="margin-top:10px;display:none;"></div>
-
-</div>
-
-<div class="grid">
-
-<div class="card">
-<h2>Entradas</h2>
-
-<div style="display:flex;align-items:center;gap:6px;font-weight:bold;margin-bottom:6px">
-
-  <button onclick="toggleIni('entradas')" 
-          style="padding:2px 6px;border-radius:6px">
-    👁
-  </button>
-
-  <div class="colIni" style="width:60px">Ini</div>
-  <div style="width:80px">Disp</div>
-  <div style="flex:1">Entradas</div>
+  <button onclick="cambiarVista('meseros')">👨‍💼 Meseros</button>
+  <button onclick="cambiarVista('cocina')">👨‍🍳 Cocina</button>
+  <button onclick="cambiarVista('clientes')">👀 Pantalla Clientes</button>
 
 </div>
 
 
-<div id="entradas"></div>
-</div>
-
-
-<div class="card">
-<h2>Segundos</h2>
-
-<div style="display:flex;align-items:center;gap:6px;font-weight:bold;margin-bottom:6px">
-
-  <button onclick="toggleIni('segundos')" 
-          style="padding:2px 6px;border-radius:6px">
-    👁
-  </button>
-
-  <div class="colIni" style="width:60px">Ini</div>
-  <div style="width:80px">Disp</div>
-  <div style="flex:1">Segundos</div>
-
-</div>
-
-
-<div id="segundos"></div>
-</div>
-
-</div>
-
-<!-- EXTRAS COMIDA -->
-<div class="card">
-<h2>🍳 Extras comida</h2>
-<div id="extrasComida"></div>
-</div>
-
-<!-- ENVASES -->
-<div class="card">
-<h2>🥡 Envases para llevar</h2>
-<div id="envases"></div>
-</div>
-
-<!-- DELIVERY -->
-<div class="card">
-<h2>🚚 Delivery</h2>
-Costo adicional:
-<input type="number" id="deliveryCosto" value="0" min="0" step="0.5" style="width:80px"> soles
-</div>
-
-<div class="card" style="text-align:center;font-size:22px;font-weight:700;color:#2c3e50">
-  💰 Total actual: <b id="totalPreview">S/ 0.00</b>
-</div>
-
-
-<button class="big" onclick="registrarPedido()">✅ Registrar pedido</button>
-
-<button class="btn" onclick="resetearDisponibles()" style="margin-top:10px;width:100%">
-🔄 Resetear DISP
-</button>
-
-<button class="btn" onclick="eliminarTodo()" 
-style="margin-top:10px;width:100%;background:black">
-🗑️ Eliminar TODOS los pedidos
-</button>
+<div id="vista_meseros">
 
 
 
-<h2>📋 Pedidos del día</h2>
+          <section>
 
-<!-- MESA -->
-<div class="card">
-  <h3>
-    🍽️ Mesa 
-    <button class="btn" onclick="descargarWordTipo('mesa')">
-      📄 Imprimir
-    </button>
-  </h3>
-  <div id="seccion_mesa"></div>
-</div>
+          <div class="card">
+          Tipo:
+          <select id="tipo" onchange="guardarTipo()">
+            <option value="mesa">Mesa</option>
+            <option value="llevar">Llevar</option>
+            <option value="reserva">Reserva</option>
+          </select>
 
-<!-- RESERVA -->
-<div class="card">
-  <h3>
-    📅 Reserva 
-    <button class="btn" onclick="descargarWordTipo('reserva')">
-      📄 Imprimir
-    </button>
-  </h3>
-  <div id="seccion_reserva"></div>
-</div>
-
-<!-- LLEVAR -->
-<div class="card">
-  <h3>
-    🥡 Llevar 
-    <button class="btn" onclick="descargarWordTipo('llevar')">
-      📄 Imprimir
-    </button>
-  </h3>
-  <div id="seccion_llevar"></div>
-</div>
+          <div class="tipoSelector">
+            <button type="button" onclick="cambiarTipo('mesa')" id="btnMesa">Mesa</button>
+            <button type="button" onclick="cambiarTipo('llevar')" id="btnLlevar">Llevar</button>
+            <button type="button" onclick="cambiarTipo('reserva')" id="btnReserva">Reserva</button>
+          </div>
 
 
+          Mesa / Nombre:
+          <input id="mesa" style="width:100%">
+          <div id="mesasBotones" style="margin-top:10px;display:none;"></div>
 
-</section>
+          </div>
 
-<script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+          <div class="grid">
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+          <div class="card">
+          <h2>Entradas</h2>
+
+          <div style="display:flex;align-items:center;gap:6px;font-weight:bold;margin-bottom:6px">
+
+            <button onclick="toggleIni('entradas')" 
+                    style="padding:2px 6px;border-radius:6px">
+              👁
+            </button>
+
+            <div class="colIni" style="width:60px">Ini</div>
+            <div style="width:80px">Disp</div>
+            <div style="flex:1">Entradas</div>
+
+          </div>
 
 
-<script>
+          <div id="entradas"></div>
+          </div>
 
-  // 🔥 CONFIG FIREBASE
-const firebaseConfig = {
-  apiKey: "AIzaSyCakBN0YRTOGCKVQ7A5iLKksNh0cjF-JOg",
-  authDomain: "el-misti-pedidos.firebaseapp.com",
-  projectId: "el-misti-pedidos",
-  storageBucket: "el-misti-pedidos.firebasestorage.app",
-  messagingSenderId: "337950171428",
-  appId: "1:337950171428:web:7a8124d45ec9e44fbe13b1",
-  measurementId: "G-3VSKDP2KF9"
-};
 
-// Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+          <div class="card">
+          <h2>Segundos</h2>
 
-/* =================================================
-   🔥 STOCK EN TIEMPO REAL DESDE FIRESTORE
-================================================= */
+          <div style="display:flex;align-items:center;gap:6px;font-weight:bold;margin-bottom:6px">
 
-function escucharStock(seccion, total, prefijo){
+            <button onclick="toggleIni('segundos')" 
+                    style="padding:2px 6px;border-radius:6px">
+              👁
+            </button>
 
-  for(let i=0;i<total;i++){
+            <div class="colIni" style="width:60px">Ini</div>
+            <div style="width:80px">Disp</div>
+            <div style="flex:1">Segundos</div>
 
-    const id = prefijo+i;
+          </div>
 
-    const ref = db.collection("stock")
-      .doc(seccion)
-      .collection("items")
-      .doc(id);
 
-    // 🔥 crear documento si no existe
-    ref.set({
-      inicial: 0,
-      vendido: 0,
-      nombre: ""
-    }, { merge:true });
+          <div id="segundos"></div>
+          </div>
 
-    // 🔥 escuchar individualmente
-    ref.onSnapshot(doc=>{
+          </div>
 
-      if(!doc.exists) return;
+          <!-- EXTRAS COMIDA -->
+          <div class="card">
+          <h2>🍳 Extras comida</h2>
+          <div id="extrasComida"></div>
+          </div>
 
-      const data = doc.data();
+          <!-- ENVASES -->
+          <div class="card">
+          <h2>🥡 Envases para llevar</h2>
+          <div id="envases"></div>
+          </div>
 
-      const inicial = data.inicial || 0;
-      const vendido = data.vendido || 0;
-      const nombre = data.nombre || "";
+          <!-- DELIVERY -->
+          <div class="card">
+          <h2>🚚 Delivery</h2>
+          Costo adicional:
+          <input type="number" id="deliveryCosto" value="0" min="0" step="0.5" style="width:80px"> soles
+          </div>
 
-      const disponible = Math.max(inicial - vendido, 0);
+          <div class="card" style="text-align:center;font-size:22px;font-weight:700;color:#2c3e50">
+            💰 Total actual: <b id="totalPreview">S/ 0.00</b>
+          </div>
 
-      // actualizar nombre
-      const inputNombre = document.querySelector(
-        `input[data-nombre='${id}']`
-      );
-      if(inputNombre){
-        inputNombre.value = nombre;
+
+          <button class="big" onclick="registrarPedido()">✅ Registrar pedido</button>
+
+          <button class="btn" onclick="resetearDisponibles()" style="margin-top:10px;width:100%">
+          🔄 Resetear DISP
+          </button>
+
+          <button class="btn" onclick="eliminarTodo()" 
+          style="margin-top:10px;width:100%;background:black">
+          🗑️ Eliminar TODOS los pedidos
+          </button>
+
+
+
+          <h2>📋 Pedidos del día</h2>
+
+          <!-- MESA -->
+          <div class="card">
+            <h3>
+              🍽️ Mesa 
+              <button class="btn" onclick="descargarWordTipo('mesa')">
+                📄 Imprimir
+              </button>
+            </h3>
+            <div id="seccion_mesa"></div>
+          </div>
+
+          <!-- RESERVA -->
+          <div class="card">
+            <h3>
+              📅 Reserva 
+              <button class="btn" onclick="descargarWordTipo('reserva')">
+                📄 Imprimir
+              </button>
+            </h3>
+            <div id="seccion_reserva"></div>
+          </div>
+
+          <!-- LLEVAR -->
+          <div class="card">
+            <h3>
+              🥡 Llevar 
+              <button class="btn" onclick="descargarWordTipo('llevar')">
+                📄 Imprimir
+              </button>
+            </h3>
+            <div id="seccion_llevar"></div>
+          </div>
+
+
+
+          </section>
+
+          <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+
+          <!-- Firebase -->
+          <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+          <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+
+          <script>
+
+            // 🔥 CONFIG FIREBASE
+          const firebaseConfig = {
+            apiKey: "AIzaSyCakBN0YRTOGCKVQ7A5iLKksNh0cjF-JOg",
+            authDomain: "el-misti-pedidos.firebaseapp.com",
+            projectId: "el-misti-pedidos",
+            storageBucket: "el-misti-pedidos.firebasestorage.app",
+            messagingSenderId: "337950171428",
+            appId: "1:337950171428:web:7a8124d45ec9e44fbe13b1",
+            measurementId: "G-3VSKDP2KF9"
+          };
+
+          // Inicializar Firebase
+          firebase.initializeApp(firebaseConfig);
+          const db = firebase.firestore();
+
+          /* =================================================
+            🔥 STOCK EN TIEMPO REAL DESDE FIRESTORE
+          ================================================= */
+
+          function cambiarVista(vista){
+
+            vistaActual = vista;
+
+            document.getElementById("vista_meseros").style.display = "none";
+            document.getElementById("vista_cocina").style.display = "none";
+            document.getElementById("vista_clientes").style.display = "none";
+
+            if(vista==="meseros")
+              document.getElementById("vista_meseros").style.display = "block";
+
+            if(vista==="cocina")
+              document.getElementById("vista_cocina").style.display = "block";
+
+            if(vista==="clientes")
+              document.getElementById("vista_clientes").style.display = "block";
+
+            mostrar(); // vuelve a renderizar según vista
+            }
+
+
+function mostrarCocina(){
+
+  const pedidosMesa = pedidos.filter(p=>p.tipo==="mesa" && !p.atendido);
+
+  let acumuladoEntradas = {};
+  let acumuladoSegundos = {};
+
+  pedidosMesa.forEach(p=>{
+
+    p.detalleEntradas.forEach(item=>{
+      const partes = item.split(" - ");
+      const cantidad = parseInt(partes[0]) || 0;
+      const nombre = partes[1]?.split("|")[0].trim();
+
+      if(nombre){
+        acumuladoEntradas[nombre] = (acumuladoEntradas[nombre] || 0) + cantidad;
       }
-
-      // actualizar INI
-      const inputIni = document.querySelector(
-        `input[data-stock='${id}']`
-      );
-      if(inputIni){
-        inputIni.value = inicial;
-      }
-
-      // actualizar DISP
-      const span = document.getElementById("disp_"+id);
-      if(span){
-        span.innerText = disponible;
-        span.style.color = disponible<=0 ? "red" : "black";
-      }
-
     });
 
-  }
+    p.detalleSegundos.forEach(item=>{
+      const partes = item.split(" - ");
+      const cantidad = parseInt(partes[0]) || 0;
+      const nombre = partes[1]?.split("|")[0].trim();
 
-}
+      if(nombre){
+        acumuladoSegundos[nombre] = (acumuladoSegundos[nombre] || 0) + cantidad;
+      }
+    });
 
+  });
 
-/* =================================================
-   CANTIDADES FIJAS (LO ÚNICO NUEVO)
-================================================= */
-const TOTAL_ENTRADAS = 5;
-const TOTAL_SEGUNDOS = 10;
-
-
-/* =================================================
-   EXTRAS Y ENVASES (INTOCABLES – IGUAL QUE TUYO)
-================================================= */
-const extrasComida=[
- {nombre:"Arroz extra",precio:2},
- {nombre:"Presa adicional",precio:5},
- {nombre:"Vaso adicional",precio:1},
- {nombre:"Medio vaso refresco",precio:0.5}
-];
-
-const envases=[
- {nombre:"Taper grande",precio:1},
- {nombre:"Taper chico",precio:0.5}
-];
-
-let pedidos = [];
-
-db.collection("pedidos").doc("diaActual")
-.onSnapshot((doc) => {
-  if(doc.exists){
-    pedidos = doc.data().lista || [];
-    mostrar();
-  }
-});
-
-/* =================================================
-   NUEVO: CREAR ENTRADAS/SEGUNDOS EDITABLES
-   (MISMO DISEÑO .item .controls .qty)
-================================================= */
-function crearMenuEditable(total, cont, prefijo){
-
-  const div=document.getElementById(cont);
-
-  for(let i=0;i<total;i++){
-
-    const key=prefijo+i;
- 
-    const inicialGuardado = localStorage.getItem(key+"-inicial") || 0;
-    const vendidoGuardado = localStorage.getItem(key+"-vendido") || 0;
-    const disponible = inicialGuardado - vendidoGuardado;
-
-    div.innerHTML+=`
-  <div class="item" style="display:flex;align-items:center;gap:10px">
-
-    <!-- INICIAL -->
-    <input
-      class="colIni"
-      type="number"
-      min="0"
-      data-stock="${key}"
-      oninput="actualizarInicialFirestore('${prefijo}','${key}',this.value)"
-    >
-
-
-
-
-
-    <!-- DISPONIBLE -->
-    <span
-      id="disp_${key}"
-      style="width:60px;text-align:center;font-weight:bold;color:${disponible<=0?'red':'black'}">
-      ${disponible}
-    </span>
-
-
-    <!-- NOMBRE -->
-    <input class="nombrePlato"
-      data-nombre="${key}"
-      data-seccion="${prefijo === 'E' ? 'entradas' : 'segundos'}"
-      placeholder="Nombre..."
-      oninput="actualizarNombreFirestore(this)"
-      style="flex:1"
-    >
-
-
-    <!-- CONTROLES -->
-    <div class="controls">
-
-      <button onclick="cambiar('${key}',-1)">-</button>
-
-      <input class="qty" id="${key}" value="0" readonly>
-
-      <button onclick="cambiar('${key}',1)">+</button>
-
-      <!-- BOTÓN NOTA -->
-      <button 
-        type="button"
-        onclick="toggleNota('${key}')"
-        style="
-          background:#eee;
-          padding:6px 8px;
-          border-radius:6px;
-          font-size:12px;
-        ">
-        📝
-      </button>
-
-    </div>
-
-  </div>
-
-  <!-- NOTA OCULTA -->
-  <input
-    id="nota_${key}"
-    placeholder="Nota (sin arroz, sin papa, etc)"
-    style="
-      display:none;
-      margin-top:5px;
-      font-size:12px;
-      padding:4px;
-      border:1px solid #ddd;
-      border-radius:6px;
-      width:100%;
+  let html = `
+    <div style="
+      background:#111;
+      color:white;
+      padding:20px;
+      font-size:24px;
+      font-weight:bold;
+      border-bottom:4px solid #FFC107;
     ">
-`;
-
-  }
-}
-
-
-
-
-
-/* =================================================
-   CREAR ITEMS (AHORA CON NOTA POR PLATO)
-================================================= */
-function crearItems(lista, cont){
-  const div=document.getElementById(cont);
-
-  lista.forEach(i=>{
-    const nombre=i.nombre||i;
-
-    div.innerHTML+=`
-      <div class="item">
-        ${nombre} ${i.precio?`(S/ ${i.precio})`:""}
-        <div class="controls">
-          <button onclick="cambiar('${nombre}',-1)">-</button>
-          <input class="qty" id="${nombre}" value="0" readonly>
-          <button onclick="cambiar('${nombre}',1)">+</button>
-        </div>
-      </div>`;
-  });
-}
-
-
-
-
-/* =================================================
-   + / -  (TUYO)
-================================================= */
-function cambiar(id,n){
-  const el=document.getElementById(id);
-  let v=parseInt(el.value)+n;
-  if(v<0)v=0;
-  el.value=v;
-  calcularPreview(); // 👈 agregado
-}
-
-
-function calcularPreview(){
-
-  let total=0;
-  let ent=0, seg=0;
-
-  // contar entradas
-  for(let i=0;i<TOTAL_ENTRADAS;i++){
-    ent += +document.getElementById("E"+i).value;
-  }
-
-  // contar segundos
-  for(let i=0;i<TOTAL_SEGUNDOS;i++){
-    seg += +document.getElementById("S"+i).value;
-  }
-
-  const menus=Math.min(ent,seg);
-
-  total+=menus*13;
-  total+=(seg-menus)*10;
-  total+=(ent-menus)*5;
-
-  // extras
-  extrasComida.forEach(e=>{
-    total += +document.getElementById(e.nombre).value * e.precio;
-  });
-
-  // envases
-  envases.forEach(e=>{
-    total += +document.getElementById(e.nombre).value * e.precio;
-  });
-
-  // delivery
-  total += +deliveryCosto.value;
-
-  totalPreview.innerText="S/ "+total.toFixed(2);
-}
-
-function toggleNota(id){
-
-  const campo = document.getElementById("nota_"+id);
-
-  if(campo.style.display === "none"){
-    campo.style.display = "block";
-    campo.focus();
-  } else {
-    campo.style.display = "none";
-  }
-
-}
-
-
-
-/* 🔥 FUNCIÓN PARA MOSTRAR / OCULTAR COLUMNA INI */
-function toggleIni(seccion){
-
-  const container = document.getElementById(seccion);
-  const card = container.closest(".card");
-  const columnas = card.querySelectorAll(".colIni");
-
-  let oculto = columnas[0].style.display !== "none";
-
-  columnas.forEach(col=>{
-    col.style.display = oculto ? "none" : "";
-  });
-
-  // 🔥 guardar estado
-  localStorage.setItem("iniOculto_"+seccion, oculto ? "1" : "0");
-}
-
-function guardarTipo(){
-
-  const selectTipo = document.getElementById("tipo");
-  const tipo = selectTipo.value;
-
-  localStorage.setItem("tipoSeleccionado", tipo);
-
-  const contenedor = document.getElementById("mesasBotones");
-
-  if(tipo === "mesa"){
-    contenedor.style.display = "block";
-    generarBotonesMesas();
-  }else{
-    contenedor.style.display = "none";
-  }
-}
-
-
-function generarBotonesMesas(){
-
-  const contenedor = document.getElementById("mesasBotones");
-  contenedor.innerHTML = "";
-
-  for(let i=1;i<=25;i++){
-
-    contenedor.innerHTML += `
-      <button 
-        type="button"
-        onclick="seleccionarMesa(${i})"
-        style="
-          margin:4px;
-          padding:8px 12px;
-          border-radius:8px;
-          background:#eee;
-        ">
-        ${i}
-      </button>
-    `;
-  }
-}
-
-function seleccionarMesa(numero){
-  document.getElementById("mesa").value = numero;
-}
-
-
-function eliminarTodo(){
-
-  if(!confirm("¿Eliminar TODOS los pedidos del día?")) return;
-
-  pedidos = [];
-  localStorage.removeItem("pedidosMisti");
-
-  mostrar();
-
-  alert("Todos los pedidos fueron eliminados");
-}
-
-function cambiarTipo(valor){
-
-  const select = document.getElementById("tipo");
-  select.value = valor;
-
-  // dispara tu función original
-  guardarTipo();
-
-  actualizarBotonesTipo();
-}
-
-function actualizarBotonesTipo(){
-
-  const valor = document.getElementById("tipo").value;
-
-  document.querySelectorAll(".tipoSelector button")
-    .forEach(btn => btn.classList.remove("activo"));
-
-  if(valor === "mesa") document.getElementById("btnMesa").classList.add("activo");
-  if(valor === "llevar") document.getElementById("btnLlevar").classList.add("activo");
-  if(valor === "reserva") document.getElementById("btnReserva").classList.add("activo");
-}
-
-
-
-
-/* =================================================
-   REGISTRAR (MISMA LÓGICA + solo cambio de lectura)
-================================================= */
-function registrarPedido(){
-
-  let total=0;
-  let ent=0, seg=0;
-
-  let detalleEntradas=[];
-  let detalleSegundos=[];
-  let detalleExtras=[];
-  let detalleEnvases=[];
-
-  /* ENTRADAS */
-  for(let i=0;i<TOTAL_ENTRADAS;i++){
-    const nombre = document.querySelector(`input[data-nombre='E${i}']`)?.value;
-    const c=+document.getElementById("E"+i).value;
-
-    if(nombre && c>0){
-
-      const nota=document.getElementById("nota_E"+i)?.value || "";
-
-      let texto=`${c} - ${nombre}`;
-      db.collection("stock")
-        .doc("entradas")
-        .collection("items")
-        .doc("E"+i)
-        .set({
-          vendido: firebase.firestore.FieldValue.increment(c)
-        }, { merge:true });
-
-
-      if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
-
-      detalleEntradas.push(texto);
-      ent+=c;
-    }
-
-  }
-
-  /* SEGUNDOS */
-  for(let i=0;i<TOTAL_SEGUNDOS;i++){
-    const nombre = document.querySelector(`input[data-nombre='S${i}']`)?.value;
-    const c=+document.getElementById("S"+i).value;
-
-    if(nombre && c>0){
-
-      const nota=document.getElementById("nota_S"+i)?.value || "";
-
-      let texto=`${c} - ${nombre}`;
-      db.collection("stock")
-        .doc("segundos")
-        .collection("items")
-        .doc("S"+i)
-        .set({
-          vendido: firebase.firestore.FieldValue.increment(c)
-        }, { merge:true });
-
-
-      if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
-
-      detalleSegundos.push(texto);
-      seg+=c;
-    }
-
-  }
-
-  const menus=Math.min(ent,seg);
-
-  total+=menus*13;
-  total+=(seg-menus)*10;
-  total+=(ent-menus)*5;
-
-  /* EXTRAS (IGUAL) */
-  extrasComida.forEach(e=>{
-    const c=+document.getElementById(e.nombre).value;
-    if(c>0){
-      detalleExtras.push(`${c} - ${e.nombre}`);
-      total+=c*e.precio;
-    }
-  });
-
-  /* ENVASES (IGUAL) */
-  envases.forEach(e=>{
-    const c=+document.getElementById(e.nombre).value;
-    if(c>0){
-      detalleEnvases.push(`${c} - ${e.nombre}`);
-      total+=c*e.precio;
-    }
-  });
-
-  const delivery=+deliveryCosto.value;
-  total+=delivery;
-
-if(detalleEntradas.length===0 && detalleSegundos.length===0){
-  alert("No hay platos en el pedido");
-  return;
-}
-
-
-const tipoActual = document.getElementById("tipo").value;
-
-let horaExacta = null;
-let timestamp = null;
-
-if(tipoActual === "mesa"){
-  const ahora = new Date();
-
-  // Hora bonita para mostrar
-  horaExacta = ahora.toLocaleTimeString("es-PE", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
-  });
-
-  // Tiempo real en milisegundos (para el temporizador)
-  timestamp = Date.now();
-}
-
-
-pedidos.push({
-  tipo: tipoActual,
-  mesa: document.getElementById("mesa").value,
-  hora: horaExacta, // solo tendrá valor si es mesa
-  horaRegistro: timestamp, // ⬅️ NUEVO (para el temporizador)
-  atendido: false, // ⬅️ NUEVO (para saber si ya se completó)
-  colapsado: false, // 👈 NUEVO
-  detalleEntradas: detalleEntradas,
-  detalleSegundos: detalleSegundos,
-  detalleExtras: detalleExtras,
-  detalleEnvases: detalleEnvases,
-  total: total,
-});
-
-
-
-
-  guardarHistorial();
-  mostrar();
-  reset();
-}
-
-
-/* =================================================
-   TODO LO DEMÁS IGUAL (MOSTRAR / ELIMINAR / ETC)
-================================================= */
-
-function mostrar(){
-
-  console.log("Array pedidos actual:", pedidos);
-
-  let htmlMesa="";
-  let htmlReserva="";
-  let htmlLlevar="";
-
-  // 🔥 ORDEN VISUAL SEGURO (sin tocar el array)
-  const ordenIndices = [
-    ...pedidos.map((p,i)=> !p.atendido ? i : null).filter(i=>i!==null),
-    ...pedidos.map((p,i)=> p.atendido ? i : null).filter(i=>i!==null)
-  ];
-
-  ordenIndices.forEach((i)=>{
-
-    const p = pedidos[i];
-
-    let bloque=`
-    <div class="pedido" id="pedido_${i}">
-
-    <b>
-    #${i+1} | ${p.tipo.toUpperCase()} | ${(p.mesa||"-").toUpperCase()}
-    ${p.tipo === "mesa" && p.hora ? ` | 🕒 ${p.hora}` : ""}
-    </b>
-    `;
-
-    if(p.tipo === "mesa"){
-
-      bloque += `
-      <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
-
-        ⏱ Tiempo: 
-        <span id="timer_${i}" style="font-weight:bold;color:#c40000">
-        ${p.atendido ? p.tiempoFinal : "00:00"}
-        </span>
-
-        ${!p.atendido ? `
-        <button onclick="marcarAtendido(${i})" 
-          style="background:green;color:white">
-          ✅ ATENDIDO
-        </button>
-        ` : `
-        <button onclick="toggleColapsado(${i})"
-          style="background:#6c757d;color:white">
-          ${p.colapsado ? "🔽 Ver" : "🔼 Ocultar"}
-        </button>
-        `}
-
-        <button onclick="eliminar(${i})"
-          style="background:black;color:white">
-          🗑️
-        </button>
-
+  `;
+
+  html += `<div style="margin-bottom:15px">🍲 ENTRADAS POR SERVIR:</div>`;
+
+  for(let nombre in acumuladoEntradas){
+    html += `
+      <div style="display:flex;justify-content:space-between;font-size:22px">
+        <div>${nombre}</div>
+        <div>${acumuladoEntradas[nombre]}</div>
       </div>
-      <br>
-      `;
-
-    } else {
-
-      bloque += `
-      <button onclick="eliminar(${i})" style="float:right">🗑️</button>
-      <br><br>
-      `;
-    }
-
-    if(!p.colapsado){
-
-      if(p.detalleEntradas.length)
-        bloque+=`<b>Entradas:</b><br>${
-          p.detalleEntradas
-          .map(x=>x.replace("NOTA:",
-            "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
-          ))
-          .join("<br>")
-        }<br><br>`;
-
-      if(p.detalleSegundos.length)
-        bloque+=`<b>Segundos:</b><br>${
-          p.detalleSegundos
-          .map(x=>x.replace("NOTA:",
-            "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
-          ))
-          .join("<br>")
-        }<br><br>`;
-
-      if(p.detalleExtras.length)
-        bloque+=`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`;
-
-      if(p.detalleEnvases.length)
-        bloque+=`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`;
-
-      bloque+=`<b>Total: S/ ${p.total.toFixed(2)}</b>`;
-    }
-
-    bloque+=`</div>`;
-
-    if(p.tipo==="mesa") htmlMesa+=bloque;
-    if(p.tipo==="reserva") htmlReserva+=bloque;
-    if(p.tipo==="llevar") htmlLlevar+=bloque;
-
-  });
-
-  document.getElementById("seccion_mesa").innerHTML=htmlMesa;
-  document.getElementById("seccion_reserva").innerHTML=htmlReserva;
-  document.getElementById("seccion_llevar").innerHTML=htmlLlevar;
-}
-
-
-
-
-function eliminar(index){
-  if(confirm("¿Eliminar este pedido?")){
-    pedidos.splice(index,1);
-    guardarHistorial();
-    mostrar();
-  }
-}
-
-function guardarHistorial(){
-  db.collection("pedidos").doc("diaActual").set({
-    lista: pedidos
-  });
-}
-
-function reset(){
-
-  document.querySelectorAll(".qty").forEach(e=>e.value=0);
-
-  /* SOLO entradas */
-  document.querySelectorAll("[id^='nota_E']").forEach(e=>e.value="");
-
-  /* SOLO segundos */
-  document.querySelectorAll("[id^='nota_S']").forEach(e=>e.value="");
-
-  deliveryCosto.value=0;
-  mesa.value="";
-  calcularPreview();
-
-}
-
-function resetearDisponibles(){
-
-  if(!confirm("¿Resetear todos los DISPONIBLES?")) return;
-
-  for(let i=0;i<TOTAL_ENTRADAS;i++){
-    db.collection("stock")
-      .doc("entradas")
-      .collection("items")
-      .doc("E"+i)
-      .set({ vendido:0 }, { merge:true });
+    `;
   }
 
-  for(let i=0;i<TOTAL_SEGUNDOS;i++){
-    db.collection("stock")
-      .doc("segundos")
-      .collection("items")
-      .doc("S"+i)
-      .set({ vendido:0 }, { merge:true });
+  html += `<br><div style="margin-bottom:15px">🍛 SEGUNDOS POR SERVIR:</div>`;
+
+  for(let nombre in acumuladoSegundos){
+    html += `
+      <div style="display:flex;justify-content:space-between;font-size:22px">
+        <div>${nombre}</div>
+        <div>${acumuladoSegundos[nombre]}</div>
+      </div>
+    `;
   }
 
-}
-
-
-
-
-function calcularTiempoFinal(inicio){
-
-  const ahora = Date.now();
-  const diff = ahora - inicio;
-
-  const minutos = Math.floor(diff / 60000);
-  const segundos = Math.floor((diff % 60000) / 1000);
-
-  return `${minutos.toString().padStart(2,"0")}:${segundos.toString().padStart(2,"0")}`;
-}
-
-function marcarAtendido(index){
-
-  const ahora = Date.now();
-  const inicio = pedidos[index].horaRegistro;
-
-  const diff = ahora - inicio;
-
-  const minutos = Math.floor(diff / 60000);
-  const segundos = Math.floor((diff % 60000) / 1000);
-
-  pedidos[index].tiempoFinal =
-    `${minutos.toString().padStart(2,"0")}:`+
-    `${segundos.toString().padStart(2,"0")}`;
-
-  pedidos[index].atendido = true;
-  pedidos[index].colapsado = true;
-
-  // mover al final
-  const pedidoFinalizado = pedidos.splice(index,1)[0];
-  pedidos.push(pedidoFinalizado);
-
-  guardarHistorial();
-  mostrar();
-}
-
-
-
-
-
-function toggleColapsado(index){
-  pedidos[index].colapsado = !pedidos[index].colapsado;
-  guardarHistorial();
-  mostrar();
-}
-
-
-
-
-function actualizarInicialFirestore(prefijo,id,valor){
-
-  const seccion = prefijo === "E" ? "entradas" : "segundos";
-
-  db.collection("stock")
-    .doc(seccion)
-    .collection("items")
-    .doc(id)
-    .set({
-      inicial: parseInt(valor) || 0
-    }, { merge:true });
-
-}
-
-
-function actualizarNombreFirestore(input){
-
-  const id = input.dataset.nombre;
-  const seccion = input.dataset.seccion;
-  const valor = input.value;
-
-  db.collection("stock")
-    .doc(seccion)
-    .collection("items")
-    .doc(id)
-    .set({
-      nombre: valor
-    }, { merge:true });
-
-}
-
-
-/* =================================================
-   INIT
-================================================= */
-crearMenuEditable(TOTAL_ENTRADAS,"entradas","E");
-crearMenuEditable(TOTAL_SEGUNDOS,"segundos","S");
-
-escucharStock("entradas", TOTAL_ENTRADAS, "E");
-escucharStock("segundos", TOTAL_SEGUNDOS, "S");
-
-// 🔥 aplicar estado guardado
-["entradas","segundos"].forEach(seccion=>{
-  const oculto = localStorage.getItem("iniOculto_"+seccion);
-  if(oculto === "1"){
-    toggleIni(seccion);
-  }
-});
-
-
-crearItems(extrasComida,"extrasComida");
-crearItems(envases,"envases");
-
-mostrar();
-actualizarBotonesTipo();
-
-
-// 🔥 TEMPORIZADOR GLOBAL (actualiza cada segundo)
-setInterval(()=>{
+  html += `</div>`;
 
   pedidos.forEach((p,i)=>{
 
-    if(p.tipo === "mesa" && p.horaRegistro && !p.atendido){
+    if(p.tipo==="mesa" && !p.atendido){
 
+      html+=`
+        <div class="pedido" id="pedido_${i}">
 
-      const span = document.getElementById("timer_"+i);
-      const pedidoBox = document.getElementById("pedido_"+i);
+          <div style="font-size:26px;font-weight:bold;margin-bottom:10px">
+            🍽️ MESA ${p.mesa}
+          </div>
 
-      if(!span || !pedidoBox) return;
+          ⏱ 
+          <span id="timer_${i}" style="font-weight:bold;color:#c40000">
+            00:00
+          </span>
 
-      const ahora = Date.now();
-      const diff = ahora - p.horaRegistro;
+          <br><br>
 
-      const minutos = Math.floor(diff / 60000);
-      const segundos = Math.floor((diff % 60000) / 1000);
+          ${p.detalleEntradas.length ? "<b>Entradas:</b><br>"+p.detalleEntradas.join("<br>")+"<br><br>" : ""}
 
-      span.innerText =
-        `${minutos.toString().padStart(2,"0")}:`+
-        `${segundos.toString().padStart(2,"0")}`;
+          ${p.detalleSegundos.length ? "<b>Segundos:</b><br>"+p.detalleSegundos.join("<br>")+"<br><br>" : ""}
 
-      // 🎨 CAMBIO VISUAL DEL BLOQUE COMPLETO
-      if(p.atendido){
-        pedidoBox.style.background = "#f8f9fa";
-        pedidoBox.style.borderLeft = "6px solid gray";
-        return;
-      }
-
-      if(minutos < 5){
-        pedidoBox.style.background = "#e9f7ef";
-        pedidoBox.style.borderLeft = "6px solid #28a745";
-      }
-      else if(minutos < 10){
-        pedidoBox.style.background = "#fff8e1";
-        pedidoBox.style.borderLeft = "6px solid #ff9800";
-      }
-      else{
-        pedidoBox.style.background = "#fdecea";
-        pedidoBox.style.borderLeft = "6px solid #dc3545";
-      }
-
+        </div>
+      `;
     }
 
   });
 
-},1000);
-
-
-
-// 🔥 restaurar tipo guardado
-const tipoGuardado = localStorage.getItem("tipoSeleccionado");
-if(tipoGuardado){
-  document.getElementById("tipo").value = tipoGuardado;
+  document.getElementById("cocina_contenido").innerHTML = html;
 }
 
-guardarTipo();
-actualizarBotonesTipo();
 
 
+      
 
-deliveryCosto.addEventListener("input",calcularPreview);
+function mostrarClientes(){
 
-async function descargarWordTipo(tipoFiltrado){
+  let html = `
+    <div style="padding:20px">
+      <h2 style="text-align:center">🍲 ENTRADAS DISPONIBLES</h2>
+  `;
 
-  const pedidosFiltrados = pedidos.filter(p=>p.tipo===tipoFiltrado);
+  db.collection("stock")
+    .doc("entradas")
+    .collection("items")
+    .get()
+    .then(snapshot=>{
 
-  if(pedidosFiltrados.length===0){
-    alert("No hay pedidos en esta sección");
-    return;
-  }
+      snapshot.forEach(doc=>{
 
-  const {
-    Document,
-    Packer,
-    Paragraph,
-    TextRun,
-    Table,
-    TableRow,
-    TableCell,
-    WidthType,
-    BorderStyle
-  } = docx;
+        const data = doc.data();
+        const nombre = data.nombre || "";
+        const inicial = data.inicial || 0;
+        const vendido = data.vendido || 0;
+        const disponible = inicial - vendido;
 
-  const COLUMNAS = 6;
+        if(nombre && disponible > 0){
 
-  let columnasPedidos = Array.from({length:COLUMNAS},()=>[]);
-
-  pedidosFiltrados.forEach((p,i)=>{
-    columnasPedidos[i % COLUMNAS].push(p);
-  });
-
-  const filas = [];
-  const maxFilas = Math.max(...columnasPedidos.map(c=>c.length));
-
-  for(let f=0; f<maxFilas; f++){
-
-    const rowCells = [];
-
-    for(let c=0; c<COLUMNAS; c++){
-
-      const pedido = columnasPedidos[c][f];
-
-      if(pedido){
-
-        const contenido = [];
-
-        contenido.push(
-          new Paragraph({
-            children:[
-              new TextRun({
-                text:(pedido.mesa||"SIN NOMBRE").toUpperCase(),
-                bold:true,
-                size:30
-              })
-            ],
-            spacing:{ after:100 }
-          })
-        );
-
-        pedido.detalleEntradas.forEach(l=>{
-          contenido.push(
-            new Paragraph({
-              children:[ new TextRun({ text:l, size:24 }) ]
-            })
-          );
-        });
-
-        pedido.detalleSegundos.forEach(l=>{
-          contenido.push(
-            new Paragraph({
-              children:[ new TextRun({ text:l, size:24 }) ]
-            })
-          );
-        });
-
-        rowCells.push(
-          new TableCell({
-            width:{ size:100/COLUMNAS, type:WidthType.PERCENTAGE },
-            margins:{ top:100, bottom:100, left:150, right:150 },
-            borders:{
-              left:{style:BorderStyle.SINGLE, size:4, color:"cccccc"},
-              right:{style:BorderStyle.SINGLE, size:4, color:"cccccc"},
-              top:{style:BorderStyle.NONE},
-              bottom:{style:BorderStyle.NONE}
-            },
-            children:contenido
-          })
-        );
-
-      } else {
-
-        rowCells.push(
-          new TableCell({
-            width:{ size:100/COLUMNAS, type:WidthType.PERCENTAGE },
-            children:[new Paragraph("")]
-          })
-        );
-
-      }
-
-    }
-
-    filas.push(new TableRow({ children: rowCells }));
-
-  }
-
-  const tabla = new Table({
-    width:{ size:100, type:WidthType.PERCENTAGE },
-    rows: filas
-  });
-
-  const doc = new Document({
-    sections:[{
-      properties:{
-        page:{
-          size:{ orientation:"landscape" },
-          margin:{ top:250, right:250, bottom:250, left:250 }
+          html += `
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              padding:10px;
+              font-size:26px;
+              border-bottom:1px solid #ddd;
+            ">
+              <div>${nombre}</div>
+              <div style="font-weight:bold;color:${disponible<=5?'red':'green'}">
+                ${disponible}
+              </div>
+            </div>
+          `;
         }
-      },
-      children:[tabla]
-    }]
-  });
 
-  const blob = await Packer.toBlob(doc);
+      });
 
-  const link=document.createElement("a");
-  link.href=URL.createObjectURL(blob);
-  link.download="Pedidos-"+tipoFiltrado+"-ElMisti.docx";
-  link.click();
+      html += `<br><h2 style="text-align:center">🍛 SEGUNDOS DISPONIBLES</h2>`;
+
+      return db.collection("stock")
+        .doc("segundos")
+        .collection("items")
+        .get();
+
+    })
+    .then(snapshot=>{
+
+      snapshot.forEach(doc=>{
+
+        const data = doc.data();
+        const nombre = data.nombre || "";
+        const inicial = data.inicial || 0;
+        const vendido = data.vendido || 0;
+        const disponible = inicial - vendido;
+
+        if(nombre && disponible > 0){
+
+          html += `
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              padding:10px;
+              font-size:26px;
+              border-bottom:1px solid #ddd;
+            ">
+              <div>${nombre}</div>
+              <div style="font-weight:bold;color:${disponible<=5?'red':'green'}">
+                ${disponible}
+              </div>
+            </div>
+          `;
+        }
+
+      });
+
+      html += `</div>`;
+
+      document.getElementById("vista_clientes").innerHTML = html;
+
+    });
+
 }
 
 
 
 
-</script>
+
+
+
+          function escucharStock(seccion, total, prefijo){
+
+            for(let i=0;i<total;i++){
+
+              const id = prefijo+i;
+
+              const ref = db.collection("stock")
+                .doc(seccion)
+                .collection("items")
+                .doc(id);
+
+              // 🔥 crear documento si no existe
+              ref.set({
+                inicial: 0,
+                vendido: 0,
+                nombre: ""
+              }, { merge:true });
+
+              // 🔥 escuchar individualmente
+              ref.onSnapshot(doc=>{
+
+                if(!doc.exists) return;
+
+                const data = doc.data();
+
+                const inicial = data.inicial || 0;
+                const vendido = data.vendido || 0;
+                const nombre = data.nombre || "";
+
+                const disponible = Math.max(inicial - vendido, 0);
+
+                // actualizar nombre
+                const inputNombre = document.querySelector(
+                  `input[data-nombre='${id}']`
+                );
+                if(inputNombre){
+                  inputNombre.value = nombre;
+                }
+
+                // actualizar INI
+                const inputIni = document.querySelector(
+                  `input[data-stock='${id}']`
+                );
+                if(inputIni){
+                  inputIni.value = inicial;
+                }
+
+                // actualizar DISP
+                const span = document.getElementById("disp_"+id);
+                if(span){
+                  span.innerText = disponible;
+                  span.style.color = disponible<=0 ? "red" : "black";
+                }
+
+              });
+
+            }
+
+          }
+
+
+          /* =================================================
+            CANTIDADES FIJAS (LO ÚNICO NUEVO)
+          ================================================= */
+          const TOTAL_ENTRADAS = 5;
+          const TOTAL_SEGUNDOS = 10;
+
+
+          /* =================================================
+            EXTRAS Y ENVASES (INTOCABLES – IGUAL QUE TUYO)
+          ================================================= */
+          const extrasComida=[
+          {nombre:"Arroz extra",precio:2},
+          {nombre:"Presa adicional",precio:5},
+          {nombre:"Vaso adicional",precio:1},
+          {nombre:"Medio vaso refresco",precio:0.5}
+          ];
+
+          const envases=[
+          {nombre:"Taper grande",precio:1},
+          {nombre:"Taper chico",precio:0.5}
+          ];
+
+          let pedidos = [];
+
+          db.collection("pedidos").doc("diaActual")
+          .onSnapshot((doc) => {
+            if(doc.exists){
+              pedidos = doc.data().lista || [];
+              mostrar();
+            }
+          });
+
+          /* =================================================
+            NUEVO: CREAR ENTRADAS/SEGUNDOS EDITABLES
+            (MISMO DISEÑO .item .controls .qty)
+          ================================================= */
+          function crearMenuEditable(total, cont, prefijo){
+
+            const div=document.getElementById(cont);
+
+            for(let i=0;i<total;i++){
+
+              const key=prefijo+i;
+          
+              const inicialGuardado = localStorage.getItem(key+"-inicial") || 0;
+              const vendidoGuardado = localStorage.getItem(key+"-vendido") || 0;
+              const disponible = inicialGuardado - vendidoGuardado;
+
+              div.innerHTML+=`
+            <div class="item" style="display:flex;align-items:center;gap:10px">
+
+              <!-- INICIAL -->
+              <input
+                class="colIni"
+                type="number"
+                min="0"
+                data-stock="${key}"
+                oninput="actualizarInicialFirestore('${prefijo}','${key}',this.value)"
+              >
 
 
 
 
-</body>
-</html>
+
+              <!-- DISPONIBLE -->
+              <span
+                id="disp_${key}"
+                style="width:60px;text-align:center;font-weight:bold;color:${disponible<=0?'red':'black'}">
+                ${disponible}
+              </span>
+
+
+              <!-- NOMBRE -->
+              <input class="nombrePlato"
+                data-nombre="${key}"
+                data-seccion="${prefijo === 'E' ? 'entradas' : 'segundos'}"
+                placeholder="Nombre..."
+                oninput="actualizarNombreFirestore(this)"
+                style="flex:1"
+              >
+
+
+              <!-- CONTROLES -->
+              <div class="controls">
+
+                <button onclick="cambiar('${key}',-1)">-</button>
+
+                <input class="qty" id="${key}" value="0" readonly>
+
+                <button onclick="cambiar('${key}',1)">+</button>
+
+                <!-- BOTÓN NOTA -->
+                <button 
+                  type="button"
+                  onclick="toggleNota('${key}')"
+                  style="
+                    background:#eee;
+                    padding:6px 8px;
+                    border-radius:6px;
+                    font-size:12px;
+                  ">
+                  📝
+                </button>
+
+              </div>
+
+            </div>
+
+            <!-- NOTA OCULTA -->
+            <input
+              id="nota_${key}"
+              placeholder="Nota (sin arroz, sin papa, etc)"
+              style="
+                display:none;
+                margin-top:5px;
+                font-size:12px;
+                padding:4px;
+                border:1px solid #ddd;
+                border-radius:6px;
+                width:100%;
+              ">
+          `;
+
+            }
+          }
+
+
+
+
+
+          /* =================================================
+            CREAR ITEMS (AHORA CON NOTA POR PLATO)
+          ================================================= */
+          function crearItems(lista, cont){
+            const div=document.getElementById(cont);
+
+            lista.forEach(i=>{
+              const nombre=i.nombre||i;
+
+              div.innerHTML+=`
+                <div class="item">
+                  ${nombre} ${i.precio?`(S/ ${i.precio})`:""}
+                  <div class="controls">
+                    <button onclick="cambiar('${nombre}',-1)">-</button>
+                    <input class="qty" id="${nombre}" value="0" readonly>
+                    <button onclick="cambiar('${nombre}',1)">+</button>
+                  </div>
+                </div>`;
+            });
+          }
+
+
+
+
+          /* =================================================
+            + / -  (TUYO)
+          ================================================= */
+          function cambiar(id,n){
+            const el=document.getElementById(id);
+            let v=parseInt(el.value)+n;
+            if(v<0)v=0;
+            el.value=v;
+            calcularPreview(); // 👈 agregado
+          }
+
+
+          function calcularPreview(){
+
+            let total=0;
+            let ent=0, seg=0;
+
+            // contar entradas
+            for(let i=0;i<TOTAL_ENTRADAS;i++){
+              ent += +document.getElementById("E"+i).value;
+            }
+
+            // contar segundos
+            for(let i=0;i<TOTAL_SEGUNDOS;i++){
+              seg += +document.getElementById("S"+i).value;
+            }
+
+            const menus=Math.min(ent,seg);
+
+            total+=menus*13;
+            total+=(seg-menus)*10;
+            total+=(ent-menus)*5;
+
+            // extras
+            extrasComida.forEach(e=>{
+              total += +document.getElementById(e.nombre).value * e.precio;
+            });
+
+            // envases
+            envases.forEach(e=>{
+              total += +document.getElementById(e.nombre).value * e.precio;
+            });
+
+            // delivery
+            total += +deliveryCosto.value;
+
+            totalPreview.innerText="S/ "+total.toFixed(2);
+          }
+
+          function toggleNota(id){
+
+            const campo = document.getElementById("nota_"+id);
+
+            if(campo.style.display === "none"){
+              campo.style.display = "block";
+              campo.focus();
+            } else {
+              campo.style.display = "none";
+            }
+
+          }
+
+
+
+          /* 🔥 FUNCIÓN PARA MOSTRAR / OCULTAR COLUMNA INI */
+          function toggleIni(seccion){
+
+            const container = document.getElementById(seccion);
+            const card = container.closest(".card");
+            const columnas = card.querySelectorAll(".colIni");
+
+            let oculto = columnas[0].style.display !== "none";
+
+            columnas.forEach(col=>{
+              col.style.display = oculto ? "none" : "";
+            });
+
+            // 🔥 guardar estado
+            localStorage.setItem("iniOculto_"+seccion, oculto ? "1" : "0");
+          }
+
+          function guardarTipo(){
+
+            const selectTipo = document.getElementById("tipo");
+            const tipo = selectTipo.value;
+
+            localStorage.setItem("tipoSeleccionado", tipo);
+
+            const contenedor = document.getElementById("mesasBotones");
+
+            if(tipo === "mesa"){
+              contenedor.style.display = "block";
+              generarBotonesMesas();
+            }else{
+              contenedor.style.display = "none";
+            }
+          }
+
+
+          function generarBotonesMesas(){
+
+            const contenedor = document.getElementById("mesasBotones");
+            contenedor.innerHTML = "";
+
+            for(let i=1;i<=25;i++){
+
+              contenedor.innerHTML += `
+                <button 
+                  type="button"
+                  onclick="seleccionarMesa(${i})"
+                  style="
+                    margin:4px;
+                    padding:8px 12px;
+                    border-radius:8px;
+                    background:#eee;
+                  ">
+                  ${i}
+                </button>
+              `;
+            }
+          }
+
+          function seleccionarMesa(numero){
+            document.getElementById("mesa").value = numero;
+          }
+
+
+          function eliminarTodo(){
+
+            if(!confirm("¿Eliminar TODOS los pedidos del día?")) return;
+
+            pedidos = [];
+            localStorage.removeItem("pedidosMisti");
+
+            mostrar();
+
+            alert("Todos los pedidos fueron eliminados");
+          }
+
+          function cambiarTipo(valor){
+
+            const select = document.getElementById("tipo");
+            select.value = valor;
+
+            // dispara tu función original
+            guardarTipo();
+
+            actualizarBotonesTipo();
+          }
+
+          function actualizarBotonesTipo(){
+
+            const valor = document.getElementById("tipo").value;
+
+            document.querySelectorAll(".tipoSelector button")
+              .forEach(btn => btn.classList.remove("activo"));
+
+            if(valor === "mesa") document.getElementById("btnMesa").classList.add("activo");
+            if(valor === "llevar") document.getElementById("btnLlevar").classList.add("activo");
+            if(valor === "reserva") document.getElementById("btnReserva").classList.add("activo");
+          }
+
+
+
+
+          /* =================================================
+            REGISTRAR (MISMA LÓGICA + solo cambio de lectura)
+          ================================================= */
+          function registrarPedido(){
+
+            let total=0;
+            let ent=0, seg=0;
+
+            let detalleEntradas=[];
+            let detalleSegundos=[];
+            let detalleExtras=[];
+            let detalleEnvases=[];
+
+            /* ENTRADAS */
+            for(let i=0;i<TOTAL_ENTRADAS;i++){
+              const nombre = document.querySelector(`input[data-nombre='E${i}']`)?.value;
+              const c=+document.getElementById("E"+i).value;
+
+              if(nombre && c>0){
+
+                const nota=document.getElementById("nota_E"+i)?.value || "";
+
+                let texto=`${c} - ${nombre}`;
+                db.collection("stock")
+                  .doc("entradas")
+                  .collection("items")
+                  .doc("E"+i)
+                  .set({
+                    vendido: firebase.firestore.FieldValue.increment(c)
+                  }, { merge:true });
+
+
+                if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
+
+                detalleEntradas.push(texto);
+                ent+=c;
+              }
+
+            }
+
+            /* SEGUNDOS */
+            for(let i=0;i<TOTAL_SEGUNDOS;i++){
+              const nombre = document.querySelector(`input[data-nombre='S${i}']`)?.value;
+              const c=+document.getElementById("S"+i).value;
+
+              if(nombre && c>0){
+
+                const nota=document.getElementById("nota_S"+i)?.value || "";
+
+                let texto=`${c} - ${nombre}`;
+                db.collection("stock")
+                  .doc("segundos")
+                  .collection("items")
+                  .doc("S"+i)
+                  .set({
+                    vendido: firebase.firestore.FieldValue.increment(c)
+                  }, { merge:true });
+
+
+                if(nota) texto+=` | NOTA: ${nota.toUpperCase()}`;
+
+                detalleSegundos.push(texto);
+                seg+=c;
+              }
+
+            }
+
+            const menus=Math.min(ent,seg);
+
+            total+=menus*13;
+            total+=(seg-menus)*10;
+            total+=(ent-menus)*5;
+
+            /* EXTRAS (IGUAL) */
+            extrasComida.forEach(e=>{
+              const c=+document.getElementById(e.nombre).value;
+              if(c>0){
+                detalleExtras.push(`${c} - ${e.nombre}`);
+                total+=c*e.precio;
+              }
+            });
+
+            /* ENVASES (IGUAL) */
+            envases.forEach(e=>{
+              const c=+document.getElementById(e.nombre).value;
+              if(c>0){
+                detalleEnvases.push(`${c} - ${e.nombre}`);
+                total+=c*e.precio;
+              }
+            });
+
+            const delivery=+deliveryCosto.value;
+            total+=delivery;
+
+          if(detalleEntradas.length===0 && detalleSegundos.length===0){
+            alert("No hay platos en el pedido");
+            return;
+          }
+
+
+          const tipoActual = document.getElementById("tipo").value;
+
+          let horaExacta = null;
+          let timestamp = null;
+
+          if(tipoActual === "mesa"){
+            const ahora = new Date();
+
+            // Hora bonita para mostrar
+            horaExacta = ahora.toLocaleTimeString("es-PE", {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            });
+
+            // Tiempo real en milisegundos (para el temporizador)
+            timestamp = Date.now();
+          }
+
+
+          pedidos.push({
+            tipo: tipoActual,
+            mesa: document.getElementById("mesa").value,
+            hora: horaExacta, // solo tendrá valor si es mesa
+            horaRegistro: timestamp, // ⬅️ NUEVO (para el temporizador)
+            atendido: false, // ⬅️ NUEVO (para saber si ya se completó)
+            colapsado: false, // 👈 NUEVO
+            detalleEntradas: detalleEntradas,
+            detalleSegundos: detalleSegundos,
+            detalleExtras: detalleExtras,
+            detalleEnvases: detalleEnvases,
+            total: total,
+          });
+
+
+
+
+            guardarHistorial();
+            mostrar();
+            reset();
+          }
+
+
+          /* =================================================
+            TODO LO DEMÁS IGUAL (MOSTRAR / ELIMINAR / ETC)
+          ================================================= */
+
+          function mostrar(){
+
+            if(vistaActual === "cocina"){
+              mostrarCocina();
+              return;
+            }
+
+            if(vistaActual === "clientes"){
+              mostrarClientes();
+              return;
+            }
+
+
+            console.log("Array pedidos actual:", pedidos);
+
+            let htmlMesa="";
+            let htmlReserva="";
+            let htmlLlevar="";
+
+            // 🔥 ORDEN VISUAL SEGURO (sin tocar el array)
+            const ordenIndices = [
+              ...pedidos.map((p,i)=> !p.atendido ? i : null).filter(i=>i!==null),
+              ...pedidos.map((p,i)=> p.atendido ? i : null).filter(i=>i!==null)
+            ];
+
+            ordenIndices.forEach((i)=>{
+
+              const p = pedidos[i];
+
+              let bloque=`
+              <div class="pedido" id="pedido_${i}">
+
+              <b>
+              #${i+1} | ${p.tipo.toUpperCase()} | ${(p.mesa||"-").toUpperCase()}
+              ${p.tipo === "mesa" && p.hora ? ` | 🕒 ${p.hora}` : ""}
+              </b>
+              `;
+
+              if(p.tipo === "mesa"){
+
+                bloque += `
+                <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
+
+                  ⏱ Tiempo: 
+                  <span id="timer_${i}" style="font-weight:bold;color:#c40000">
+                  ${p.atendido ? p.tiempoFinal : "00:00"}
+                  </span>
+
+                  ${!p.atendido ? `
+                  <button onclick="marcarAtendido(${i})" 
+                    style="background:green;color:white">
+                    ✅ ATENDIDO
+                  </button>
+                  ` : `
+                  <button onclick="toggleColapsado(${i})"
+                    style="background:#6c757d;color:white">
+                    ${p.colapsado ? "🔽 Ver" : "🔼 Ocultar"}
+                  </button>
+                  `}
+
+                  <button onclick="editarPedido(${i})"
+                    style="background:#2196F3;color:white">
+                    ✏️ EDITAR
+                  </button>
+
+                  <button onclick="eliminar(${i})"
+                    style="background:black;color:white">
+                    🗑️
+                  </button>
+
+                </div>
+                <br>
+                `;
+
+              } else {
+
+                if(p.tipo === "reserva"){
+                  bloque += `
+                    <button onclick="pasarAMesa(${i})"
+                      style="background:#4CAF50;color:white;margin-right:6px">
+                      ➜ Pasar a Mesa
+                    </button>
+                  `;
+                }
+
+                bloque += `
+                  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+
+                    <button onclick="editarPedido(${i})"
+                      style="background:#2196F3;color:white">
+                      ✏️
+                    </button>
+
+                    <button onclick="eliminar(${i})"
+                      style="background:black;color:white">
+                      🗑️
+                    </button>
+
+                  </div>
+                  <br>
+                  `;
+
+              }
+
+                if(p.convertidoDesde === "reserva"){
+                  bloque += `
+                    <div style="
+                      background:#ff9800;
+                      color:white;
+                      padding:6px;
+                      margin-top:6px;
+                      font-weight:bold;
+                      border-radius:4px;
+                    ">
+                      ⚠️ RESERVA: ${p.nombreReserva}
+                    </div>
+                  `;
+                }
+
+
+
+              if(!p.colapsado){
+
+                if(p.detalleEntradas.length)
+                  bloque+=`<b>Entradas:</b><br>${
+                    p.detalleEntradas
+                    .map(x=>x.replace("NOTA:",
+                      "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
+                    ))
+                    .join("<br>")
+                  }<br><br>`;
+
+                if(p.detalleSegundos.length)
+                  bloque+=`<b>Segundos:</b><br>${
+                    p.detalleSegundos
+                    .map(x=>x.replace("NOTA:",
+                      "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
+                    ))
+                    .join("<br>")
+                  }<br><br>`;
+
+                if(p.detalleExtras.length)
+                  bloque+=`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`;
+
+                if(p.detalleEnvases.length)
+                  bloque+=`<b>Envases:</b><br>${p.detalleEnvases.join("<br>")}<br><br>`;
+
+                bloque+=`<b>Total: S/ ${p.total.toFixed(2)}</b>`;
+              }
+
+              bloque+=`</div>`;
+
+              if(p.tipo==="mesa") htmlMesa+=bloque;
+              if(p.tipo==="reserva") htmlReserva+=bloque;
+              if(p.tipo==="llevar") htmlLlevar+=bloque;
+
+            });
+
+            document.getElementById("seccion_mesa").innerHTML=htmlMesa;
+            document.getElementById("seccion_reserva").innerHTML=htmlReserva;
+            document.getElementById("seccion_llevar").innerHTML=htmlLlevar;
+          }
+
+
+
+
+          function eliminar(index){
+            if(confirm("¿Eliminar este pedido?")){
+              pedidos.splice(index,1);
+              guardarHistorial();
+              mostrar();
+            }
+          }
+
+          function editarPedido(index){
+
+            const p = pedidos[index];
+
+            if(!confirm("Editar este pedido?")) return;
+
+            // 🔥 1. DEVOLVER STOCK
+            p.detalleEntradas.forEach(item=>{
+              const partes = item.split(" - ");
+              const cantidad = parseInt(partes[0]);
+              const nombre = partes[1]?.split("|")[0].trim();
+
+              for(let i=0;i<TOTAL_ENTRADAS;i++){
+                const inputNombre = document.querySelector(`input[data-nombre='E${i}']`);
+                if(inputNombre && inputNombre.value === nombre){
+                  db.collection("stock")
+                    .doc("entradas")
+                    .collection("items")
+                    .doc("E"+i)
+                    .set({
+                      vendido: firebase.firestore.FieldValue.increment(-cantidad)
+                    }, { merge:true });
+                }
+              }
+            });
+
+            p.detalleSegundos.forEach(item=>{
+              const partes = item.split(" - ");
+              const cantidad = parseInt(partes[0]);
+              const nombre = partes[1]?.split("|")[0].trim();
+
+              for(let i=0;i<TOTAL_SEGUNDOS;i++){
+                const inputNombre = document.querySelector(`input[data-nombre='S${i}']`);
+                if(inputNombre && inputNombre.value === nombre){
+                  db.collection("stock")
+                    .doc("segundos")
+                    .collection("items")
+                    .doc("S"+i)
+                    .set({
+                      vendido: firebase.firestore.FieldValue.increment(-cantidad)
+                    }, { merge:true });
+                }
+              }
+            });
+
+          // 🔥 1. limpiar primero
+          reset();
+
+          // 🔥 2. luego cargar datos
+          document.getElementById("tipo").value = p.tipo;
+          document.getElementById("mesa").value = p.mesa;
+
+          // activar botones visuales
+          guardarTipo();
+          actualizarBotonesTipo();
+
+            // rellenar entradas
+            p.detalleEntradas.forEach(item=>{
+              const partes = item.split(" - ");
+              const cantidad = parseInt(partes[0]);
+              const nombre = partes[1]?.split("|")[0].trim();
+
+              for(let i=0;i<TOTAL_ENTRADAS;i++){
+                const inputNombre = document.querySelector(`input[data-nombre='E${i}']`);
+                if(inputNombre && inputNombre.value === nombre){
+                  document.getElementById("E"+i).value = cantidad;
+                }
+              }
+            });
+
+            // rellenar segundos
+            p.detalleSegundos.forEach(item=>{
+              const partes = item.split(" - ");
+              const cantidad = parseInt(partes[0]);
+              const nombre = partes[1]?.split("|")[0].trim();
+
+              for(let i=0;i<TOTAL_SEGUNDOS;i++){
+                const inputNombre = document.querySelector(`input[data-nombre='S${i}']`);
+                if(inputNombre && inputNombre.value === nombre){
+                  document.getElementById("S"+i).value = cantidad;
+                }
+              }
+            });
+
+            // 🔥 3. ELIMINAR PEDIDO ORIGINAL
+            pedidos.splice(index,1);
+            guardarHistorial();
+            mostrar();
+
+            calcularPreview();
+          }
+
+
+          function guardarHistorial(){
+            db.collection("pedidos").doc("diaActual").set({
+              lista: pedidos
+            });
+          }
+
+          function reset(){
+
+            document.querySelectorAll(".qty").forEach(e=>e.value=0);
+
+            /* SOLO entradas */
+            document.querySelectorAll("[id^='nota_E']").forEach(e=>e.value="");
+
+            /* SOLO segundos */
+            document.querySelectorAll("[id^='nota_S']").forEach(e=>e.value="");
+
+            deliveryCosto.value=0;
+            mesa.value="";
+            calcularPreview();
+
+          }
+
+          function resetearDisponibles(){
+
+            if(!confirm("¿Resetear todos los DISPONIBLES?")) return;
+
+            for(let i=0;i<TOTAL_ENTRADAS;i++){
+              db.collection("stock")
+                .doc("entradas")
+                .collection("items")
+                .doc("E"+i)
+                .set({ vendido:0 }, { merge:true });
+            }
+
+            for(let i=0;i<TOTAL_SEGUNDOS;i++){
+              db.collection("stock")
+                .doc("segundos")
+                .collection("items")
+                .doc("S"+i)
+                .set({ vendido:0 }, { merge:true });
+            }
+
+          }
+
+
+
+
+          function calcularTiempoFinal(inicio){
+
+            const ahora = Date.now();
+            const diff = ahora - inicio;
+
+            const minutos = Math.floor(diff / 60000);
+            const segundos = Math.floor((diff % 60000) / 1000);
+
+            return `${minutos.toString().padStart(2,"0")}:${segundos.toString().padStart(2,"0")}`;
+          }
+
+          function marcarAtendido(index){
+
+            const ahora = Date.now();
+            const inicio = pedidos[index].horaRegistro;
+
+            const diff = ahora - inicio;
+
+            const minutos = Math.floor(diff / 60000);
+            const segundos = Math.floor((diff % 60000) / 1000);
+
+            pedidos[index].tiempoFinal =
+              `${minutos.toString().padStart(2,"0")}:`+
+              `${segundos.toString().padStart(2,"0")}`;
+
+            pedidos[index].atendido = true;
+            pedidos[index].colapsado = true;
+
+            // ❌ ELIMINAMOS ESTO:
+            // const pedidoFinalizado = pedidos.splice(index,1)[0];
+            // pedidos.push(pedidoFinalizado);
+
+            guardarHistorial();
+            mostrar();
+          }
+
+
+
+
+
+
+          function toggleColapsado(index){
+            pedidos[index].colapsado = !pedidos[index].colapsado;
+            guardarHistorial();
+            mostrar();
+          }
+
+
+          function pasarAMesa(index){
+
+            const numeroMesa = prompt("Número de mesa:");
+            if(!numeroMesa) return;
+
+            const ahora = new Date();
+            const horaExacta = ahora.toLocaleTimeString("es-PE", {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            });
+
+            // 🔥 GUARDAR EL NOMBRE ORIGINAL CORRECTAMENTE
+            pedidos[index].convertidoDesde = "reserva";
+            pedidos[index].nombreReserva = pedidos[index].mesa;
+
+            // 🔥 CAMBIAR A MESA
+            pedidos[index].tipo = "mesa";
+            pedidos[index].mesa = numeroMesa;
+            pedidos[index].hora = horaExacta;
+            pedidos[index].horaRegistro = Date.now();
+            pedidos[index].atendido = false;
+            pedidos[index].colapsado = false;
+
+            guardarHistorial();
+            mostrar();
+          }
+
+
+          function actualizarInicialFirestore(prefijo,id,valor){
+
+            const seccion = prefijo === "E" ? "entradas" : "segundos";
+
+            db.collection("stock")
+              .doc(seccion)
+              .collection("items")
+              .doc(id)
+              .set({
+                inicial: parseInt(valor) || 0
+              }, { merge:true });
+
+          }
+
+
+          function actualizarNombreFirestore(input){
+
+            const id = input.dataset.nombre;
+            const seccion = input.dataset.seccion;
+            const valor = input.value;
+
+            db.collection("stock")
+              .doc(seccion)
+              .collection("items")
+              .doc(id)
+              .set({
+                nombre: valor
+              }, { merge:true });
+
+          }
+
+
+          /* =================================================
+            INIT
+          ================================================= */
+          crearMenuEditable(TOTAL_ENTRADAS,"entradas","E");
+          crearMenuEditable(TOTAL_SEGUNDOS,"segundos","S");
+
+          escucharStock("entradas", TOTAL_ENTRADAS, "E");
+          escucharStock("segundos", TOTAL_SEGUNDOS, "S");
+
+          // 🔥 aplicar estado guardado
+          ["entradas","segundos"].forEach(seccion=>{
+            const oculto = localStorage.getItem("iniOculto_"+seccion);
+            if(oculto === "1"){
+              toggleIni(seccion);
+            }
+          });
+
+
+          crearItems(extrasComida,"extrasComida");
+          crearItems(envases,"envases");
+
+          mostrar();
+          actualizarBotonesTipo();
+
+
+          // 🔥 TEMPORIZADOR GLOBAL (actualiza cada segundo)
+          setInterval(()=>{
+
+            pedidos.forEach((p,i)=>{
+
+              if(p.tipo === "mesa" && p.horaRegistro && !p.atendido){
+
+
+                const span = document.getElementById("timer_"+i);
+                const pedidoBox = document.getElementById("pedido_"+i);
+
+                if(!span || !pedidoBox) return;
+
+                const ahora = Date.now();
+                const diff = ahora - p.horaRegistro;
+
+                const minutos = Math.floor(diff / 60000);
+                const segundos = Math.floor((diff % 60000) / 1000);
+
+                span.innerText =
+                  `${minutos.toString().padStart(2,"0")}:`+
+                  `${segundos.toString().padStart(2,"0")}`;
+
+                // 🎨 CAMBIO VISUAL DEL BLOQUE COMPLETO
+                if(p.atendido){
+                  pedidoBox.style.background = "#f8f9fa";
+                  pedidoBox.style.borderLeft = "6px solid gray";
+                  return;
+                }
+
+                if(minutos < 5){
+                  pedidoBox.style.background = "#e9f7ef";
+                  pedidoBox.style.borderLeft = "6px solid #28a745";
+                }
+                else if(minutos < 10){
+                  pedidoBox.style.background = "#fff8e1";
+                  pedidoBox.style.borderLeft = "6px solid #ff9800";
+                }
+                else{
+                  pedidoBox.style.background = "#fdecea";
+                  pedidoBox.style.borderLeft = "6px solid #dc3545";
+                }
+
+              }
+
+            });
+
+          },1000);
+
+
+
+          // 🔥 restaurar tipo guardado
+          const tipoGuardado = localStorage.getItem("tipoSeleccionado");
+          if(tipoGuardado){
+            document.getElementById("tipo").value = tipoGuardado;
+          }
+
+          guardarTipo();
+          actualizarBotonesTipo();
+
+
+
+          deliveryCosto.addEventListener("input",calcularPreview);
+
+          async function descargarWordTipo(tipoFiltrado){
+
+            const pedidosFiltrados = pedidos.filter(p=>p.tipo===tipoFiltrado);
+
+            if(pedidosFiltrados.length===0){
+              alert("No hay pedidos en esta sección");
+              return;
+            }
+
+            const {
+              Document,
+              Packer,
+              Paragraph,
+              TextRun,
+              Table,
+              TableRow,
+              TableCell,
+              WidthType,
+              BorderStyle
+            } = docx;
+
+            const COLUMNAS = 6;
+
+            let columnasPedidos = Array.from({length:COLUMNAS},()=>[]);
+
+            pedidosFiltrados.forEach((p,i)=>{
+              columnasPedidos[i % COLUMNAS].push(p);
+            });
+
+            const filas = [];
+            const maxFilas = Math.max(...columnasPedidos.map(c=>c.length));
+
+            for(let f=0; f<maxFilas; f++){
+
+              const rowCells = [];
+
+              for(let c=0; c<COLUMNAS; c++){
+
+                const pedido = columnasPedidos[c][f];
+
+                if(pedido){
+
+                  const contenido = [];
+
+                  contenido.push(
+                    new Paragraph({
+                      children:[
+                        new TextRun({
+                          text:(pedido.mesa||"SIN NOMBRE").toUpperCase(),
+                          bold:true,
+                          size:30
+                        })
+                      ],
+                      spacing:{ after:100 }
+                    })
+                  );
+
+                  pedido.detalleEntradas.forEach(l=>{
+                    contenido.push(
+                      new Paragraph({
+                        children:[ new TextRun({ text:l, size:24 }) ]
+                      })
+                    );
+                  });
+
+                  pedido.detalleSegundos.forEach(l=>{
+                    contenido.push(
+                      new Paragraph({
+                        children:[ new TextRun({ text:l, size:24 }) ]
+                      })
+                    );
+                  });
+
+                  rowCells.push(
+                    new TableCell({
+                      width:{ size:100/COLUMNAS, type:WidthType.PERCENTAGE },
+                      margins:{ top:100, bottom:100, left:150, right:150 },
+                      borders:{
+                        left:{style:BorderStyle.SINGLE, size:4, color:"cccccc"},
+                        right:{style:BorderStyle.SINGLE, size:4, color:"cccccc"},
+                        top:{style:BorderStyle.NONE},
+                        bottom:{style:BorderStyle.NONE}
+                      },
+                      children:contenido
+                    })
+                  );
+
+                } else {
+
+                  rowCells.push(
+                    new TableCell({
+                      width:{ size:100/COLUMNAS, type:WidthType.PERCENTAGE },
+                      children:[new Paragraph("")]
+                    })
+                  );
+
+                }
+
+              }
+
+              filas.push(new TableRow({ children: rowCells }));
+
+            }
+
+            const tabla = new Table({
+              width:{ size:100, type:WidthType.PERCENTAGE },
+              rows: filas
+            });
+
+            const doc = new Document({
+              sections:[{
+                properties:{
+                  page:{
+                    size:{ orientation:"landscape" },
+                    margin:{ top:250, right:250, bottom:250, left:250 }
+                  }
+                },
+                children:[tabla]
+              }]
+            });
+
+            const blob = await Packer.toBlob(doc);
+
+            const link=document.createElement("a");
+            link.href=URL.createObjectURL(blob);
+            link.download="Pedidos-"+tipoFiltrado+"-ElMisti.docx";
+            link.click();
+          }
+
+
+
+
+          </script>
+
+</div>
+
+<div id="vista_cocina" style="display:none">
+  <h2>👨‍🍳 Cocina</h2>
+  <div id="cocina_contenido"></div>
+</div>
+
+<div id="vista_clientes" style="display:none">
+  <h2 style="text-align:center">🍽️ Pedidos en Proceso</h2>
+  <div style="text-align:center;font-size:80px;font-weight:bold" id="contador_clientes">0</div>
+</div>
+
+
+          </body>
+          </html>
