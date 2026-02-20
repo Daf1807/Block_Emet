@@ -565,8 +565,7 @@ function crearMenuEditable(total, cont, prefijo){
   for(let i=0;i<total;i++){
 
     const key=prefijo+i;
-    const nombreGuardado =
-      localStorage.getItem(key+"-nombre") || "";
+ 
     const inicialGuardado = localStorage.getItem(key+"-inicial") || 0;
     const vendidoGuardado = localStorage.getItem(key+"-vendido") || 0;
     const disponible = inicialGuardado - vendidoGuardado;
@@ -597,11 +596,13 @@ function crearMenuEditable(total, cont, prefijo){
 
     <!-- NOMBRE -->
     <input class="nombrePlato"
-      value="${nombreGuardado}"
+      data-nombre="${key}"
+      data-seccion="${prefijo === 'E' ? 'entradas' : 'segundos'}"
       placeholder="Nombre..."
-      oninput="localStorage.setItem('${key}-nombre',this.value)"
+      oninput="actualizarNombreFirestore(this)"
       style="flex:1"
     >
+
 
     <!-- CONTROLES -->
     <div class="controls">
@@ -737,30 +738,7 @@ function toggleNota(id){
 
 }
 
-function actualizarDisponible(key){
 
-  const inicial = +localStorage.getItem(key+"-inicial") || 0;
-  const vendido = +localStorage.getItem(key+"-vendido") || 0;
-
-  let disponible = inicial - vendido;
-  if(disponible < 0) disponible = 0;
-
-  const span = document.getElementById("disp_"+key);
-  if(span){
-    span.innerText = disponible;
-    span.style.color = disponible <= 0 ? "red" : "black";
-  }
-
-  // bloquear botón +
-  const btnMas = document.querySelector(
-    `button[onclick="cambiar('${key}',1)"]`
-  );
-
-  if(btnMas){
-    btnMas.disabled = disponible <= 0;
-    btnMas.style.opacity = disponible <= 0 ? 0.3 : 1;
-  }
-}
 
 /* 🔥 FUNCIÓN PARA MOSTRAR / OCULTAR COLUMNA INI */
 function toggleIni(seccion){
@@ -1342,12 +1320,7 @@ if(tipoGuardado){
 guardarTipo();
 actualizarBotonesTipo();
 
-for(let i=0;i<TOTAL_ENTRADAS;i++){
-  actualizarDisponible("E"+i);
-}
-for(let i=0;i<TOTAL_SEGUNDOS;i++){
-  actualizarDisponible("S"+i);
-}
+
 
 deliveryCosto.addEventListener("input",calcularPreview);
 
