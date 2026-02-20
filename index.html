@@ -491,6 +491,15 @@ function escucharStock(seccion, total, prefijo){
         const vendido = data.vendido || 0;
         const disponible = Math.max(inicial - vendido, 0);
 
+        // 🔥 actualizar nombre en tiempo real
+        const inputNombre = document.querySelector(
+          `input[data-nombre='${id}']`
+        );
+        if(inputNombre && data.nombre !== undefined){
+          inputNombre.value = data.nombre;
+        }
+
+
         // actualizar input INI
         const inputIni = document.querySelector(
           `input[data-stock='${id}']`
@@ -587,8 +596,7 @@ function crearMenuEditable(total, cont, prefijo){
 
 
     <!-- NOMBRE -->
-    <input
-      class="nombrePlato"
+    <input class="nombrePlato"
       value="${nombreGuardado}"
       placeholder="Nombre..."
       oninput="localStorage.setItem('${key}-nombre',this.value)"
@@ -870,7 +878,7 @@ function registrarPedido(){
 
   /* ENTRADAS */
   for(let i=0;i<TOTAL_ENTRADAS;i++){
-    const nombre=localStorage.getItem("E"+i+"-nombre");
+    const nombre = document.querySelector(`input[data-nombre='E${i}']`)?.value;
     const c=+document.getElementById("E"+i).value;
 
     if(nombre && c>0){
@@ -897,7 +905,7 @@ function registrarPedido(){
 
   /* SEGUNDOS */
   for(let i=0;i<TOTAL_SEGUNDOS;i++){
-    const nombre=localStorage.getItem("S"+i+"-nombre");
+    const nombre = document.querySelector(`input[data-nombre='S${i}']`)?.value;
     const c=+document.getElementById("S"+i).value;
 
     if(nombre && c>0){
@@ -1232,6 +1240,21 @@ function actualizarInicialFirestore(prefijo,id,valor){
 }
 
 
+function actualizarNombreFirestore(input){
+
+  const id = input.dataset.nombre;
+  const seccion = input.dataset.seccion;
+  const valor = input.value;
+
+  db.collection("stock")
+    .doc(seccion)
+    .collection("items")
+    .doc(id)
+    .set({
+      nombre: valor
+    }, { merge:true });
+
+}
 
 
 /* =================================================
