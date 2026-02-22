@@ -112,6 +112,7 @@ button:hover{
 /* PEDIDOS */
 .pedido{
   background:white;
+  /* Borde por defecto (Rojo) */
   border-left:6px solid var(--rojo);
   padding:14px;
   margin-bottom:14px;
@@ -123,6 +124,10 @@ button:hover{
 .pedido:hover{
   transform:scale(1.01);
 }
+
+/* COLORES ESPECIALES PARA COCINA */
+.pedido-azul { border-left-color: #2196F3 !important; } /* Llevar/Alistar */
+.pedido-amarillo { border-left-color: #FFC107 !important; } /* Reserva */
 
 
 /* GRID PC */
@@ -384,6 +389,31 @@ button:hover{
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* COCINA ESTILOS ESPECIFICOS */
+.cocina-header-split {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.cocina-col {
+  flex: 1;
+  background: #222;
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+}
+.cocina-col h3 {
+  margin-top: 0;
+  border-bottom: 2px solid #FFC107;
+  padding-bottom: 10px;
+}
+.cocina-item-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
 </style>
 </head>
 
@@ -427,6 +457,7 @@ button:hover{
             <option value="mesa">Mesa</option>
             <option value="llevar">Llevar</option>
             <option value="reserva">Reserva</option>
+            <option value="alistar">Alistar (Cocina)</option>
           </select>
 
           <div class="tipoSelector">
@@ -537,12 +568,14 @@ button:hover{
             <button onclick="mostrarSeccionPedidos('mesa')" id="btnMesaPedidos">🍽 Mesa</button>
             <button onclick="mostrarSeccionPedidos('reserva')" id="btnReservaPedidos">📅 Reserva</button>
             <button onclick="mostrarSeccionPedidos('llevar')" id="btnLlevarPedidos">🥡 Llevar</button>
+            <button onclick="mostrarSeccionPedidos('alistar')" id="btnAlistarPedidos">👨‍🍳 Alistar</button>
           </div>
           
             <div style="display:none">
               <div id="seccion_mesa"></div>
               <div id="seccion_reserva"></div>
               <div id="seccion_llevar"></div>
+              <div id="seccion_alistar"></div>
             </div>
 
               <div id="contenedorPedidos" class="card"></div>
@@ -664,134 +697,166 @@ function cambiarVista(vista){
 
 
 
+/* =================================================
+  🔥 NUEVA LÓGICA COCINA: MESA + ALISTAR
+================================================= */
 function mostrarCocina(){
 
-  const pedidosMesa = pedidos.filter(p=>p.tipo==="mesa" && !p.atendido);
+  // Filtramos: Solo MESA y ALISTAR (no RESERVA, no LLEVAR programado)
+  const pedidosActivos = pedidos.filter(p => (p.tipo === "mesa" || p.tipo === "alistar") && !p.atendido);
 
-  let acumuladoEntradas = {};
-  let acumuladoSegundos = {};
+  // Acumulados separados
+  let acumuladoEntradasSalon = {};
+  let acumuladoSegundosSalon = {};
+  let acumuladoEntradasLlevar = {};
+  let acumuladoSegundosLlevar = {};
 
-  pedidosMesa.forEach(p=>{
+  pedidosActivos.forEach(p=>{
 
-      p.detalleEntradas.forEach(item=>{
-        const partes = item.split(" - ");
-        const cantidad = parseInt(partes[0]) || 0;
-        const nombre = partes[1]?.split("|")[0].trim();
+    const esLlevar = (p.tipo === "alistar");
+    const mapEntradas = esLlevar ? acumuladoEntradasLlevar : acumuladoEntradasSalon;
+    const mapSegundos = esLlevar ? acumuladoSegundosLlevar : acumuladoSegundosSalon;
 
-        if(nombre){
+    // Entradas
+    p.detalleEntradas.forEach(item=>{
+      const partes = item.split(" - ");
+      const cantidad = parseInt(partes[0]) || 0;
+      const nombre = partes[1]?.split("|")[0].trim();
 
-          const servidos =
-            p.servidos?.entrada?.[nombre]
-              ? p.servidos.entrada[nombre].length
-              : 0;
+      if(nombre){
+        const servidos =
+          p.servidos?.entrada?.[nombre]
+            ? p.servidos.entrada[nombre].length
+            : 0;
+        const pendiente = cantidad - servidos;
 
-          const pendiente = cantidad - servidos;
-
-          if(pendiente > 0){
-            acumuladoEntradas[nombre] =
-              (acumuladoEntradas[nombre] || 0) + pendiente;
-          }
-
+        if(pendiente > 0){
+          mapEntradas[nombre] = (mapEntradas[nombre] || 0) + pendiente;
         }
-      });
+      }
+    });
 
-      p.detalleSegundos.forEach(item=>{
-        const partes = item.split(" - ");
-        const cantidad = parseInt(partes[0]) || 0;
-        const nombre = partes[1]?.split("|")[0].trim();
+    // Segundos
+    p.detalleSegundos.forEach(item=>{
+      const partes = item.split(" - ");
+      const cantidad = parseInt(partes[0]) || 0;
+      const nombre = partes[1]?.split("|")[0].trim();
 
-        if(nombre){
+      if(nombre){
+        const servidos =
+          p.servidos?.segundo?.[nombre]
+            ? p.servidos.segundo[nombre].length
+            : 0;
+        const pendiente = cantidad - servidos;
 
-          const servidos =
-            p.servidos?.segundo?.[nombre]
-              ? p.servidos.segundo[nombre].length
-              : 0;
-
-          const pendiente = cantidad - servidos;
-
-          if(pendiente > 0){
-            acumuladoSegundos[nombre] =
-              (acumuladoSegundos[nombre] || 0) + pendiente;
-          }
-
+        if(pendiente > 0){
+          mapSegundos[nombre] = (mapSegundos[nombre] || 0) + pendiente;
         }
-      });
+      }
+    });
 
   });
 
-  let html = `
-    <div style="
-      background:#111;
-      color:white;
-      padding:20px;
-      font-size:24px;
-      font-weight:bold;
-      border-bottom:4px solid #FFC107;
-    ">
-  `;
-
-  html += `<div style="margin-bottom:15px">🍲 ENTRADAS POR SERVIR:</div>`;
-
-  for(let nombre in acumuladoEntradas){
-    html += `
-      <div style="display:flex;justify-content:space-between;font-size:22px">
-        <div>${nombre}</div>
-        <div>${acumuladoEntradas[nombre]}</div>
-      </div>
-    `;
+  // Renderizar Acumulados
+  let htmlAcumulados = `<div class="cocina-header-split">`;
+  
+  // Columna Salón
+  htmlAcumulados += `<div class="cocina-col">
+    <h3>🍽️ ACUMULADO SALÓN</h3>
+    <div style="margin-bottom:10px;font-weight:bold;color:#FFC107">🍲 ENTRADAS</div>`;
+  for(let nombre in acumuladoEntradasSalon){
+    htmlAcumulados += `<div class="cocina-item-row"><div>${nombre}</div><div>${acumuladoEntradasSalon[nombre]}</div></div>`;
   }
-
-  html += `<br><div style="margin-bottom:15px">🍛 SEGUNDOS POR SERVIR:</div>`;
-
-  for(let nombre in acumuladoSegundos){
-    html += `
-      <div style="display:flex;justify-content:space-between;font-size:22px">
-        <div>${nombre}</div>
-        <div>${acumuladoSegundos[nombre]}</div>
-      </div>
-    `;
+  htmlAcumulados += `<div style="margin:15px 0 10px 0;font-weight:bold;color:#FFC107">🍛 SEGUNDOS</div>`;
+  for(let nombre in acumuladoSegundosSalon){
+    htmlAcumulados += `<div class="cocina-item-row"><div>${nombre}</div><div>${acumuladoSegundosSalon[nombre]}</div></div>`;
   }
+  htmlAcumulados += `</div>`;
 
-  html += `</div>`;
+  // Columna Llevar
+  htmlAcumulados += `<div class="cocina-col" style="background:#333; border-color:orange;">
+    <h3>🥡 ACUMULADO LLEVAR</h3>
+    <div style="margin-bottom:10px;font-weight:bold;color:#FFC107">🍲 ENTRADAS</div>`;
+  for(let nombre in acumuladoEntradasLlevar){
+    htmlAcumulados += `<div class="cocina-item-row"><div>${nombre}</div><div>${acumuladoEntradasLlevar[nombre]}</div></div>`;
+  }
+  htmlAcumulados += `<div style="margin:15px 0 10px 0;font-weight:bold;color:#FFC107">🍛 SEGUNDOS</div>`;
+  for(let nombre in acumuladoSegundosLlevar){
+    htmlAcumulados += `<div class="cocina-item-row"><div>${nombre}</div><div>${acumuladoSegundosLlevar[nombre]}</div></div>`;
+  }
+  htmlAcumulados += `</div></div>`; // Fin split
 
-  pedidos.forEach((p,i)=>{
+  document.getElementById("cocina_contenido").innerHTML = htmlAcumulados + '<div id="lista_pedidos_cocina"></div>';
 
-    if(p.tipo==="mesa" && !p.atendido){
+  // Renderizar Pedidos Individuales (Estilo Mesero)
+  let listaHtml = "";
+  let contador = 1; // Para numerar #1, #2...
 
-        let tituloMesa = `🍽️ MESA ${p.mesa}`;
+  pedidosActivos.forEach((p)=>{
 
-        if(p.tipoOriginal === "reserva" || p.reservaNombre || p.nombreReserva){
-          const nombre = p.reservaNombre || p.nombreReserva || "";
-          tituloMesa += `<br><span style="color:#c40000;font-weight:bold">⚠️ RESERVA: ${nombre}</span>`;
-        }
-
-        html+=`
-          <div class="pedido" id="pedido_${i}">
-
-            <div style="font-size:26px;font-weight:bold;margin-bottom:10px">
-              ${tituloMesa}
-            </div>
-
-        
-            ⏱ 
-            <span class="timer"
-                  data-hora="${p.horaRegistro || ''}"
-                  data-atendido="${p.atendido ? '1' : '0'}"
-                  style="font-weight:bold;color:#c40000">
-              00:00
-            </span>
-          <br><br>
-
-          ${p.detalleEntradas.length ? "<b>Entradas:</b><br>"+p.detalleEntradas.join("<br>")+"<br><br>" : ""}
-          ${p.detalleSegundos.length ? "<b>Segundos:</b><br>"+p.detalleSegundos.join("<br>")+"<br><br>" : ""}
-
-        </div>
-      `;
+    // 🔥 LÓGICA DE COLORES
+    let claseColor = ""; // Por defecto rojo (CSS)
+    
+    if (p.tipo === "alistar" || p.convertidoDesde === "llevar") {
+      claseColor = "pedido-azul"; // Azul para llevar
+    } else if (p.convertidoDesde === "reserva") {
+      claseColor = "pedido-amarillo"; // Amarillo para reserva
     }
 
+    const subtitulo = (p.mesa || "").toUpperCase();
+
+    // Título estilo ejemplo: #13 | ALISTAR | LUCAS | 🕒 ...
+    let tituloHeader = `
+      <div>
+        <b>
+          #${contador} | ${p.tipo.toUpperCase()} | ${subtitulo}
+          ${p.hora ? ` | 🕒 ${p.hora}` : ""}
+        </b>
+      </div>
+    `;
+
+    // Avisos de origen
+    let avisos = "";
+    if(p.convertidoDesde === "reserva" || p.nombreReserva){
+      avisos += `<div style="color:#FFC107;font-weight:bold;margin-bottom:5px">⚠️ RESERVA: ${p.nombreReserva}</div>`;
+    }
+    if(p.convertidoDesde === "llevar" || p.nombreLlevar){
+      avisos += `<div style="color:#2196F3;font-weight:bold;margin-bottom:5px">🥡 PARA LLEVAR: ${p.nombreLlevar}</div>`;
+    }
+
+    listaHtml+=`
+      <div class="pedido ${claseColor}" id="pedido_cocina_${contador}">
+
+        ${tituloHeader}
+
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
+          ⏱ Tiempo: 
+          <span class="timer"
+                data-hora="${p.horaRegistro || ''}"
+                data-atendido="${p.atendido ? '1' : '0'}"
+                style="font-weight:bold;color:#c40000">
+            00:00
+          </span>
+        </div>
+        
+        ${avisos}
+
+        <br>
+
+        ${p.detalleEntradas.length ? "<b>Entradas:</b><br>"+p.detalleEntradas.join("<br>")+"<br><br>" : ""}
+        ${p.detalleSegundos.length ? "<b>Segundos:</b><br>"+p.detalleSegundos.join("<br>")+"<br><br>" : ""}
+        
+        ${p.detalleExtras.length ? "<b>Extras:</b><br>"+p.detalleExtras.join("<br>")+"<br><br>" : ""}
+        ${p.detalleEnvases.length ? "<b>Envases:</b><br>"+p.detalleEnvases.join("<br>") : ""}
+
+        <!-- SIN MONTO TOTAL SEGÚN REQUERIMIENTO -->
+
+    </div>
+  `;
+  contador++;
   });
 
-  document.getElementById("cocina_contenido").innerHTML = html;
+  document.getElementById("lista_pedidos_cocina").innerHTML = listaHtml;
 }
 
 function dibujarItemsMesero(lista, indexPedido, tipo){
@@ -1144,7 +1209,8 @@ function marcarServido(indexPedido, nombre, tipo){
 
           let pedidos = [];
           let vistaActual = "meseros";
-          let mostrarAtendidos = false;
+          let mostrarAtendidosMesa = false;
+          let mostrarAtendidosAlistar = false;
 
           db.collection("pedidos").doc("diaActual")
           .onSnapshot((doc) => {
@@ -1558,17 +1624,15 @@ function marcarServido(indexPedido, nombre, tipo){
           let horaExacta = null;
           let timestamp = null;
 
-          if(tipoActual === "mesa"){
+          // Solo ponemos hora si es MESA o ALISTAR inmediato
+          // RESERVA y LLEVAR (programado) no tienen hora hasta activar
+          if(tipoActual === "mesa" || tipoActual === "alistar"){
             const ahora = new Date();
-
-            // Hora bonita para mostrar
             horaExacta = ahora.toLocaleTimeString("es-PE", {
               hour: "2-digit",
               minute: "2-digit",
               second: "2-digit"
             });
-
-            // Tiempo real en milisegundos (para el temporizador)
             timestamp = Date.now();
           }
 
@@ -1576,10 +1640,10 @@ function marcarServido(indexPedido, nombre, tipo){
           pedidos.push({
             tipo: tipoActual,
             mesa: document.getElementById("mesa").value,
-            hora: horaExacta, // solo tendrá valor si es mesa
-            horaRegistro: timestamp, // ⬅️ NUEVO (para el temporizador)
-            atendido: false, // ⬅️ NUEVO (para saber si ya se completó)
-            colapsado: false, // 👈 NUEVO
+            hora: horaExacta,
+            horaRegistro: timestamp,
+            atendido: false,
+            colapsado: false,
             detalleEntradas: detalleEntradas,
             detalleSegundos: detalleSegundos,
             detalleExtras: detalleExtras,
@@ -1621,6 +1685,8 @@ function marcarServido(indexPedido, nombre, tipo){
 
             let htmlMesaPendientes = "";
             let htmlMesaAtendidos = "";
+            let htmlAlistarPendientes = "";
+            let htmlAlistarAtendidos = "";
 
             // 🔥 ORDEN VISUAL SEGURO (sin tocar el array)
             const ordenIndices = [
@@ -1637,11 +1703,12 @@ function marcarServido(indexPedido, nombre, tipo){
 
               <b>
               #${i+1} | ${p.tipo.toUpperCase()} | ${(p.mesa||"-").toUpperCase()}
-              ${p.tipo === "mesa" && p.hora ? ` | 🕒 ${p.hora}` : ""}
+              ${p.hora ? ` | 🕒 ${p.hora}` : ""}
               </b>
               `;
 
-              if(p.tipo === "mesa"){
+              // Lógica para MESA y ALISTAR (ambos se atienden)
+              if(p.tipo === "mesa" || p.tipo === "alistar"){
 
                 bloque += `
                 <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
@@ -1652,7 +1719,7 @@ function marcarServido(indexPedido, nombre, tipo){
       data-atendido="${p.atendido ? '1' : '0'}"
       data-tiempofinal="${p.tiempoFinal || ''}"
       style="font-weight:bold;color:#c40000">
-${p.tiempoFinal ? p.tiempoFinal : "00:00"}
+ ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
 </span>
 
                   ${!p.atendido ? `
@@ -1682,12 +1749,22 @@ ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
                 `;
 
               } else {
+                // Lógica para RESERVA y LLEVAR (programados)
 
                 if(p.tipo === "reserva"){
                   bloque += `
                     <button onclick="pasarAMesa(${i})"
                       style="background:#4CAF50;color:white;margin-right:6px">
                       ➜ Pasar a Mesa
+                    </button>
+                  `;
+                }
+
+                if(p.tipo === "llevar"){
+                  bloque += `
+                    <button onclick="pasarAlistar(${i})"
+                      style="background:#FF9800;color:white;margin-right:6px">
+                      ⏱ ALISTAR
                     </button>
                   `;
                 }
@@ -1711,7 +1788,8 @@ ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
 
               }
 
-                if(p.convertidoDesde === "reserva"){
+                // Avisos de conversión
+                if(p.convertidoDesde === "reserva" && p.nombreReserva){
                   bloque += `
                     <div style="
                       background:#ff9800;
@@ -1726,6 +1804,20 @@ ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
                   `;
                 }
 
+                if(p.convertidoDesde === "llevar" && p.nombreLlevar){
+                  bloque += `
+                    <div style="
+                      background:#2196F3;
+                      color:white;
+                      padding:6px;
+                      margin-top:6px;
+                      font-weight:bold;
+                      border-radius:4px;
+                    ">
+                      🥡 PARA LLEVAR: ${p.nombreLlevar}
+                    </div>
+                  `;
+                }
 
 
               if(!p.colapsado || p.atendido){
@@ -1751,42 +1843,84 @@ ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
 
               bloque+=`</div>`;
 
+                // Clasificación en secciones
                 if(p.tipo==="mesa"){
-
                   if(p.atendido){
                     htmlMesaAtendidos += bloque;
                   } else {
                     htmlMesaPendientes += bloque;
                   }
-
                 }
-              if(p.tipo==="reserva") htmlReserva+=bloque;
-              if(p.tipo==="llevar") htmlLlevar+=bloque;
+                if(p.tipo==="reserva") htmlReserva+=bloque;
+                if(p.tipo==="llevar") htmlLlevar+=bloque;
+                
+                // SEPARACIÓN DE ALISTAR
+                if(p.tipo==="alistar") {
+                   if(p.atendido){
+                    htmlAlistarAtendidos += bloque;
+                   } else {
+                    htmlAlistarPendientes += bloque;
+                   }
+                }
 
             });
 
+            // Rellenar MESA
             document.getElementById("seccion_mesa").innerHTML = `
 
               ${htmlMesaPendientes}
 
               ${htmlMesaAtendidos ? `
                 <div style="margin-top:20px;text-align:center">
-                  <button onclick="toggleAtendidos()"
+                  <button onclick="toggleAtendidos('mesa')"
                     style="padding:8px 14px;border-radius:8px;background:#444;color:white">
                     📂 Ver pedidos atendidos
                   </button>
 
-                  <div id="listaAtendidos" style="display:${mostrarAtendidos ? 'block' : 'none'};margin-top:15px">
+                  <div id="listaAtendidosMesa" style="display:${mostrarAtendidosMesa ? 'block' : 'none'};margin-top:15px">
                     ${htmlMesaAtendidos}
                   </div>
                 </div>
               ` : ""}
 
             `;
+            
+            // Rellenar ALISTAR
+            document.getElementById("seccion_alistar").innerHTML = `
+
+              ${htmlAlistarPendientes}
+
+              ${htmlAlistarAtendidos ? `
+                <div style="margin-top:20px;text-align:center">
+                  <button onclick="toggleAtendidos('alistar')"
+                    style="padding:8px 14px;border-radius:8px;background:#444;color:white">
+                    📂 Ver pedidos atendidos
+                  </button>
+
+                  <div id="listaAtendidosAlistar" style="display:${mostrarAtendidosAlistar ? 'block' : 'none'};margin-top:15px">
+                    ${htmlAlistarAtendidos}
+                  </div>
+                </div>
+              ` : ""}
+
+            `;
+            
             document.getElementById("seccion_reserva").innerHTML=htmlReserva;
             document.getElementById("seccion_llevar").innerHTML=htmlLlevar;
-            
-            mostrarSeccionPedidos("mesa");
+
+            // Refrescar la vista actual si ya estamos en una sección
+            // Esto es para que el contenido se actualice si estamos mirando la lista
+            const contenedor = document.getElementById("contenedorPedidos");
+            const h3 = contenedor.querySelector("h3");
+            if(h3){
+              if(h3.innerText.includes("Mesa")) mostrarSeccionPedidos('mesa');
+              else if(h3.innerText.includes("Reserva")) mostrarSeccionPedidos('reserva');
+              else if(h3.innerText.includes("Llevar")) mostrarSeccionPedidos('llevar');
+              else if(h3.innerText.includes("Alistar")) mostrarSeccionPedidos('alistar');
+            } else {
+                mostrarSeccionPedidos("mesa"); // Default
+            }
+
           }
 
 
@@ -1799,14 +1933,16 @@ ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
               titulo = "🍽️ Mesa";
               contenido = document.getElementById("seccion_mesa").innerHTML;
             }
-
-            if(tipo === "reserva"){
+            else if(tipo === "alistar"){
+              titulo = "👨‍🍳 Alistar";
+              contenido = document.getElementById("seccion_alistar").innerHTML;
+            }
+            else if(tipo === "reserva"){
               titulo = "📅 Reserva";
               contenido = document.getElementById("seccion_reserva").innerHTML;
             }
-
-            if(tipo === "llevar"){
-              titulo = "🥡 Llevar";
+            else if(tipo === "llevar"){
+              titulo = "🥡 Llevar (Programado)";
               contenido = document.getElementById("seccion_llevar").innerHTML;
             }
 
@@ -1821,12 +1957,13 @@ ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
             `;
 
             // activar botón visual
-            document.querySelectorAll("#btnMesaPedidos,#btnReservaPedidos,#btnLlevarPedidos")
+            document.querySelectorAll("#btnMesaPedidos,#btnReservaPedidos,#btnLlevarPedidos,#btnAlistarPedidos")
               .forEach(b=>b.classList.remove("activo"));
 
             if(tipo==="mesa") document.getElementById("btnMesaPedidos").classList.add("activo");
             if(tipo==="reserva") document.getElementById("btnReservaPedidos").classList.add("activo");
             if(tipo==="llevar") document.getElementById("btnLlevarPedidos").classList.add("activo");
+            if(tipo==="alistar") document.getElementById("btnAlistarPedidos").classList.add("activo");
 
           }
 
@@ -2009,10 +2146,6 @@ ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
             pedidos[index].atendido = true;
             pedidos[index].colapsado = true;
 
-            // ❌ ELIMINAMOS ESTO:
-            // const pedidoFinalizado = pedidos.splice(index,1)[0];
-            // pedidos.push(pedidoFinalizado);
-
             guardarHistorial();
             mostrar();
           }
@@ -2028,9 +2161,10 @@ ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
             mostrar();
           }
 
-            function toggleAtendidos(){
-              mostrarAtendidos = !mostrarAtendidos;
-              mostrar();
+            function toggleAtendidos(tipo){
+                if(tipo === 'mesa') mostrarAtendidosMesa = !mostrarAtendidosMesa;
+                if(tipo === 'alistar') mostrarAtendidosAlistar = !mostrarAtendidosAlistar;
+                mostrar();
             }
 
 
@@ -2060,6 +2194,39 @@ ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
 
             guardarHistorial();
             mostrar();
+          }
+
+          /* =================================================
+            NUEVO: PASAR A ALISTAR (Llevar -> Alistar)
+          ================================================= */
+          function pasarAlistar(index){
+
+            if(!confirm("¿Iniciar preparación para llevar?")) return;
+
+            const ahora = new Date();
+            const horaExacta = ahora.toLocaleTimeString("es-PE", {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            });
+
+            // 🔥 GUARDAR NOMBRE ORIGINAL DEL CLIENTE
+            pedidos[index].convertidoDesde = "llevar";
+            pedidos[index].nombreLlevar = pedidos[index].mesa;
+
+            // 🔥 CAMBIAR A ALISTAR
+            pedidos[index].tipo = "alistar";
+            // Mantenemos el nombre del cliente en 'mesa' para referencia, pero el tipo cambia
+            pedidos[index].hora = horaExacta;
+            pedidos[index].horaRegistro = Date.now();
+            pedidos[index].atendido = false;
+            pedidos[index].colapsado = false;
+
+            guardarHistorial();
+            mostrar();
+            
+            // 👉 FORZAR EL CAMBIO DE VISTA A "ALISTAR" PARA QUE EL USUARIO VEA EL CAMBIO
+            mostrarSeccionPedidos('alistar');
           }
 
 
@@ -2195,9 +2362,16 @@ setInterval(() => {
 
           async function descargarWordTipo(tipoFiltrado){
 
-            const pedidosFiltrados = pedidos.filter(p=>p.tipo===tipoFiltrado);
+            let listaImprimir = [];
 
-            if(pedidosFiltrados.length===0){
+            if(tipoFiltrado === "alistar" || tipoFiltrado === "mesa"){
+               // Combinamos ambos para imprimir la tanda de cocina
+               listaImprimir = pedidos.filter(p=> (p.tipo === "mesa" || p.tipo === "alistar") && !p.atendido);
+            } else {
+               listaImprimir = pedidos.filter(p=>p.tipo===tipoFiltrado);
+            }
+
+            if(listaImprimir.length===0){
               alert("No hay pedidos en esta sección");
               return;
             }
@@ -2218,7 +2392,7 @@ setInterval(() => {
 
             let columnasPedidos = Array.from({length:COLUMNAS},()=>[]);
 
-            pedidosFiltrados.forEach((p,i)=>{
+            listaImprimir.forEach((p,i)=>{
               columnasPedidos[i % COLUMNAS].push(p);
             });
 
@@ -2244,6 +2418,20 @@ setInterval(() => {
                           text:(pedido.mesa||"SIN NOMBRE").toUpperCase(),
                           bold:true,
                           size:30
+                        })
+                      ],
+                      spacing:{ after:100 }
+                    })
+                  );
+
+                  // Añadir tipo para diferenciar en impresión
+                  contenido.push(
+                     new Paragraph({
+                      children:[
+                        new TextRun({
+                          text:pedido.tipo.toUpperCase(),
+                          color:"999999",
+                          size:20
                         })
                       ],
                       spacing:{ after:100 }
@@ -2330,7 +2518,7 @@ setInterval(() => {
 </div>
 
 <div id="vista_cocina" style="display:none">
-  <h2>👨‍🍳 Cocina</h2>
+  <h2 style="background:#222;color:white;padding:15px;margin:0;border-bottom:5px solid #FFC107">👨‍🍳 COCINA - PEDIDOS ACTIVOS</h2>
   <div id="cocina_contenido"></div>
 </div>
 
