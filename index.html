@@ -485,6 +485,13 @@ button:hover{
           <div id="segundos"></div>
           </div>
 
+          <div style="padding:10px">
+            <button class="big" onclick="registrarPedido()">
+              ✅ Registrar pedido
+            </button>
+          </div>
+
+
           </div>
 
           <!-- EXTRAS COMIDA -->
@@ -751,12 +758,19 @@ function mostrarCocina(){
 
     if(p.tipo==="mesa" && !p.atendido){
 
-      html+=`
-        <div class="pedido" id="pedido_${i}">
+        let tituloMesa = `🍽️ MESA ${p.mesa}`;
 
-          <div style="font-size:26px;font-weight:bold;margin-bottom:10px">
-            🍽️ MESA ${p.mesa}
-          </div>
+        if(p.tipoOriginal === "reserva" || p.reservaNombre || p.nombreReserva){
+          const nombre = p.reservaNombre || p.nombreReserva || "";
+          tituloMesa += `<br><span style="color:#c40000;font-weight:bold">⚠️ RESERVA: ${nombre}</span>`;
+        }
+
+        html+=`
+          <div class="pedido" id="pedido_${i}">
+
+            <div style="font-size:26px;font-weight:bold;margin-bottom:10px">
+              ${tituloMesa}
+            </div>
 
         
             ⏱ 
