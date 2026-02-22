@@ -295,11 +295,114 @@ button:hover{
 
 }
 
+.cuadro-servir{
+  display:inline-block;
+  width:18px;
+  height:18px;
+  border:2px solid #8B0000;
+  margin-left:4px;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+.cuadro-servir.servido{
+  background:#8B0000;
+}
+
+.login-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #7b2ff7, #f107a3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.login-box {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.login-box h2 {
+  margin-bottom: 5px;
+  color: #7b2ff7;
+}
+
+.subtitulo {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.login-box input:focus {
+  outline: none;
+  border-color: #7b2ff7;
+}
+
+.login-box button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #7b2ff7;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-box button:hover {
+  background: #5f22c5;
+}
+
+#mensajeError {
+  margin-top: 10px;
+  color: red;
+  font-size: 13px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 </style>
 </head>
 
 <body>
+
+<div id="loginPantalla" class="login-container">
+  <div class="login-box">
+    <h2>🔐 EL MISTI</h2>
+    <p class="subtitulo">Sistema de Gestión</p>
+
+    <input type="password" id="inputClave" placeholder="Ingrese contraseña">
+    <button onclick="verificarClave()">Ingresar</button>
+
+    <p id="mensajeError"></p>
+  </div>
+</div>
+
+<div id="sistema" style="display:none;">
+
 
 <header>🍽️ EL MISTI - Registro de Pedidos</header>
 
@@ -423,39 +526,19 @@ button:hover{
 
           <h2>📋 Pedidos del día</h2>
 
-          <!-- MESA -->
-          <div class="card">
-            <h3>
-              🍽️ Mesa 
-              <button class="btn" onclick="descargarWordTipo('mesa')">
-                📄 Imprimir
-              </button>
-            </h3>
-            <div id="seccion_mesa"></div>
+          <div style="display:flex;gap:10px;margin-bottom:15px">
+            <button onclick="mostrarSeccionPedidos('mesa')" id="btnMesaPedidos">🍽 Mesa</button>
+            <button onclick="mostrarSeccionPedidos('reserva')" id="btnReservaPedidos">📅 Reserva</button>
+            <button onclick="mostrarSeccionPedidos('llevar')" id="btnLlevarPedidos">🥡 Llevar</button>
           </div>
+          
+            <div style="display:none">
+              <div id="seccion_mesa"></div>
+              <div id="seccion_reserva"></div>
+              <div id="seccion_llevar"></div>
+            </div>
 
-          <!-- RESERVA -->
-          <div class="card">
-            <h3>
-              📅 Reserva 
-              <button class="btn" onclick="descargarWordTipo('reserva')">
-                📄 Imprimir
-              </button>
-            </h3>
-            <div id="seccion_reserva"></div>
-          </div>
-
-          <!-- LLEVAR -->
-          <div class="card">
-            <h3>
-              🥡 Llevar 
-              <button class="btn" onclick="descargarWordTipo('llevar')">
-                📄 Imprimir
-              </button>
-            </h3>
-            <div id="seccion_llevar"></div>
-          </div>
-
+              <div id="contenedorPedidos" class="card"></div>
 
 
           </section>
@@ -468,6 +551,34 @@ button:hover{
 
 
           <script>
+
+const CLAVE_PRINCIPAL = "MISTI2026";
+
+function verificarClave() {
+
+  const clave = document.getElementById("inputClave").value;
+
+  if (clave === CLAVE_PRINCIPAL) {
+
+    const ahora = new Date();
+    const expiracion = new Date();
+
+    expiracion.setHours(17, 0, 0, 0); // 5:00 PM
+
+    if (ahora > expiracion) {
+      alert("Ya pasó la hora límite de acceso.");
+      return;
+    }
+
+    localStorage.setItem("sesionActiva", "true");
+    localStorage.setItem("expiraEn", expiracion.getTime());
+
+    mostrarSistema();
+
+  } else {
+    document.getElementById("mensajeError").innerText = "Contraseña incorrecta";
+  }
+}
 
             // 🔥 CONFIG FIREBASE
           const firebaseConfig = {
@@ -484,29 +595,66 @@ button:hover{
           firebase.initializeApp(firebaseConfig);
           const db = firebase.firestore();
 
+
+function mostrarSistema() {
+  document.getElementById("loginPantalla").style.display = "none";
+  document.getElementById("sistema").style.display = "block";
+
+  // 🔥 recuperar última vista guardada
+  const vistaGuardada = localStorage.getItem("vistaActualMisti");
+
+  if (vistaGuardada) {
+    cambiarVista(vistaGuardada);
+  } else {
+    cambiarVista("meseros"); // por defecto meseros
+  }
+}
+
+
+// Verificar sesión al cargar página
+window.onload = function() {
+  const sesion = localStorage.getItem("sesionActiva");
+  const expiraEn = localStorage.getItem("expiraEn");
+
+  if (sesion === "true" && expiraEn) {
+    const ahora = new Date().getTime();
+
+    if (ahora < parseInt(expiraEn)) {
+      mostrarSistema();
+    } else {
+      localStorage.removeItem("sesionActiva");
+      localStorage.removeItem("expiraEn");
+    }
+  }
+};
+
+
           /* =================================================
             🔥 STOCK EN TIEMPO REAL DESDE FIRESTORE
           ================================================= */
 
-          function cambiarVista(vista){
+function cambiarVista(vista){
 
-            vistaActual = vista;
+  vistaActual = vista;
+  localStorage.setItem("vistaActualMisti", vista);
 
-            document.getElementById("vista_meseros").style.display = "none";
-            document.getElementById("vista_cocina").style.display = "none";
-            document.getElementById("vista_clientes").style.display = "none";
+  document.getElementById("vista_meseros").style.display = "none";
+  document.getElementById("vista_cocina").style.display = "none";
+  document.getElementById("vista_clientes").style.display = "none";
 
-            if(vista==="meseros")
-              document.getElementById("vista_meseros").style.display = "block";
+  if(vista==="meseros")
+    document.getElementById("vista_meseros").style.display = "block";
 
-            if(vista==="cocina")
-              document.getElementById("vista_cocina").style.display = "block";
+  if(vista==="cocina")
+    document.getElementById("vista_cocina").style.display = "block";
 
-            if(vista==="clientes")
-              document.getElementById("vista_clientes").style.display = "block";
+  if(vista==="clientes")
+    document.getElementById("vista_clientes").style.display = "block";
 
-            mostrar(); // vuelve a renderizar según vista
-            }
+  mostrar();
+}
+
+
 
 
 function mostrarCocina(){
@@ -518,25 +666,49 @@ function mostrarCocina(){
 
   pedidosMesa.forEach(p=>{
 
-    p.detalleEntradas.forEach(item=>{
-      const partes = item.split(" - ");
-      const cantidad = parseInt(partes[0]) || 0;
-      const nombre = partes[1]?.split("|")[0].trim();
+      p.detalleEntradas.forEach(item=>{
+        const partes = item.split(" - ");
+        const cantidad = parseInt(partes[0]) || 0;
+        const nombre = partes[1]?.split("|")[0].trim();
 
-      if(nombre){
-        acumuladoEntradas[nombre] = (acumuladoEntradas[nombre] || 0) + cantidad;
-      }
-    });
+        if(nombre){
 
-    p.detalleSegundos.forEach(item=>{
-      const partes = item.split(" - ");
-      const cantidad = parseInt(partes[0]) || 0;
-      const nombre = partes[1]?.split("|")[0].trim();
+          const servidos =
+            p.servidos?.entrada?.[nombre]
+              ? p.servidos.entrada[nombre].length
+              : 0;
 
-      if(nombre){
-        acumuladoSegundos[nombre] = (acumuladoSegundos[nombre] || 0) + cantidad;
-      }
-    });
+          const pendiente = cantidad - servidos;
+
+          if(pendiente > 0){
+            acumuladoEntradas[nombre] =
+              (acumuladoEntradas[nombre] || 0) + pendiente;
+          }
+
+        }
+      });
+
+      p.detalleSegundos.forEach(item=>{
+        const partes = item.split(" - ");
+        const cantidad = parseInt(partes[0]) || 0;
+        const nombre = partes[1]?.split("|")[0].trim();
+
+        if(nombre){
+
+          const servidos =
+            p.servidos?.segundo?.[nombre]
+              ? p.servidos.segundo[nombre].length
+              : 0;
+
+          const pendiente = cantidad - servidos;
+
+          if(pendiente > 0){
+            acumuladoSegundos[nombre] =
+              (acumuladoSegundos[nombre] || 0) + pendiente;
+          }
+
+        }
+      });
 
   });
 
@@ -586,15 +758,17 @@ function mostrarCocina(){
             🍽️ MESA ${p.mesa}
           </div>
 
-          ⏱ 
-          <span id="timer_${i}" style="font-weight:bold;color:#c40000">
-            00:00
-          </span>
-
+        
+            ⏱ 
+            <span class="timer"
+                  data-hora="${p.horaRegistro || ''}"
+                  data-atendido="${p.atendido ? '1' : '0'}"
+                  style="font-weight:bold;color:#c40000">
+              00:00
+            </span>
           <br><br>
 
           ${p.detalleEntradas.length ? "<b>Entradas:</b><br>"+p.detalleEntradas.join("<br>")+"<br><br>" : ""}
-
           ${p.detalleSegundos.length ? "<b>Segundos:</b><br>"+p.detalleSegundos.join("<br>")+"<br><br>" : ""}
 
         </div>
@@ -606,9 +780,151 @@ function mostrarCocina(){
   document.getElementById("cocina_contenido").innerHTML = html;
 }
 
+function dibujarItemsMesero(lista, indexPedido, tipo){
+
+  let html = "";
+
+  lista.forEach((item, indexItem) => {
+
+    let partes = item.split(" - ");
+    let cantidad = parseInt(partes[0]);
+    let nombre = partes[1]?.split("|")[0].trim();
+
+    html += `
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:8px;
+      ">
+        
+        <div>
+          <b>${cantidad} - ${nombre}</b>
+        </div>
+
+        <div>
+    `;
+
+    for(let i=0;i<cantidad;i++){
+
+      const estaServido =
+        pedidos[indexPedido].servidos?.[tipo]?.[nombre]?.includes(i);
+
+      html += `
+        <span 
+          onclick="marcarEntregado(${indexPedido},'${tipo}',${indexItem},${i})"
+          id="chk_${indexPedido}_${tipo}_${indexItem}_${i}"
+          style="
+            display:inline-block;
+            width:18px;
+            height:18px;
+            border:2px solid #444;
+            margin-left:4px;
+            cursor:pointer;
+            background:${estaServido ? "green" : "transparent"};
+          ">
+        </span>
+      `;
+    }
+
+    html += `
+        </div>
+      </div>
+    `;
+  });
+
+  return html;
+}
+
+function marcarEntregado(pedidoIndex, tipo, itemIndex, cuadritoIndex){
+
+  let id = `chk_${pedidoIndex}_${tipo}_${itemIndex}_${cuadritoIndex}`;
+  let cuadro = document.getElementById(id);
+
+  if(!pedidos[pedidoIndex].servidos){
+    pedidos[pedidoIndex].servidos = {
+      entrada: {},
+      segundo: {}
+    };
+  }
+
+  const grupo = tipo; // "entrada" o "segundo"
+
+  const itemTexto = grupo === "entrada"
+    ? pedidos[pedidoIndex].detalleEntradas[itemIndex]
+    : pedidos[pedidoIndex].detalleSegundos[itemIndex];
+
+  const nombre = itemTexto.split(" - ")[1]?.split("|")[0].trim();
+
+  if(!pedidos[pedidoIndex].servidos[grupo][nombre]){
+    pedidos[pedidoIndex].servidos[grupo][nombre] = [];
+  }
+
+  if(cuadro.style.background === "green"){
+
+    cuadro.style.background = "";
+
+    pedidos[pedidoIndex].servidos[grupo][nombre] =
+      pedidos[pedidoIndex].servidos[grupo][nombre]
+      .filter(i => i !== cuadritoIndex);
+
+  }else{
+
+    cuadro.style.background = "green";
+
+    pedidos[pedidoIndex].servidos[grupo][nombre]
+      .push(cuadritoIndex);
+
+  }
+
+  guardarHistorial();
+  mostrar();
+
+  if(vistaActual === "cocina"){
+    mostrarCocina();
+  }
+
+}
 
 
-      
+
+function dibujarItemsConCuadros(lista, indexPedido, tipo){
+
+  if(!lista.length) return "";
+
+  let agrupado = {};
+
+  lista.forEach(item=>{
+    agrupado[item] = (agrupado[item] || 0) + 1;
+  });
+
+  let html = "";
+
+  Object.keys(agrupado).forEach(nombre=>{
+    let cantidad = agrupado[nombre];
+
+    html += `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+
+        <div>
+          ${cantidad} - ${nombre}
+        </div>
+
+        <div>
+          ${Array(cantidad).fill(0).map((_,c)=>`
+            <span class="cuadro-servir"
+                  onclick="marcarServido(${indexPedido}, '${nombre}', '${tipo}')">
+            </span>
+          `).join("")}
+        </div>
+
+      </div>
+    `;
+  });
+
+  return html + "<br>";
+}
+
 
 function mostrarClientes(){
 
@@ -698,7 +1014,22 @@ function mostrarClientes(){
 }
 
 
+function marcarServido(indexPedido, nombre, tipo){
 
+  let pedido = pedidos[indexPedido];
+
+  let lista = tipo==="entrada" 
+    ? pedido.detalleEntradas 
+    : pedido.detalleSegundos;
+
+  let indexItem = lista.indexOf(nombre);
+
+  if(indexItem !== -1){
+    lista.splice(indexItem,1);
+  }
+
+  mostrar();
+}
 
 
 
@@ -715,11 +1046,15 @@ function mostrarClientes(){
                 .doc(id);
 
               // 🔥 crear documento si no existe
-              ref.set({
-                inicial: 0,
-                vendido: 0,
-                nombre: ""
-              }, { merge:true });
+              ref.get().then(doc=>{
+                if(!doc.exists){
+                  ref.set({
+                    inicial: 0,
+                    vendido: 0,
+                    nombre: ""
+                  });
+                }
+              });
 
               // 🔥 escuchar individualmente
               ref.onSnapshot(doc=>{
@@ -764,6 +1099,13 @@ function mostrarClientes(){
           }
 
 
+
+          function obtenerCantidad(texto){
+            return parseInt(texto.split(" - ")[0]);
+          }
+
+
+
           /* =================================================
             CANTIDADES FIJAS (LO ÚNICO NUEVO)
           ================================================= */
@@ -787,13 +1129,29 @@ function mostrarClientes(){
           ];
 
           let pedidos = [];
+          let vistaActual = "meseros";
+          let mostrarAtendidos = false;
 
           db.collection("pedidos").doc("diaActual")
           .onSnapshot((doc) => {
-            if(doc.exists){
-              pedidos = doc.data().lista || [];
+
+            if(!doc.exists) return;
+
+            const nuevaLista = doc.data().lista || [];
+
+            // 🔥 SOLO redibujar si cambió cantidad de pedidos
+            if(nuevaLista.length !== pedidos.length){
+
+              pedidos = nuevaLista;
               mostrar();
+
+            } else {
+
+              // 🔥 SOLO actualizar datos sin reconstruir HTML
+              pedidos = nuevaLista;
+
             }
+
           });
 
           /* =================================================
@@ -808,9 +1166,7 @@ function mostrarClientes(){
 
               const key=prefijo+i;
           
-              const inicialGuardado = localStorage.getItem(key+"-inicial") || 0;
-              const vendidoGuardado = localStorage.getItem(key+"-vendido") || 0;
-              const disponible = inicialGuardado - vendidoGuardado;
+                const disponible = 0;
 
               div.innerHTML+=`
             <div class="item" style="display:flex;align-items:center;gap:10px">
@@ -1249,6 +1605,9 @@ function mostrarClientes(){
             let htmlReserva="";
             let htmlLlevar="";
 
+            let htmlMesaPendientes = "";
+            let htmlMesaAtendidos = "";
+
             // 🔥 ORDEN VISUAL SEGURO (sin tocar el array)
             const ordenIndices = [
               ...pedidos.map((p,i)=> !p.atendido ? i : null).filter(i=>i!==null),
@@ -1274,9 +1633,13 @@ function mostrarClientes(){
                 <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
 
                   ⏱ Tiempo: 
-                  <span id="timer_${i}" style="font-weight:bold;color:#c40000">
-                  ${p.atendido ? p.tiempoFinal : "00:00"}
-                  </span>
+<span class="timer"
+      data-hora="${p.horaRegistro || ''}"
+      data-atendido="${p.atendido ? '1' : '0'}"
+      data-tiempofinal="${p.tiempoFinal || ''}"
+      style="font-weight:bold;color:#c40000">
+${p.tiempoFinal ? p.tiempoFinal : "00:00"}
+</span>
 
                   ${!p.atendido ? `
                   <button onclick="marcarAtendido(${i})" 
@@ -1351,25 +1714,17 @@ function mostrarClientes(){
 
 
 
-              if(!p.colapsado){
+              if(!p.colapsado || p.atendido){
 
                 if(p.detalleEntradas.length)
                   bloque+=`<b>Entradas:</b><br>${
-                    p.detalleEntradas
-                    .map(x=>x.replace("NOTA:",
-                      "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
-                    ))
-                    .join("<br>")
-                  }<br><br>`;
+                    dibujarItemsMesero(p.detalleEntradas, i, "entrada")
+                  }<br>`;
 
                 if(p.detalleSegundos.length)
                   bloque+=`<b>Segundos:</b><br>${
-                    p.detalleSegundos
-                    .map(x=>x.replace("NOTA:",
-                      "<span style='color:#c40000;font-weight:bold'>NOTA:</span>"
-                    ))
-                    .join("<br>")
-                  }<br><br>`;
+                    dibujarItemsMesero(p.detalleSegundos, i, "segundo")
+                  }<br>`;
 
                 if(p.detalleExtras.length)
                   bloque+=`<b>Extras:</b><br>${p.detalleExtras.join("<br>")}<br><br>`;
@@ -1382,18 +1737,84 @@ function mostrarClientes(){
 
               bloque+=`</div>`;
 
-              if(p.tipo==="mesa") htmlMesa+=bloque;
+                if(p.tipo==="mesa"){
+
+                  if(p.atendido){
+                    htmlMesaAtendidos += bloque;
+                  } else {
+                    htmlMesaPendientes += bloque;
+                  }
+
+                }
               if(p.tipo==="reserva") htmlReserva+=bloque;
               if(p.tipo==="llevar") htmlLlevar+=bloque;
 
             });
 
-            document.getElementById("seccion_mesa").innerHTML=htmlMesa;
+            document.getElementById("seccion_mesa").innerHTML = `
+
+              ${htmlMesaPendientes}
+
+              ${htmlMesaAtendidos ? `
+                <div style="margin-top:20px;text-align:center">
+                  <button onclick="toggleAtendidos()"
+                    style="padding:8px 14px;border-radius:8px;background:#444;color:white">
+                    📂 Ver pedidos atendidos
+                  </button>
+
+                  <div id="listaAtendidos" style="display:${mostrarAtendidos ? 'block' : 'none'};margin-top:15px">
+                    ${htmlMesaAtendidos}
+                  </div>
+                </div>
+              ` : ""}
+
+            `;
             document.getElementById("seccion_reserva").innerHTML=htmlReserva;
             document.getElementById("seccion_llevar").innerHTML=htmlLlevar;
+            
+            mostrarSeccionPedidos("mesa");
           }
 
 
+          function mostrarSeccionPedidos(tipo){
+
+            let titulo = "";
+            let contenido = "";
+
+            if(tipo === "mesa"){
+              titulo = "🍽️ Mesa";
+              contenido = document.getElementById("seccion_mesa").innerHTML;
+            }
+
+            if(tipo === "reserva"){
+              titulo = "📅 Reserva";
+              contenido = document.getElementById("seccion_reserva").innerHTML;
+            }
+
+            if(tipo === "llevar"){
+              titulo = "🥡 Llevar";
+              contenido = document.getElementById("seccion_llevar").innerHTML;
+            }
+
+            document.getElementById("contenedorPedidos").innerHTML = `
+              <h3>
+                ${titulo}
+                <button class="btn" onclick="descargarWordTipo('${tipo}')">
+                  📄 Imprimir
+                </button>
+              </h3>
+              ${contenido}
+            `;
+
+            // activar botón visual
+            document.querySelectorAll("#btnMesaPedidos,#btnReservaPedidos,#btnLlevarPedidos")
+              .forEach(b=>b.classList.remove("activo"));
+
+            if(tipo==="mesa") document.getElementById("btnMesaPedidos").classList.add("activo");
+            if(tipo==="reserva") document.getElementById("btnReservaPedidos").classList.add("activo");
+            if(tipo==="llevar") document.getElementById("btnLlevarPedidos").classList.add("activo");
+
+          }
 
 
           function eliminar(index){
@@ -1505,18 +1926,20 @@ function mostrarClientes(){
 
           function reset(){
 
+            // 🔥 Solo reiniciar cantidades del pedido
             document.querySelectorAll(".qty").forEach(e=>e.value=0);
 
-            /* SOLO entradas */
+            // limpiar notas
             document.querySelectorAll("[id^='nota_E']").forEach(e=>e.value="");
-
-            /* SOLO segundos */
             document.querySelectorAll("[id^='nota_S']").forEach(e=>e.value="");
 
-            deliveryCosto.value=0;
-            mesa.value="";
-            calcularPreview();
+            // NO tocar nombres
+            // NO tocar INICIAL
+            // NO tocar stock
 
+            deliveryCosto.value=0;
+
+            calcularPreview();
           }
 
           function resetearDisponibles(){
@@ -1590,6 +2013,11 @@ function mostrarClientes(){
             guardarHistorial();
             mostrar();
           }
+
+            function toggleAtendidos(){
+              mostrarAtendidos = !mostrarAtendidos;
+              mostrar();
+            }
 
 
           function pasarAMesa(index){
@@ -1679,54 +2107,57 @@ function mostrarClientes(){
 
 
           // 🔥 TEMPORIZADOR GLOBAL (actualiza cada segundo)
-          setInterval(()=>{
+setInterval(() => {
 
-            pedidos.forEach((p,i)=>{
+  document.querySelectorAll(".timer").forEach(timer => {
 
-              if(p.tipo === "mesa" && p.horaRegistro && !p.atendido){
+    const hora = timer.dataset.hora;
+    const atendido = timer.dataset.atendido;
 
+    if (atendido === "1") {
 
-                const span = document.getElementById("timer_"+i);
-                const pedidoBox = document.getElementById("pedido_"+i);
+    const final = timer.dataset.tiempofinal;
+    if (final) {
+      timer.textContent = final;
+    }
 
-                if(!span || !pedidoBox) return;
+    return;
+  }
 
-                const ahora = Date.now();
-                const diff = ahora - p.horaRegistro;
+  if (!hora) return;
 
-                const minutos = Math.floor(diff / 60000);
-                const segundos = Math.floor((diff % 60000) / 1000);
+    const diff = Date.now() - Number(hora);
 
-                span.innerText =
-                  `${minutos.toString().padStart(2,"0")}:`+
-                  `${segundos.toString().padStart(2,"0")}`;
+    const minutos = Math.floor(diff / 60000);
+    const segundos = Math.floor((diff % 60000) / 1000);
 
-                // 🎨 CAMBIO VISUAL DEL BLOQUE COMPLETO
-                if(p.atendido){
-                  pedidoBox.style.background = "#f8f9fa";
-                  pedidoBox.style.borderLeft = "6px solid gray";
-                  return;
-                }
+    const tiempo =
+      minutos.toString().padStart(2,"0") + ":" +
+      segundos.toString().padStart(2,"0");
 
-                if(minutos < 5){
-                  pedidoBox.style.background = "#e9f7ef";
-                  pedidoBox.style.borderLeft = "6px solid #28a745";
-                }
-                else if(minutos < 10){
-                  pedidoBox.style.background = "#fff8e1";
-                  pedidoBox.style.borderLeft = "6px solid #ff9800";
-                }
-                else{
-                  pedidoBox.style.background = "#fdecea";
-                  pedidoBox.style.borderLeft = "6px solid #dc3545";
-                }
+    timer.textContent = tiempo;
 
-              }
+    // 🔥 PINTAR EL CUADRITO SEGÚN URGENCIA
+      const pedidoBox = timer.closest(".pedido");
 
-            });
+      if (pedidoBox) {
 
-          },1000);
+        if (minutos < 5) {
+          pedidoBox.style.background = "#C8E6C9";   // verde suave
+        } 
+        else if (minutos < 10) {
+          pedidoBox.style.background = "#FFF9C4";   // amarillo suave
+        } 
+        else {
+          pedidoBox.style.background = "#FFCDD2";   // rojo suave
+        }
 
+        pedidoBox.style.color = "black";  // mantener letras negras
+      }
+
+  });
+
+}, 1000);
 
 
           // 🔥 restaurar tipo guardado
@@ -1738,7 +2169,13 @@ function mostrarClientes(){
           guardarTipo();
           actualizarBotonesTipo();
 
+          // 🔥 restaurar vista guardada
+          const vistaGuardada = localStorage.getItem("vistaActualMisti");
+          if(vistaGuardada){
+            vistaActual = vistaGuardada;
+          }
 
+          cambiarVista(vistaActual);
 
           deliveryCosto.addEventListener("input",calcularPreview);
 
@@ -1888,6 +2325,6 @@ function mostrarClientes(){
   <div style="text-align:center;font-size:80px;font-weight:bold" id="contador_clientes">0</div>
 </div>
 
-
+</div>
           </body>
           </html>
