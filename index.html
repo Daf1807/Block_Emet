@@ -535,6 +535,7 @@ button:hover{
             </button>
 
             <div class="colIni" style="width:30px">Ini</div>
+            <div style="width:30px">Disp</div>
             <div style="flex:1">Entradas</div>
 
           </div>
@@ -555,6 +556,7 @@ button:hover{
             </button>
 
             <div class="colIni" style="width:30px">Ini</div>
+            <div style="width:30px">Disp</div>
             <div style="flex:1">Segundos</div>
 
           </div>
@@ -1291,17 +1293,14 @@ function marcarServido(indexPedido, nombre, tipo){
 
             const nuevaLista = doc.data().lista || [];
 
-            // 🔥 SOLO redibujar si cambió cantidad de pedidos
-            if(nuevaLista.length !== pedidos.length){
+            // 🔥 CORRECCIÓN CRÍTICA DE SINCRONIZACIÓN
+            // Comparamos el contenido completo para detectar cambios de estado (atendido, colapsado, etc)
+            const datosViejos = JSON.stringify(pedidos);
+            const datosNuevos = JSON.stringify(nuevaLista);
 
-              pedidos = nuevaLista;
-              mostrar();
-
-            } else {
-
-              // 🔥 SOLO actualizar datos sin reconstruir HTML
-              pedidos = nuevaLista;
-
+            if(datosViejos !== datosNuevos){
+                pedidos = nuevaLista;
+                mostrar(); // Redibujar SIEMPRE que haya cambios reales
             }
 
           });
@@ -2236,9 +2235,10 @@ function marcarServido(indexPedido, nombre, tipo){
 
           function marcarAtendido(index){
 
+            // 🔥 ACTUALIZACIÓN LOCAL INMEDIATA (Optimista)
+            // Primero actualizamos la vista local para que se sienta rápido
             const ahora = Date.now();
             const inicio = pedidos[index].horaRegistro;
-
             const diff = ahora - inicio;
 
             const minutos = Math.floor(diff / 60000);
@@ -2251,8 +2251,11 @@ function marcarServido(indexPedido, nombre, tipo){
             pedidos[index].atendido = true;
             pedidos[index].colapsado = true;
 
+            // Redibujar localmente ANTES de guardar en Firebase
+            mostrar(); 
+
+            // Luego guardar en Firebase para sincronizar con otros dispositivos
             guardarHistorial();
-            mostrar();
           }
 
 
