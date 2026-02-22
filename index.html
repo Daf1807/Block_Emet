@@ -747,7 +747,7 @@ function cambiarVista(vista){
 
 
 /* =================================================
-  🔥 NUEVA LÓGICA COCINA: MESA + ALISTAR
+  🔥 NUEVA LÓGICA COCINA: MESA + ALISTAR + CUADROS
 ================================================= */
 function mostrarCocina(){
 
@@ -761,7 +761,7 @@ function mostrarCocina(){
   let acumuladoSegundosLlevar = {};
 
   // Función auxiliar para procesar items
-  const procesarItems = (lista, mapTotales, esLlevar) => {
+  const procesarItems = (lista, pedido, mapTotales, tipoGrupo) => {
     
     // Objeto temporal para agrupar notas
     // mapTotales[nombre] = { total: 10, notas: { "POCO ARROZ": 2, "SIN PAPA": 1 } }
@@ -779,15 +779,14 @@ function mostrarCocina(){
         nota = nombreCompleto.split("| NOTA:")[1].trim();
       }
 
-      // Calcular servidos
-      const servidos = 0; // Simplificado para acumulado (se basa en total activo)
-      
-      const pendiente = cantidad - servidos; // En acumulado asumimos todo pendiente de cocina hasta que se atiende el pedido entero
-      // CORRECCIÓN: El usuario dijo "CADA VEZ QUE SE ATIENDE LOS PEDIDIOS SE DESCUENTA DE L ACUMULADO".
-      // Para el acumulado, debemos usar la cantidad TOTAL del item activo, ya que si es activo no está atendido.
-      // La lógica de servidos individuales (checkbox) es para detalle visual, pero para "Acumulado de Cocina"
-      // generalmente queremos cuantos totales hay en la cola.
-      
+      // 🔥 CORRECCIÓN: Calcular servidos individuales de ESTE pedido específico
+      let servidos = 0;
+      if(pedido.servidos && pedido.servidos[tipoGrupo] && pedido.servidos[tipoGrupo][nombreBase]){
+          servidos = pedido.servidos[tipoGrupo][nombreBase].length;
+      }
+
+      const pendiente = cantidad - servidos;
+
       if(pendiente > 0){
         if(!mapTotales[nombreBase]){
             mapTotales[nombreBase] = { total: 0, notas: {} };
@@ -810,8 +809,8 @@ function mostrarCocina(){
     const mapEntradas = esLlevar ? acumuladoEntradasLlevar : acumuladoEntradasSalon;
     const mapSegundos = esLlevar ? acumuladoSegundosLlevar : acumuladoSegundosSalon;
 
-    procesarItems(p.detalleEntradas, mapEntradas, esLlevar);
-    procesarItems(p.detalleSegundos, mapSegundos, esLlevar);
+    procesarItems(p.detalleEntradas, p, mapEntradas, 'entrada');
+    procesarItems(p.detalleSegundos, p, mapSegundos, 'segundo');
   });
 
   // Renderizar Acumulados
@@ -2235,10 +2234,9 @@ function marcarServido(indexPedido, nombre, tipo){
 
           function marcarAtendido(index){
 
-            // 🔥 ACTUALIZACIÓN LOCAL INMEDIATA (Optimista)
-            // Primero actualizamos la vista local para que se sienta rápido
             const ahora = Date.now();
             const inicio = pedidos[index].horaRegistro;
+
             const diff = ahora - inicio;
 
             const minutos = Math.floor(diff / 60000);
@@ -2251,11 +2249,8 @@ function marcarServido(indexPedido, nombre, tipo){
             pedidos[index].atendido = true;
             pedidos[index].colapsado = true;
 
-            // Redibujar localmente ANTES de guardar en Firebase
-            mostrar(); 
-
-            // Luego guardar en Firebase para sincronizar con otros dispositivos
             guardarHistorial();
+            mostrar();
           }
 
 
