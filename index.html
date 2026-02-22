@@ -1588,7 +1588,9 @@ function marcarServido(indexPedido, nombre, tipo){
             if(!confirm("¿Eliminar TODOS los pedidos del día?")) return;
 
             pedidos = [];
-            localStorage.removeItem("pedidosMisti");
+
+            // 👇 CORRECCIÓN: Guardar en Firebase para que otros teléfonos lo vean
+            guardarHistorial();
 
             mostrar();
 
@@ -2249,11 +2251,12 @@ function marcarServido(indexPedido, nombre, tipo){
             pedidos[index].atendido = true;
             pedidos[index].colapsado = true;
 
+            // Redibujar localmente ANTES de guardar en Firebase
+            mostrar(); 
+
+            // Luego guardar en Firebase para sincronizar con otros dispositivos
             guardarHistorial();
-            mostrar();
           }
-
-
 
 
 
