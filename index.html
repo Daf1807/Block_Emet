@@ -900,7 +900,7 @@ function mostrarCocina(){
 
   // Renderizar Pedidos Individuales (Estilo Mesero)
   let listaHtml = "";
-  let contador = 1; // Para numerar #1, #2...
+  let contador = 1; // Para numerar #1, #2
 
   pedidosActivos.forEach((p)=>{
 
@@ -915,7 +915,7 @@ function mostrarCocina(){
 
     const subtitulo = (p.mesa || "").toUpperCase();
 
-    // Título estilo ejemplo: #13 | ALISTAR | LUCAS | 🕒 ...
+    // Título estilo ejemplo: #13 | ALISTAR | LUCAS | 🕒 
     let tituloHeader = `
       <div>
         <b style="font-size: 22px;">
@@ -1391,7 +1391,7 @@ function marcarServido(indexPedido, nombre, tipo){
               <input class="nombrePlato"
                 data-nombre="${key}"
                 data-seccion="${prefijo === 'E' ? 'entradas' : 'segundos'}"
-                placeholder="Nombre..."
+                placeholder="Nombre"
                 oninput="actualizarNombreFirestore(this)"
                 style="flex:1"
               >
@@ -2142,8 +2142,8 @@ function obtenerTextoPlano(pedido){
     }
 
     // 4. Puntos finaleS
-    texto += "";
-    texto += "";
+    texto += ".";
+    texto += ".";
     texto += "...";
 
     return texto;
