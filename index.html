@@ -162,6 +162,48 @@ button:hover{
 .pedido-azul { border-left-color: #2196F3 !important; } /* Llevar/Alistar */
 .pedido-amarillo { border-left-color: #FFC107 !important; } /* Reserva */
 
+/* ESTILOS PARA VISTA IMPRIMIR */
+.imprimir-card {
+    background: white;
+    border: 2px solid #000;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-family: 'Courier New', Courier, monospace; /* Fuente tipo máquina de escribir */
+    font-size: 16px;
+    line-height: 1.4;
+    color: #000;
+    position: relative;
+}
+
+.imprimir-header {
+    font-weight: bold;
+    border-bottom: 1px dashed #000;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.imprimir-copy-btn {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+.imprimir-section {
+    margin-bottom: 8px;
+}
+.imprimir-label {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
 
 /* GRID PC */
 @media(min-width:700px){
@@ -613,7 +655,10 @@ button:hover{
 
           <h2>📋 Pedidos del día</h2>
 
-          <div style="display:flex;gap:10px;margin-bottom:15px">
+          <div style="display:flex;gap:10px;margin-bottom:15px; flex-wrap:wrap;">
+            <!-- 🔥 NUEVO BOTÓN IMPRIMIR A LA IZQUIERDA -->
+            <button onclick="mostrarSeccionPedidos('imprimir')" id="btnImprimirPedidos" class="btn">🖨️ Imprimir</button>
+            
             <button onclick="mostrarSeccionPedidos('mesa')" id="btnMesaPedidos">🍽 Mesa</button>
             <button onclick="mostrarSeccionPedidos('reserva')" id="btnReservaPedidos">📅 Reserva</button>
             <button onclick="mostrarSeccionPedidos('llevar')" id="btnLlevarPedidos">🥡 Llevar</button>
@@ -2022,11 +2067,102 @@ function marcarServido(indexPedido, nombre, tipo){
               else if(h3.innerText.includes("Reserva")) mostrarSeccionPedidos('reserva');
               else if(h3.innerText.includes("Llevar")) mostrarSeccionPedidos('llevar');
               else if(h3.innerText.includes("Alistar")) mostrarSeccionPedidos('alistar');
+              else if(h3.innerText.includes("Imprimir")) mostrarSeccionPedidos('imprimir');
             } else {
                 mostrarSeccionPedidos("mesa"); // Default
             }
 
           }
+
+/* =================================================
+  🔥 LÓGICA DE TEXTO PARA COPIAR
+================================================= */
+function obtenerTextoPlano(pedido){
+    let texto = "";
+    
+    // 1. Cabecera
+    const nombre = (pedido.mesa || "").toUpperCase();
+    const hora = pedido.hora || "";
+    
+    if(pedido.tipo === 'mesa') {
+        texto += `| MESA ${nombre} | ${nombre} | ${hora}\n`;
+    } else if (pedido.tipo === 'llevar') {
+        texto += `| LLEVAR | ${nombre} | ${hora}\n`;
+    } else if (pedido.tipo === 'reserva') {
+        texto += `| RESERVA | ${nombre} | ${hora}\n`;
+    }
+
+    // 2. Entradas
+    if(pedido.detalleEntradas.length > 0){
+        texto += "Entradas:\n";
+        pedido.detalleEntradas.forEach(item => {
+            let partes = item.split(" - ");
+            let qty = partes[0];
+            let resto = partes[1] || "";
+            
+            // Separar nombre y nota si existe
+            let nota = "";
+            if(resto.includes("| NOTA:")){
+                let splitNota = resto.split("| NOTA:");
+                resto = splitNota[0].trim();
+                nota = splitNota[1].trim();
+            }
+
+            texto += `${qty} - ${resto}\n`;
+            
+            if(nota){
+                texto += `Nota: ${nota}\n`;
+            }
+        });
+        texto += "\n"; // Espacio entre secciones
+    }
+
+    // 3. Segundos
+    if(pedido.detalleSegundos.length > 0){
+        texto += "Segundos:\n";
+        pedido.detalleSegundos.forEach(item => {
+            let partes = item.split(" - ");
+            let qty = partes[0];
+            let resto = partes[1] || "";
+            
+            let nota = "";
+            if(resto.includes("| NOTA:")){
+                let splitNota = resto.split("| NOTA:");
+                resto = splitNota[0].trim();
+                nota = splitNota[1].trim();
+            }
+
+            texto += `${qty} - ${resto}\n`;
+            
+            if(nota){
+                texto += `Nota: ${nota}\n`;
+            }
+        });
+        texto += "\n";
+    }
+
+    // 4. Puntos finales
+    texto += "...";
+
+    return texto;
+}
+
+/* =================================================
+  🔥 FUNCIÓN PARA COPIAR AL PORTAPAPELES
+================================================= */
+function copiarTextoPedido(index){
+    const pedido = pedidos[index];
+    if(!pedido) return;
+
+    const texto = obtenerTextoPlano(pedido);
+
+    navigator.clipboard.writeText(texto).then(() => {
+        alert("✅ Pedido copiado al portapapeles");
+    }).catch(err => {
+        console.error("Error al copiar: ", err);
+        alert("❌ Error al copiar");
+    });
+}
 
 
           function mostrarSeccionPedidos(tipo){
@@ -2034,7 +2170,81 @@ function marcarServido(indexPedido, nombre, tipo){
             let titulo = "";
             let contenido = "";
 
-            if(tipo === "mesa"){
+            // 🔥 NUEVA LÓGICA PARA IMPRIMIR (AGRUPA MESA, LLEVAR, RESERVA)
+            if(tipo === 'imprimir'){
+                titulo = "🖨️ Imprimir (General)";
+                
+                // Filtrar pedidos activos de estos 3 tipos
+                // 🔥 AGREGADO .reverse() PARA QUE EL ÚLTIMO SEA EL PRIMERO
+                const listaImprimir = pedidos
+                    .filter(p => 
+                        (p.tipo === 'mesa' || p.tipo === 'llevar' || p.tipo === 'reserva') && !p.atendido
+                    )
+                    .reverse(); 
+
+                if(listaImprimir.length === 0) {
+                    contenido = "<p style='text-align:center; color:#777;'>No hay pedidos pendientes para imprimir.</p>";
+                } else {
+                    listaImprimir.forEach((p, i) => {
+                        // Buscamos el índice real en el array principal para la función copiar
+                        const indexReal = pedidos.indexOf(p);
+
+                        contenido += `
+                        <div class="imprimir-card">
+                            <div class="imprimir-header">
+                                <button class="imprimir-copy-btn" onclick="copiarTextoPedido(${indexReal})">📋 COPIAR</button>
+                                <div>
+                                    ${p.tipo === 'mesa' ? `| MESA ${p.mesa.toUpperCase()} |` : ''}
+                                    ${p.tipo === 'llevar' ? `| LLEVAR |` : ''}
+                                    ${p.tipo === 'reserva' ? `| RESERVA |` : ''}
+                                    ${p.mesa.toUpperCase()} | ${p.hora || ''}
+                                </div>
+                            </div>
+                            <div class="imprimir-body">
+                        `;
+
+                        // Entradas
+                        if(p.detalleEntradas.length > 0){
+                            contenido += `<div class="imprimir-section"><span class="imprimir-label">Entradas:</span><br>`;
+                            p.detalleEntradas.forEach(item => {
+                                let partes = item.split(" - ");
+                                let resto = partes[1] || "";
+                                let nota = "";
+                                if(resto.includes("| NOTA:")){
+                                    let splitNota = resto.split("| NOTA:");
+                                    resto = splitNota[0].trim();
+                                    nota = splitNota[1].trim();
+                                }
+                                contenido += `${partes[0]} - ${resto}<br>`;
+                                if(nota) contenido += `Nota: ${nota}<br>`;
+                            });
+                            contenido += `</div>`;
+                        }
+
+                        // Segundos
+                        if(p.detalleSegundos.length > 0){
+                            contenido += `<div class="imprimir-section"><span class="imprimir-label">Segundos:</span><br>`;
+                            p.detalleSegundos.forEach(item => {
+                                let partes = item.split(" - ");
+                                let resto = partes[1] || "";
+                                let nota = "";
+                                if(resto.includes("| NOTA:")){
+                                    let splitNota = resto.split("| NOTA:");
+                                    resto = splitNota[0].trim();
+                                    nota = splitNota[1].trim();
+                                }
+                                contenido += `${partes[0]} - ${resto}<br>`;
+                                if(nota) contenido += `Nota: ${nota}<br>`;
+                            });
+                            contenido += `</div>`;
+                        }
+
+                        contenido += `<div>...</div>`;
+                        contenido += `</div></div>`; // Cerrar body y card
+                    });
+                }
+
+            } else if(tipo === "mesa"){
               titulo = "🍽️ Mesa";
               contenido = document.getElementById("seccion_mesa").innerHTML;
             }
@@ -2054,21 +2264,20 @@ function marcarServido(indexPedido, nombre, tipo){
             document.getElementById("contenedorPedidos").innerHTML = `
               <h3>
                 ${titulo}
-                <button class="btn" onclick="descargarWordTipo('${tipo}')">
-                  📄 Imprimir
-                </button>
+                ${tipo === 'imprimir' ? '' : `<button class="btn" onclick="descargarWordTipo('${tipo}')">📄 Imprimir Word</button>`}
               </h3>
               ${contenido}
             `;
 
             // activar botón visual
-            document.querySelectorAll("#btnMesaPedidos,#btnReservaPedidos,#btnLlevarPedidos,#btnAlistarPedidos")
+            document.querySelectorAll("#btnMesaPedidos,#btnReservaPedidos,#btnLlevarPedidos,#btnAlistarPedidos,#btnImprimirPedidos")
               .forEach(b=>b.classList.remove("activo"));
 
             if(tipo==="mesa") document.getElementById("btnMesaPedidos").classList.add("activo");
             if(tipo==="reserva") document.getElementById("btnReservaPedidos").classList.add("activo");
             if(tipo==="llevar") document.getElementById("btnLlevarPedidos").classList.add("activo");
             if(tipo==="alistar") document.getElementById("btnAlistarPedidos").classList.add("activo");
+            if(tipo==="imprimir") document.getElementById("btnImprimirPedidos").classList.add("activo");
 
           }
 
