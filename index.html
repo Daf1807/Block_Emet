@@ -761,7 +761,30 @@ window.onload = function() {
     }
   }
 };
+/* =================================================
+  🔥 NUEVA FUNCIÓN: ENVIAR A COLA DE IMPRESIÓN
+================================================= */
+async function enviarImpresion(index){
+    const pedido = pedidos[index];
+    if(!pedido) return;
 
+    // Generamos el texto exacto igual que para copiar
+    const texto = obtenerTextoPlano(pedido);
+
+    try {
+        // Creamos el documento en Firestore
+        await db.collection("cola_impresion").add({
+            texto: texto,
+            estado: "pendiente",
+            fecha: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        alert("✅ Pedido enviado a la impresora");
+    } catch (error) {
+        console.error("Error al enviar a impresión:", error);
+        alert("❌ Error de conexión al enviar impresión");
+    }
+}
 
           /* =================================================
             🔥 STOCK EN TIEMPO REAL DESDE FIRESTORE
@@ -2192,15 +2215,30 @@ function copiarTextoPedido(index){
 
                         contenido += `
                         <div class="imprimir-card">
-                            <div class="imprimir-header">
-                                <button class="imprimir-copy-btn" onclick="copiarTextoPedido(${indexReal})">📋 COPIAR</button>
-                                <div>
-                                    ${p.tipo === 'mesa' ? `| MESA ${p.mesa.toUpperCase()} |` : ''}
-                                    ${p.tipo === 'llevar' ? `| LLEVAR |` : ''}
-                                    ${p.tipo === 'reserva' ? `| RESERVA |` : ''}
-                                    ${p.mesa.toUpperCase()} | ${p.hora || ''}
-                                </div>
-                            </div>
+                              <!-- DENTRO DE if(tipo === 'imprimir') ... dentro del loop listaImprimir.forEach ... -->
+                              <!-- Busca el div con clase "imprimir-header" y pega esto ahí: -->
+
+                              <div class="imprimir-header" style="display:flex; justify-content:space-between; align-items:center;">
+                                  <div>
+                                      ${p.tipo === 'mesa' ? `| MESA ${p.mesa.toUpperCase()} |` : ''}
+                                      ${p.tipo === 'llevar' ? `| LLEVAR |` : ''}
+                                      ${p.tipo === 'reserva' ? `| RESERVA |` : ''}
+                                      ${p.mesa.toUpperCase()} | ${p.hora || ''}
+                                  </div>
+                                  
+                                  <div style="display:flex; gap:5px;">
+                                      <button class="imprimir-copy-btn" onclick="copiarTextoPedido(${indexReal})">📋 COPIAR</button>
+                                      <!-- 🔥 NUEVO BOTÓN ENVIAR -->
+                                      <button class="imprimir-copy-btn" 
+                                              onclick="enviarImpresion(${indexReal})" 
+                                              style="background:#2196F3;">
+                                              🖨️ IMPRIMIR
+                                      </button>
+                                  </div>
+                              </div>                            
+
+
+                          
                             <div class="imprimir-body">
                         `;
 
