@@ -2161,12 +2161,8 @@ function obtenerTextoPlano(pedido){
                 texto += `Nota: ${nota}\n`;
             }
         });
-        texto += "\n";
+        // 🔥 ELIMINADO: Ya no agregamos espacios ni puntos al final
     }
-       texto += "\n"; // Espacio entre secciones
-       texto += "\n"; // Espacio entre secciones
-    // 4. Puntos finaleS
-    texto += "...";
 
     return texto;
 }
@@ -2278,7 +2274,6 @@ function copiarTextoPedido(index){
                             contenido += `</div>`;
                         }
 
-                        contenido += `<div>...</div>`;
                         contenido += `</div></div>`; // Cerrar body y card
                     });
                 }
