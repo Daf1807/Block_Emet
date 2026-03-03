@@ -765,25 +765,24 @@ window.onload = function() {
   🔥 NUEVA FUNCIÓN: ENVIAR A COLA DE IMPRESIÓN
 ================================================= */
 async function enviarImpresion(index){
-    const pedido = pedidos[index];
-    if(!pedido) return;
+  const pedido = pedidos[index];
+  if(!pedido) return;
 
-    // Generamos el texto exacto igual que para copiar
-    const texto = obtenerTextoPlano(pedido);
+  const texto = obtenerTextoPlano(pedido);
 
-    try {
-        // Creamos el documento en Firestore
-        await db.collection("cola_impresion").add({
-            texto: texto,
-            estado: "pendiente",
-            fecha: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        alert("✅ Pedido enviado a la impresora");
-    } catch (error) {
-        console.error("Error al enviar a impresión:", error);
-        alert("❌ Error de conexión al enviar impresión");
-    }
+  try {
+    await db.collection("cola_impresion").add({
+      texto: texto,
+      estado: "pendiente",
+      fecha: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // 🔥 SIN ALERT
+    console.log("Pedido enviado a impresión");
+
+  } catch (error) {
+    console.error("Error al enviar a impresión:", error);
+  }
 }
 
           /* =================================================
