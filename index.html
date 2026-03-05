@@ -60,37 +60,42 @@ h2{
 /* PLATOS - AJUSTES PARA MÓVIL Y TAMAÑO */
 .item{
   display:flex;
-  flex-wrap:nowrap; /* 🔥 Evitar bajar línea a toda costa */
+  flex-wrap:nowrap; /* Evitar bajar línea */
   align-items:center;
-  gap:4px; /* 🔥 Reducido para ahorrar espacio */
-  padding:6px 0;
+  gap:8px; /* Espacio ajustado */
+  padding:8px 0;
   border-bottom:1px solid #eee;
 }
 
 .controls{
   display:flex;
-  gap:4px;
+  gap:6px;
   align-items:center;
-  flex-shrink: 0; /* Evita que se aplasten los botones */
+  flex-shrink: 0;
 }
 
 .qty{
-  width:30px; /* 🔥 Más chiquito */
+  width:40px; 
   text-align:center;
   font-weight:bold;
   border:none;
-  font-size:16px;
+  font-size:18px;
 }
 
-/* BOTONES */
+/* BOTONES - MODIFICADOS PARA SER MÁS GRANDES */
 button{
   border:none;
-  padding:6px 10px; /* 🔥 Más compactos */
+  /* 🔥 AUMENTADO: Padding más grande */
+  padding: 12px 20px; 
   border-radius:8px;
   cursor:pointer;
-  font-size:12px; /* 🔥 Letras más chicas en botones para ahorrar espacio */
-  font-weight:600;
+  /* 🔥 AUMENTADO: Letra más grande */
+  font-size:20px; 
+  font-weight:bold;
   transition:all .2s ease;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 button:hover{
@@ -101,11 +106,13 @@ button:hover{
 .btn{
   background:var(--rojo);
   color:white;
+  font-size: 16px; /* Botones generales mantienen tamaño razonable */
+  padding: 10px 15px;
 }
 
 .big{
   width:100%;
-  padding:14px;
+  padding:16px;
   background:var(--amarillo);
   font-weight:bold;
   font-size:18px;
@@ -159,8 +166,8 @@ button:hover{
 }
 
 /* COLORES ESPECIALES PARA COCINA */
-.pedido-azul { border-left-color: #2196F3 !important; } /* Llevar/Alistar */
-.pedido-amarillo { border-left-color: #FFC107 !important; } /* Reserva */
+.pedido-azul { border-left-color: #2196F3 !important; } 
+.pedido-amarillo { border-left-color: #FFC107 !important; } 
 
 /* ESTILOS PARA VISTA IMPRIMIR */
 .imprimir-card {
@@ -168,7 +175,7 @@ button:hover{
     border: 2px solid #000;
     padding: 15px;
     margin-bottom: 20px;
-    font-family: 'Courier New', Courier, monospace; /* Fuente tipo máquina de escribir */
+    font-family: 'Courier New', Courier, monospace;
     font-size: 16px;
     line-height: 1.4;
     color: #000;
@@ -260,35 +267,32 @@ button:hover{
   transition:width .5s linear;
 }
 
-/* 🔥 COLUMNAS INI Y DISP MÁS ANGOSTAS Y RESPONSIVAS */
+/* COLUMNAS INI Y DISP */
 .colIni{
-  width:35px; /* 🔥 Reducido de 75px */
+  width:40px; 
   padding:4px;
   border-radius:6px;
   border:1px solid #e0e0e0;
   font-weight:600;
   text-align:center;
   background:#f8f9fa;
-  font-size:12px; /* 🔥 Letra más pequeña */
+  font-size:14px;
   transition:all .25s ease;
   outline:none;
   flex-shrink: 0;
 }
 
-/* Hover */
 .colIni:hover{
   border-color:#bdbdbd;
   transform:scale(1.05);
 }
 
-/* Cuando está activo */
 .colIni:focus{
   border-color:#4CAF50;
   box-shadow:0 0 0 2px rgba(76,175,80,.2);
   background:white;
 }
 
-/* Cuando tiene número diferente de 0 */
 .colIni:not([value="0"]){
   border-color:#4CAF50;
   background:#f1fff4;
@@ -299,12 +303,12 @@ button:hover{
     opacity:1;
   }
 
-/* 🔥 NOMBRE PLATO MÁS GRANDE Y RESPONSIVO */
+/* NOMBRE PLATO */
 .nombrePlato{
-  flex:1; /* 🔥 Ocupa todo el espacio restante */
-  min-width: 80px; /* Mínimo para que no desaparezca */
-  padding:6px 8px; /* Padding ajustado */
-  font-size:16px; /* 🔥 Letra más grande */
+  flex:1;
+  min-width: 80px;
+  padding:8px 10px;
+  font-size:16px;
   font-weight:600;
   border-radius:8px;
   border:2px solid #e0e0e0;
@@ -313,12 +317,10 @@ button:hover{
   outline:none;
 }
 
-/* Hover */
 .nombrePlato:hover{
   border-color:#bdbdbd;
 }
 
-/* Cuando escribes */
 .nombrePlato:focus{
   border-color:#2196F3;
   box-shadow:0 0 0 3px rgba(33,150,243,.2);
@@ -365,21 +367,48 @@ button:hover{
   box-shadow:0 0 0 3px rgba(76,175,80,.2);
 }
 
-/* 🔥 Ajustes específicos para móvil en sección MesasBotones */
+/* 🔥 ESTILO PARA BOTONES DE MESAS - GRID */
+#mesasBotones {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columnas para móvil */
+  gap: 8px; /* Espacio entre botones */
+  margin-top: 10px;
+}
+
+#mesasBotones button {
+  margin: 0; /* Quitar margen individual para que el gap funcione */
+  padding: 10px 0; /* Padding vertical para altura cómoda */
+  width: 100%; /* Ocupar toda la celda */
+  box-sizing: border-box; /* Incluir padding en el ancho */
+}
+
+/* Ajuste para PC (más columnas) */
+@media(min-width:700px) {
+  #mesasBotones {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+/* Ajustes específicos para móvil */
 @media(max-width:600px){
   .nombrePlato{
-    font-size:15px; /* Ajuste fino móvil */
+    font-size:15px;
+  }
+  .colIni {
+    width: 35px;
+    font-size: 12px;
   }
   .controls button {
-     padding: 4px 6px;
-     font-size: 11px;
+     /* Mantener botones grandes incluso en móvil pequeño */
+     padding: 10px 16px;
+     font-size: 18px;
   }
 }
 
 .cuadro-servir{
   display:inline-block;
-  width:18px;
-  height:18px;
+  width:20px;
+  height:20px;
   border:2px solid #8B0000;
   margin-left:4px;
   border-radius:4px;
@@ -465,12 +494,12 @@ button:hover{
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* COCINA ESTILOS ESPECIFICOS - TAMAÑO GRANDE */
+/* COCINA ESTILOS ESPECIFICOS */
 .cocina-header-split {
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
-  flex-direction: column; /* En móvil poner uno debajo del otro */
+  flex-direction: column;
 }
 @media(min-width:700px){
   .cocina-header-split { flex-direction: row; }
@@ -487,12 +516,12 @@ button:hover{
   margin-top: 0;
   border-bottom: 2px solid #FFC107;
   padding-bottom: 10px;
-  font-size: 24px; /* Títulos más grandes */
+  font-size: 24px;
 }
 .cocina-item-row {
   display: flex;
   justify-content: space-between;
-  font-size: 22px; /* Texto más grande para tablet/celular */
+  font-size: 22px;
   margin-bottom: 8px;
   line-height: 1.4;
 }
@@ -560,7 +589,7 @@ button:hover{
 
           Mesa / Nombre:
           <input id="mesa" style="width:100%">
-          <div id="mesasBotones" style="margin-top:10px;display:none;"></div>
+          <div id="mesasBotones" style="display:none;"></div>
 
           </div>
 
@@ -572,7 +601,7 @@ button:hover{
           <div style="display:flex;align-items:center;gap:4px;font-weight:bold;margin-bottom:6px">
 
             <button onclick="toggleIni('entradas')" 
-                    style="padding:2px 6px;border-radius:6px">
+                    style="padding:2px 6px;border-radius:6px; font-size:14px;">
               👁
             </button>
 
@@ -593,7 +622,7 @@ button:hover{
           <div style="display:flex;align-items:center;gap:4px;font-weight:bold;margin-bottom:6px">
 
             <button onclick="toggleIni('segundos')" 
-                    style="padding:2px 6px;border-radius:6px">
+                    style="padding:2px 6px;border-radius:6px; font-size:14px;">
               👁
             </button>
 
@@ -622,18 +651,7 @@ button:hover{
           <div id="extrasComida"></div>
           </div>
 
-          <!-- ENVASES -->
-          <div class="card">
-          <h2>🥡 Envases para llevar</h2>
-          <div id="envases"></div>
-          </div>
-
-          <!-- DELIVERY -->
-          <div class="card">
-          <h2>🚚 Delivery</h2>
-          Costo adicional:
-          <input type="number" id="deliveryCosto" value="0" min="0" step="0.5" style="width:80px"> soles
-          </div>
+          <!-- SECCIONES ELIMINADAS: ENVASES Y DELIVERY SEGÚN SOLICITUD -->
 
           <div class="card" style="text-align:center;font-size:22px;font-weight:700;color:#2c3e50">
             💰 Total actual: <b id="totalPreview">S/ 0.00</b>
@@ -656,7 +674,6 @@ button:hover{
           <h2>📋 Pedidos del día</h2>
 
           <div style="display:flex;gap:10px;margin-bottom:15px; flex-wrap:wrap;">
-            <!-- 🔥 NUEVO BOTÓN IMPRIMIR A LA IZQUIERDA -->
             <button onclick="mostrarSeccionPedidos('imprimir')" id="btnImprimirPedidos" class="btn">🖨️ Imprimir</button>
             
             <button onclick="mostrarSeccionPedidos('mesa')" id="btnMesaPedidos">🍽 Mesa</button>
@@ -714,7 +731,7 @@ function verificarClave() {
   }
 }
 
-            // 🔥 CONFIG FIREBASE
+            // CONFIG FIREBASE
           const firebaseConfig = {
             apiKey: "AIzaSyCakBN0YRTOGCKVQ7A5iLKksNh0cjF-JOg",
             authDomain: "el-misti-pedidos.firebaseapp.com",
@@ -734,7 +751,7 @@ function mostrarSistema() {
   document.getElementById("loginPantalla").style.display = "none";
   document.getElementById("sistema").style.display = "block";
 
-  // 🔥 recuperar última vista guardada
+  // recuperar última vista guardada
   const vistaGuardada = localStorage.getItem("vistaActualMisti");
 
   if (vistaGuardada) {
@@ -777,7 +794,6 @@ async function enviarImpresion(index){
       fecha: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    // 🔥 SIN ALERT
     console.log("Pedido enviado a impresión");
 
   } catch (error) {
@@ -818,26 +834,19 @@ function cambiarVista(vista){
 ================================================= */
 function mostrarCocina(){
 
-  // Filtramos: Solo MESA y ALISTAR (no RESERVA, no LLEVAR programado)
+  // Filtramos: Solo MESA y ALISTAR
   const pedidosActivos = pedidos.filter(p => (p.tipo === "mesa" || p.tipo === "alistar") && !p.atendido);
 
-  // Acumulados separados con lógica de notas
   let acumuladoEntradasSalon = {};
   let acumuladoSegundosSalon = {};
   let acumuladoEntradasLlevar = {};
   let acumuladoSegundosLlevar = {};
 
-  // Función auxiliar para procesar items
   const procesarItems = (lista, pedido, mapTotales, tipoGrupo) => {
-    
-    // Objeto temporal para agrupar notas
-    // mapTotales[nombre] = { total: 10, notas: { "POCO ARROZ": 2, "SIN PAPA": 1 } }
-    
     lista.forEach(item=>{
       const partes = item.split(" - ");
       const cantidad = parseInt(partes[0]) || 0;
       
-      // Extraer nombre y nota
       let nombreCompleto = partes[1]?.trim() || "";
       let nombreBase = nombreCompleto.split("|")[0].trim();
       let nota = "";
@@ -846,7 +855,6 @@ function mostrarCocina(){
         nota = nombreCompleto.split("| NOTA:")[1].trim();
       }
 
-      // 🔥 CORRECCIÓN: Calcular servidos individuales de ESTE pedido específico
       let servidos = 0;
       if(pedido.servidos && pedido.servidos[tipoGrupo] && pedido.servidos[tipoGrupo][nombreBase]){
           servidos = pedido.servidos[tipoGrupo][nombreBase].length;
@@ -880,18 +888,14 @@ function mostrarCocina(){
     procesarItems(p.detalleSegundos, p, mapSegundos, 'segundo');
   });
 
-  // Renderizar Acumulados
   let htmlAcumulados = `<div class="cocina-header-split">`;
   
-  // Función para renderizar mapa
   const renderizarMapa = (map) => {
       let html = "";
       for(let nombre in map){
           const info = map[nombre];
-          // Línea principal
           html += `<div class="cocina-item-row"><div>${nombre}</div><div style="color:#FFC107;font-weight:bold">${info.total}</div></div>`;
           
-          // Líneas de notas si existen
           for(let nota in info.notas){
               const cantNota = info.notas[nota];
               html += `<div class="cocina-sub-nota">↳ ${nota} (${cantNota})</div>`;
@@ -900,7 +904,6 @@ function mostrarCocina(){
       return html;
   };
   
-  // Columna Salón
   htmlAcumulados += `<div class="cocina-col">
     <h3>🍽️ ACUMULADO SALÓN</h3>
     <div style="margin-bottom:10px;font-weight:bold;color:#fff;font-size:20px">🍲 ENTRADAS</div>`;
@@ -909,35 +912,31 @@ function mostrarCocina(){
   htmlAcumulados += renderizarMapa(acumuladoSegundosSalon);
   htmlAcumulados += `</div>`;
 
-  // Columna Llevar
   htmlAcumulados += `<div class="cocina-col" style="background:#333; border-color:orange;">
     <h3>🥡 ACUMULADO LLEVAR</h3>
     <div style="margin-bottom:10px;font-weight:bold;color:#fff;font-size:20px">🍲 ENTRADAS</div>`;
   htmlAcumulados += renderizarMapa(acumuladoEntradasLlevar);
   htmlAcumulados += `<div style="margin:20px 0 10px 0;font-weight:bold;color:#fff;font-size:20px">🍛 SEGUNDOS</div>`;
   htmlAcumulados += renderizarMapa(acumuladoSegundosLlevar);
-  htmlAcumulados += `</div></div>`; // Fin split
+  htmlAcumulados += `</div></div>`; 
 
   document.getElementById("cocina_contenido").innerHTML = htmlAcumulados + '<div id="lista_pedidos_cocina"></div>';
 
-  // Renderizar Pedidos Individuales (Estilo Mesero)
   let listaHtml = "";
-  let contador = 1; // Para numerar #1, #2
+  let contador = 1; 
 
   pedidosActivos.forEach((p)=>{
 
-    // 🔥 LÓGICA DE COLORES
-    let claseColor = ""; // Por defecto rojo (CSS)
+    let claseColor = ""; 
     
     if (p.tipo === "alistar" || p.convertidoDesde === "llevar") {
-      claseColor = "pedido-azul"; // Azul para llevar
+      claseColor = "pedido-azul"; 
     } else if (p.convertidoDesde === "reserva") {
-      claseColor = "pedido-amarillo"; // Amarillo para reserva
+      claseColor = "pedido-amarillo"; 
     }
 
     const subtitulo = (p.mesa || "").toUpperCase();
 
-    // Título estilo ejemplo: #13 | ALISTAR | LUCAS | 🕒 
     let tituloHeader = `
       <div>
         <b style="font-size: 22px;">
@@ -947,7 +946,6 @@ function mostrarCocina(){
       </div>
     `;
 
-    // Avisos de origen
     let avisos = "";
     if(p.convertidoDesde === "reserva" || p.nombreReserva){
       avisos += `<div style="color:#FFC107;font-weight:bold;margin-bottom:5px;font-size:18px">⚠️ RESERVA: ${p.nombreReserva}</div>`;
@@ -979,9 +977,6 @@ function mostrarCocina(){
         ${p.detalleSegundos.length ? "<b style='font-size:18px'>Segundos:</b><br>"+p.detalleSegundos.join("<br>")+"<br><br>" : ""}
         
         ${p.detalleExtras.length ? "<b>Extras:</b><br>"+p.detalleExtras.join("<br>")+"<br><br>" : ""}
-        ${p.detalleEnvases.length ? "<b>Envases:</b><br>"+p.detalleEnvases.join("<br>") : ""}
-
-        <!-- SIN MONTO TOTAL SEGÚN REQUERIMIENTO -->
 
     </div>
   `;
@@ -1059,7 +1054,7 @@ function marcarEntregado(pedidoIndex, tipo, itemIndex, cuadritoIndex){
     };
   }
 
-  const grupo = tipo; // "entrada" o "segundo"
+  const grupo = tipo; 
 
   const itemTexto = grupo === "entrada"
     ? pedidos[pedidoIndex].detalleEntradas[itemIndex]
@@ -1256,7 +1251,6 @@ function marcarServido(indexPedido, nombre, tipo){
                 .collection("items")
                 .doc(id);
 
-              // 🔥 crear documento si no existe
               ref.get().then(doc=>{
                 if(!doc.exists){
                   ref.set({
@@ -1267,7 +1261,6 @@ function marcarServido(indexPedido, nombre, tipo){
                 }
               });
 
-              // 🔥 escuchar individualmente
               ref.onSnapshot(doc=>{
 
                 if(!doc.exists) return;
@@ -1280,15 +1273,13 @@ function marcarServido(indexPedido, nombre, tipo){
 
                 const disponible = Math.max(inicial - vendido, 0);
 
-                // actualizar nombre
                 const inputNombre = document.querySelector(
                   `input[data-nombre='${id}']`
                 );
                 if(inputNombre){
                   inputNombre.value = nombre;
-                  // 🔥 PONER NOMBRE EN ROJO SI NO HAY STOCK
                   if(disponible <= 0){
-                     inputNombre.style.color = "#d32f2f"; // Rojo Material
+                     inputNombre.style.color = "#d32f2f"; 
                      inputNombre.style.borderColor = "#d32f2f";
                   } else {
                      inputNombre.style.color = "black";
@@ -1296,7 +1287,6 @@ function marcarServido(indexPedido, nombre, tipo){
                   }
                 }
 
-                // actualizar INI
                 const inputIni = document.querySelector(
                   `input[data-stock='${id}']`
                 );
@@ -1304,7 +1294,6 @@ function marcarServido(indexPedido, nombre, tipo){
                   inputIni.value = inicial;
                 }
 
-                // actualizar DISP
                 const span = document.getElementById("disp_"+id);
                 if(span){
                   span.innerText = disponible;
@@ -1325,16 +1314,12 @@ function marcarServido(indexPedido, nombre, tipo){
 
 
 
-          /* =================================================
-            CANTIDADES FIJAS (LO ÚNICO NUEVO)
-          ================================================= */
+          /* CANTIDADES FIJAS */
           const TOTAL_ENTRADAS = 5;
           const TOTAL_SEGUNDOS = 10;
 
 
-          /* =================================================
-            EXTRAS Y ENVASES (INTOCABLES – IGUAL QUE TUYO)
-          ================================================= */
+          /* EXTRAS (INTACTO) */
           const extrasComida=[
           {nombre:"Arroz extra",precio:2},
           {nombre:"Presa adicional",precio:5},
@@ -1342,6 +1327,7 @@ function marcarServido(indexPedido, nombre, tipo){
           {nombre:"Medio vaso refresco",precio:0.5}
           ];
 
+          /* ENVASES ELIMINADO DE LA LÓGICA DE RENDERIZADO, PERO SE MANTIENE LA CONST POR SI ACASO */
           const envases=[
           {nombre:"Taper grande",precio:1},
           {nombre:"Taper chico",precio:0.5}
@@ -1359,22 +1345,16 @@ function marcarServido(indexPedido, nombre, tipo){
 
             const nuevaLista = doc.data().lista || [];
 
-            // 🔥 CORRECCIÓN CRÍTICA DE SINCRONIZACIÓN
-            // Comparamos el contenido completo para detectar cambios de estado (atendido, colapsado, etc)
             const datosViejos = JSON.stringify(pedidos);
             const datosNuevos = JSON.stringify(nuevaLista);
 
             if(datosViejos !== datosNuevos){
                 pedidos = nuevaLista;
-                mostrar(); // Redibujar SIEMPRE que haya cambios reales
+                mostrar(); 
             }
 
           });
 
-          /* =================================================
-            NUEVO: CREAR ENTRADAS/SEGUNDOS EDITABLES
-            (MISMO DISEÑO .item .controls .qty)
-          ================================================= */
           function crearMenuEditable(total, cont, prefijo){
 
             const div=document.getElementById(cont);
@@ -1467,11 +1447,10 @@ function marcarServido(indexPedido, nombre, tipo){
 
 
 
-          /* =================================================
-            CREAR ITEMS (AHORA CON NOTA POR PLATO)
-          ================================================= */
           function crearItems(lista, cont){
             const div=document.getElementById(cont);
+            // Solo crear items si el contenedor existe
+            if(!div) return;
 
             lista.forEach(i=>{
               const nombre=i.nombre||i;
@@ -1491,13 +1470,11 @@ function marcarServido(indexPedido, nombre, tipo){
 
 
 
-          /* =================================================
-            + / -  (TUYO) + BLOQUEO STOCK 0
-          ================================================= */
+          /* + / -  + BLOQUEO STOCK 0 */
           function cambiar(id,n){
             const el=document.getElementById(id);
+            if(!el) return;
             
-            // 🔥 BLOQUEO SI ES SUMAR Y NO HAY STOCK
             if(n > 0){
                 const idDisp = "disp_" + id;
                 const spanDisp = document.getElementById(idDisp);
@@ -1510,7 +1487,7 @@ function marcarServido(indexPedido, nombre, tipo){
             let v=parseInt(el.value)+n;
             if(v<0)v=0;
             el.value=v;
-            calcularPreview(); // 👈 agregado
+            calcularPreview(); 
           }
 
 
@@ -1540,13 +1517,13 @@ function marcarServido(indexPedido, nombre, tipo){
               total += +document.getElementById(e.nombre).value * e.precio;
             });
 
-            // envases
-            envases.forEach(e=>{
-              total += +document.getElementById(e.nombre).value * e.precio;
-            });
+            // ENVASES ELIMINADO
+            // envases.forEach(e=>{
+            //   total += +document.getElementById(e.nombre).value * e.precio;
+            // });
 
-            // delivery
-            total += +deliveryCosto.value;
+            // DELIVERY ELIMINADO
+            // total += +deliveryCosto.value;
 
             totalPreview.innerText="S/ "+total.toFixed(2);
           }
@@ -1566,7 +1543,6 @@ function marcarServido(indexPedido, nombre, tipo){
 
 
 
-          /* 🔥 FUNCIÓN PARA MOSTRAR / OCULTAR COLUMNA INI */
           function toggleIni(seccion){
 
             const container = document.getElementById(seccion);
@@ -1579,7 +1555,6 @@ function marcarServido(indexPedido, nombre, tipo){
               col.style.display = oculto ? "none" : "";
             });
 
-            // 🔥 guardar estado
             localStorage.setItem("iniOculto_"+seccion, oculto ? "1" : "0");
           }
 
@@ -1593,7 +1568,7 @@ function marcarServido(indexPedido, nombre, tipo){
             const contenedor = document.getElementById("mesasBotones");
 
             if(tipo === "mesa"){
-              contenedor.style.display = "block";
+              contenedor.style.display = "grid"; // Cambiado a grid
               generarBotonesMesas();
             }else{
               contenedor.style.display = "none";
@@ -1606,39 +1581,25 @@ function marcarServido(indexPedido, nombre, tipo){
             const contenedor = document.getElementById("mesasBotones");
             contenedor.innerHTML = "";
 
-            // Números 1 al 14
             for(let i=1;i<=14;i++){
 
               contenedor.innerHTML += `
                 <button 
                   type="button"
                   onclick="seleccionarMesa(${i})"
-                  style="
-                    margin:4px;
-                    padding:8px 12px;
-                    border-radius:8px;
-                    background:#eee;
-                    font-weight:bold;
-                  ">
+                  >
                   ${i}
                 </button>
               `;
             }
 
-            // Mesas S1 al S7
             for(let i=1;i<=7;i++){
 
               contenedor.innerHTML += `
                 <button 
                   type="button"
                   onclick="seleccionarMesa('S${i}')"
-                  style="
-                    margin:4px;
-                    padding:8px 12px;
-                    border-radius:8px;
-                    background:#ddd;
-                    font-weight:bold;
-                  ">
+                  >
                   S${i}
                 </button>
               `;
@@ -1656,7 +1617,6 @@ function marcarServido(indexPedido, nombre, tipo){
 
             pedidos = [];
 
-            // 👇 CORRECCIÓN: Guardar en Firebase para que otros teléfonos lo vean
             guardarHistorial();
 
             mostrar();
@@ -1669,7 +1629,6 @@ function marcarServido(indexPedido, nombre, tipo){
             const select = document.getElementById("tipo");
             select.value = valor;
 
-            // dispara tu función original
             guardarTipo();
 
             actualizarBotonesTipo();
@@ -1690,9 +1649,7 @@ function marcarServido(indexPedido, nombre, tipo){
 
 
 
-          /* =================================================
-            REGISTRAR (MISMA LÓGICA + solo cambio de lectura)
-          ================================================= */
+          /* REGISTRAR */
           function registrarPedido(){
 
             let total=0;
@@ -1772,7 +1729,8 @@ function marcarServido(indexPedido, nombre, tipo){
               }
             });
 
-            /* ENVASES (IGUAL) */
+            /* ENVASES ELIMINADO DEL CÁLCULO DE REGISTRO */
+            /*
             envases.forEach(e=>{
               const c=+document.getElementById(e.nombre).value;
               if(c>0){
@@ -1780,9 +1738,13 @@ function marcarServido(indexPedido, nombre, tipo){
                 total+=c*e.precio;
               }
             });
+            */
 
+            /* DELIVERY ELIMINADO DEL CÁLCULO DE REGISTRO */
+            /*
             const delivery=+deliveryCosto.value;
             total+=delivery;
+            */
 
           if(detalleEntradas.length===0 && detalleSegundos.length===0){
             alert("No hay platos en el pedido");
@@ -1795,8 +1757,6 @@ function marcarServido(indexPedido, nombre, tipo){
           let horaExacta = null;
           let timestamp = null;
 
-          // Solo ponemos hora si es MESA o ALISTAR inmediato
-          // RESERVA y LLEVAR (programado) no tienen hora hasta activar
           if(tipoActual === "mesa" || tipoActual === "alistar"){
             const ahora = new Date();
             horaExacta = ahora.toLocaleTimeString("es-PE", {
@@ -1818,11 +1778,10 @@ function marcarServido(indexPedido, nombre, tipo){
             detalleEntradas: detalleEntradas,
             detalleSegundos: detalleSegundos,
             detalleExtras: detalleExtras,
-            detalleEnvases: detalleEnvases,
+            detalleEnvases: detalleEnvases, // Se mantiene la propiedad vacía para compatibilidad
             total: total,
           });
 
-            // 🔥 LIMPIAR NOMBRE/MESA DESPUÉS DE REGISTRAR
             document.getElementById("mesa").value = "";
 
 
@@ -1832,9 +1791,7 @@ function marcarServido(indexPedido, nombre, tipo){
           }
 
 
-          /* =================================================
-            TODO LO DEMÁS IGUAL (MOSTRAR / ELIMINAR / ETC)
-          ================================================= */
+
 
           function mostrar(){
 
@@ -1860,7 +1817,6 @@ function marcarServido(indexPedido, nombre, tipo){
             let htmlAlistarPendientes = "";
             let htmlAlistarAtendidos = "";
 
-            // 🔥 ORDEN VISUAL SEGURO (sin tocar el array)
             const ordenIndices = [
               ...pedidos.map((p,i)=> !p.atendido ? i : null).filter(i=>i!==null),
               ...pedidos.map((p,i)=> p.atendido ? i : null).filter(i=>i!==null)
@@ -1879,7 +1835,6 @@ function marcarServido(indexPedido, nombre, tipo){
               </b>
               `;
 
-              // Lógica para MESA y ALISTAR (ambos se atienden)
               if(p.tipo === "mesa" || p.tipo === "alistar"){
 
                 bloque += `
@@ -1921,7 +1876,6 @@ function marcarServido(indexPedido, nombre, tipo){
                 `;
 
               } else {
-                // Lógica para RESERVA y LLEVAR (programados)
 
                 if(p.tipo === "reserva"){
                   bloque += `
@@ -1960,7 +1914,6 @@ function marcarServido(indexPedido, nombre, tipo){
 
               }
 
-                // Avisos de conversión
                 if(p.convertidoDesde === "reserva" && p.nombreReserva){
                   bloque += `
                     <div style="
@@ -2015,7 +1968,6 @@ function marcarServido(indexPedido, nombre, tipo){
 
               bloque+=`</div>`;
 
-                // Clasificación en secciones
                 if(p.tipo==="mesa"){
                   if(p.atendido){
                     htmlMesaAtendidos += bloque;
@@ -2026,7 +1978,6 @@ function marcarServido(indexPedido, nombre, tipo){
                 if(p.tipo==="reserva") htmlReserva+=bloque;
                 if(p.tipo==="llevar") htmlLlevar+=bloque;
                 
-                // SEPARACIÓN DE ALISTAR
                 if(p.tipo==="alistar") {
                    if(p.atendido){
                     htmlAlistarAtendidos += bloque;
@@ -2037,7 +1988,6 @@ function marcarServido(indexPedido, nombre, tipo){
 
             });
 
-            // Rellenar MESA
             document.getElementById("seccion_mesa").innerHTML = `
 
               ${htmlMesaPendientes}
@@ -2057,7 +2007,6 @@ function marcarServido(indexPedido, nombre, tipo){
 
             `;
             
-            // Rellenar ALISTAR
             document.getElementById("seccion_alistar").innerHTML = `
 
               ${htmlAlistarPendientes}
@@ -2080,8 +2029,6 @@ function marcarServido(indexPedido, nombre, tipo){
             document.getElementById("seccion_reserva").innerHTML=htmlReserva;
             document.getElementById("seccion_llevar").innerHTML=htmlLlevar;
 
-            // Refrescar la vista actual si ya estamos en una sección
-            // Esto es para que el contenido se actualice si estamos mirando la lista
             const contenedor = document.getElementById("contenedorPedidos");
             const h3 = contenedor.querySelector("h3");
             if(h3){
@@ -2091,18 +2038,15 @@ function marcarServido(indexPedido, nombre, tipo){
               else if(h3.innerText.includes("Alistar")) mostrarSeccionPedidos('alistar');
               else if(h3.innerText.includes("Imprimir")) mostrarSeccionPedidos('imprimir');
             } else {
-                mostrarSeccionPedidos("mesa"); // Default
+                mostrarSeccionPedidos("mesa"); 
             }
 
           }
 
-/* =================================================
-  🔥 LÓGICA DE TEXTO PARA COPIAR
-================================================= */
+/* LÓGICA DE TEXTO PARA COPIAR */
 function obtenerTextoPlano(pedido){
     let texto = "";
     
-    // 1. Cabecera
     const nombre = (pedido.mesa || "").toUpperCase();
     const hora = pedido.hora || "";
     
@@ -2114,7 +2058,6 @@ function obtenerTextoPlano(pedido){
         texto += `| RESERVA | ${nombre} | ${hora}\n`;
     }
 
-    // 2. Entradas
     if(pedido.detalleEntradas.length > 0){
         texto += "Entradas:\n";
         pedido.detalleEntradas.forEach(item => {
@@ -2122,7 +2065,6 @@ function obtenerTextoPlano(pedido){
             let qty = partes[0];
             let resto = partes[1] || "";
             
-            // Separar nombre y nota si existe
             let nota = "";
             if(resto.includes("| NOTA:")){
                 let splitNota = resto.split("| NOTA:");
@@ -2136,10 +2078,9 @@ function obtenerTextoPlano(pedido){
                 texto += `Nota: ${nota}\n`;
             }
         });
-        texto += "\n"; // Espacio entre secciones
+        texto += "\n"; 
     }
 
-    // 3. Segundos
     if(pedido.detalleSegundos.length > 0){
         texto += "Segundos:\n";
         pedido.detalleSegundos.forEach(item => {
@@ -2160,15 +2101,12 @@ function obtenerTextoPlano(pedido){
                 texto += `Nota: ${nota}\n`;
             }
         });
-        // 🔥 ELIMINADO: Ya no agregamos espacios ni puntos al final
     }
 
     return texto;
 }
 
-/* =================================================
-  🔥 FUNCIÓN PARA COPIAR AL PORTAPAPELES
-================================================= */
+/* FUNCIÓN PARA COPIAR AL PORTAPAPELES */
 function copiarTextoPedido(index){
     const pedido = pedidos[index];
     if(!pedido) return;
@@ -2189,12 +2127,9 @@ function copiarTextoPedido(index){
             let titulo = "";
             let contenido = "";
 
-            // 🔥 NUEVA LÓGICA PARA IMPRIMIR (AGRUPA MESA, LLEVAR, RESERVA)
             if(tipo === 'imprimir'){
                 titulo = "🖨️ Imprimir (General)";
                 
-                // Filtrar pedidos activos de estos 3 tipos
-                // 🔥 AGREGADO .reverse() PARA QUE EL ÚLTIMO SEA EL PRIMERO
                 const listaImprimir = pedidos
                     .filter(p => 
                         (p.tipo === 'mesa' || p.tipo === 'llevar' || p.tipo === 'reserva') && !p.atendido
@@ -2205,13 +2140,10 @@ function copiarTextoPedido(index){
                     contenido = "<p style='text-align:center; color:#777;'>No hay pedidos pendientes para imprimir.</p>";
                 } else {
                     listaImprimir.forEach((p, i) => {
-                        // Buscamos el índice real en el array principal para la función copiar
                         const indexReal = pedidos.indexOf(p);
 
                         contenido += `
                         <div class="imprimir-card">
-                              <!-- DENTRO DE if(tipo === 'imprimir') ... dentro del loop listaImprimir.forEach ... -->
-                              <!-- Busca el div con clase "imprimir-header" y pega esto ahí: -->
 
                               <div class="imprimir-header" style="display:flex; justify-content:space-between; align-items:center;">
                                   <div>
@@ -2223,7 +2155,6 @@ function copiarTextoPedido(index){
                                   
                                   <div style="display:flex; gap:5px;">
                                       <button class="imprimir-copy-btn" onclick="copiarTextoPedido(${indexReal})">📋 COPIAR</button>
-                                      <!-- 🔥 NUEVO BOTÓN ENVIAR -->
                                       <button class="imprimir-copy-btn" 
                                               onclick="enviarImpresion(${indexReal})" 
                                               style="background:#2196F3;">
@@ -2237,7 +2168,6 @@ function copiarTextoPedido(index){
                             <div class="imprimir-body">
                         `;
 
-                        // Entradas
                         if(p.detalleEntradas.length > 0){
                             contenido += `<div class="imprimir-section"><span class="imprimir-label">Entradas:</span><br>`;
                             p.detalleEntradas.forEach(item => {
@@ -2255,7 +2185,6 @@ function copiarTextoPedido(index){
                             contenido += `</div>`;
                         }
 
-                        // Segundos
                         if(p.detalleSegundos.length > 0){
                             contenido += `<div class="imprimir-section"><span class="imprimir-label">Segundos:</span><br>`;
                             p.detalleSegundos.forEach(item => {
@@ -2273,7 +2202,7 @@ function copiarTextoPedido(index){
                             contenido += `</div>`;
                         }
 
-                        contenido += `</div></div>`; // Cerrar body y card
+                        contenido += `</div></div>`; 
                     });
                 }
 
@@ -2302,7 +2231,6 @@ function copiarTextoPedido(index){
               ${contenido}
             `;
 
-            // activar botón visual
             document.querySelectorAll("#btnMesaPedidos,#btnReservaPedidos,#btnLlevarPedidos,#btnAlistarPedidos,#btnImprimirPedidos")
               .forEach(b=>b.classList.remove("activo"));
 
@@ -2329,7 +2257,7 @@ function copiarTextoPedido(index){
 
             if(!confirm("Editar este pedido?")) return;
 
-            // 🔥 1. DEVOLVER STOCK
+            // 1. DEVOLVER STOCK
             p.detalleEntradas.forEach(item=>{
               const partes = item.split(" - ");
               const cantidad = parseInt(partes[0]);
@@ -2368,14 +2296,13 @@ function copiarTextoPedido(index){
               }
             });
 
-          // 🔥 1. limpiar primero
+          // 1. limpiar primero
           reset();
 
-          // 🔥 2. luego cargar datos
+          // 2. luego cargar datos
           document.getElementById("tipo").value = p.tipo;
           document.getElementById("mesa").value = p.mesa;
 
-          // activar botones visuales
           guardarTipo();
           actualizarBotonesTipo();
 
@@ -2407,7 +2334,7 @@ function copiarTextoPedido(index){
               }
             });
 
-            // 🔥 3. ELIMINAR PEDIDO ORIGINAL
+            // 3. ELIMINAR PEDIDO ORIGINAL
             pedidos.splice(index,1);
             guardarHistorial();
             mostrar();
@@ -2424,18 +2351,12 @@ function copiarTextoPedido(index){
 
           function reset(){
 
-            // 🔥 Solo reiniciar cantidades del pedido
             document.querySelectorAll(".qty").forEach(e=>e.value=0);
 
-            // limpiar notas
             document.querySelectorAll("[id^='nota_E']").forEach(e=>e.value="");
             document.querySelectorAll("[id^='nota_S']").forEach(e=>e.value="");
 
-            // NO tocar nombres
-            // NO tocar INICIAL
-            // NO tocar stock
-
-            deliveryCosto.value=0;
+            // NO deliveryCosto.value=0; eliminado
 
             calcularPreview();
           }
@@ -2493,10 +2414,8 @@ function copiarTextoPedido(index){
             pedidos[index].atendido = true;
             pedidos[index].colapsado = true;
 
-            // Redibujar localmente ANTES de guardar en Firebase
             mostrar(); 
 
-            // Luego guardar en Firebase para sincronizar con otros dispositivos
             guardarHistorial();
           }
 
@@ -2528,11 +2447,9 @@ function copiarTextoPedido(index){
               second: "2-digit"
             });
 
-            // 🔥 GUARDAR EL NOMBRE ORIGINAL CORRECTAMENTE
             pedidos[index].convertidoDesde = "reserva";
             pedidos[index].nombreReserva = pedidos[index].mesa;
 
-            // 🔥 CAMBIAR A MESA
             pedidos[index].tipo = "mesa";
             pedidos[index].mesa = numeroMesa;
             pedidos[index].hora = horaExacta;
@@ -2544,9 +2461,6 @@ function copiarTextoPedido(index){
             mostrar();
           }
 
-          /* =================================================
-            NUEVO: PASAR A ALISTAR (Llevar -> Alistar)
-          ================================================= */
           function pasarAlistar(index){
 
             if(!confirm("¿Iniciar preparación para llevar?")) return;
@@ -2558,13 +2472,10 @@ function copiarTextoPedido(index){
               second: "2-digit"
             });
 
-            // 🔥 GUARDAR NOMBRE ORIGINAL DEL CLIENTE
             pedidos[index].convertidoDesde = "llevar";
             pedidos[index].nombreLlevar = pedidos[index].mesa;
 
-            // 🔥 CAMBIAR A ALISTAR
             pedidos[index].tipo = "alistar";
-            // Mantenemos el nombre del cliente en 'mesa' para referencia, pero el tipo cambia
             pedidos[index].hora = horaExacta;
             pedidos[index].horaRegistro = Date.now();
             pedidos[index].atendido = false;
@@ -2573,7 +2484,6 @@ function copiarTextoPedido(index){
             guardarHistorial();
             mostrar();
             
-            // 👉 FORZAR EL CAMBIO DE VISTA A "ALISTAR" PARA QUE EL USUARIO VEA EL CAMBIO
             mostrarSeccionPedidos('alistar');
           }
 
@@ -2610,16 +2520,13 @@ function copiarTextoPedido(index){
           }
 
 
-          /* =================================================
-            INIT
-          ================================================= */
+          /* INIT */
           crearMenuEditable(TOTAL_ENTRADAS,"entradas","E");
           crearMenuEditable(TOTAL_SEGUNDOS,"segundos","S");
 
           escucharStock("entradas", TOTAL_ENTRADAS, "E");
           escucharStock("segundos", TOTAL_SEGUNDOS, "S");
 
-          // 🔥 aplicar estado guardado
           ["entradas","segundos"].forEach(seccion=>{
             const oculto = localStorage.getItem("iniOculto_"+seccion);
             if(oculto === "1"){
@@ -2629,13 +2536,13 @@ function copiarTextoPedido(index){
 
 
           crearItems(extrasComida,"extrasComida");
-          crearItems(envases,"envases");
+          // crearItems(envases,"envases"); ELIMINADO
 
           mostrar();
           actualizarBotonesTipo();
 
 
-          // 🔥 TEMPORIZADOR GLOBAL (actualiza cada segundo)
+          // TEMPORIZADOR GLOBAL
 setInterval(() => {
 
   document.querySelectorAll(".timer").forEach(timer => {
@@ -2666,22 +2573,21 @@ setInterval(() => {
 
     timer.textContent = tiempo;
 
-    // 🔥 PINTAR EL CUADRITO SEGÚN URGENCIA
       const pedidoBox = timer.closest(".pedido");
 
       if (pedidoBox) {
 
         if (minutos < 5) {
-          pedidoBox.style.background = "#C8E6C9";   // verde suave
+          pedidoBox.style.background = "#C8E6C9";   
         } 
         else if (minutos < 10) {
-          pedidoBox.style.background = "#FFF9C4";   // amarillo suave
+          pedidoBox.style.background = "#FFF9C4";   
         } 
         else {
-          pedidoBox.style.background = "#FFCDD2";   // rojo suave
+          pedidoBox.style.background = "#FFCDD2";   
         }
 
-        pedidoBox.style.color = "black";  // mantener letras negras
+        pedidoBox.style.color = "black";  
       }
 
   });
@@ -2689,7 +2595,6 @@ setInterval(() => {
 }, 1000);
 
 
-          // 🔥 restaurar tipo guardado
           const tipoGuardado = localStorage.getItem("tipoSeleccionado");
           if(tipoGuardado){
             document.getElementById("tipo").value = tipoGuardado;
@@ -2698,7 +2603,6 @@ setInterval(() => {
           guardarTipo();
           actualizarBotonesTipo();
 
-          // 🔥 restaurar vista guardada
           const vistaGuardada = localStorage.getItem("vistaActualMisti");
           if(vistaGuardada){
             vistaActual = vistaGuardada;
@@ -2706,14 +2610,13 @@ setInterval(() => {
 
           cambiarVista(vistaActual);
 
-          deliveryCosto.addEventListener("input",calcularPreview);
+          // deliveryCosto.addEventListener eliminado porque el input no existe
 
           async function descargarWordTipo(tipoFiltrado){
 
             let listaImprimir = [];
 
             if(tipoFiltrado === "alistar" || tipoFiltrado === "mesa"){
-               // Combinamos ambos para imprimir la tanda de cocina
                listaImprimir = pedidos.filter(p=> (p.tipo === "mesa" || p.tipo === "alistar") && !p.atendido);
             } else {
                listaImprimir = pedidos.filter(p=>p.tipo===tipoFiltrado);
@@ -2772,7 +2675,6 @@ setInterval(() => {
                     })
                   );
 
-                  // Añadir tipo para diferenciar en impresión
                   contenido.push(
                      new Paragraph({
                       children:[
@@ -2865,7 +2767,7 @@ setInterval(() => {
 
 </div>
 
-<!-- 🔥 BOTONES FLOTANTES -->
+<!-- BOTONES FLOTANTES -->
 <div class="fab-container">
     <button class="fab fab-up" onclick="window.scrollTo({top:0, behavior:'smooth'})">
         ⬆️
