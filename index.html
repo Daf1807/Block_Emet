@@ -705,14 +705,6 @@ async function validarAcceso() {
   if (rolIntento === "MOSO") {
     if (claveIngresada === CLAVE_PRINCIPAL) {
       // Verificar hora (lógica original)
-      const ahora = new Date();
-      const expiracion = new Date();
-      expiracion.setHours(17, 0, 0, 0); // 5:00 PM
-      if (ahora > expiracion) {
-        alert("Ya pasó la hora límite de acceso.");
-        cancelarLogin();
-        return;
-      }
       
       iniciarSesion("MOSO");
     } else {
