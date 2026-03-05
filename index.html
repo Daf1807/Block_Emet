@@ -13,7 +13,6 @@
   --bg:#f4f6f9;
   --card:#ffffff;
   --gris-suave:#f8f9fa;
-  --morado-cliente: #9C27B0;
 }
 
 
@@ -326,20 +325,6 @@ button:hover{
   background:#fff;
 }
 
-/* 🔥 RESTRICCIÓN CLIENTE: LOS NOMBRES SE VEN COMO TEXTO PLANO */
-body.rol-cliente .nombrePlato {
-  background: transparent;
-  border: 2px solid transparent; /* Mantiene el espacio para alineación */
-  color: #000;
-  font-weight: bold;
-  padding-left: 0;
-  pointer-events: none; 
-}
-body.rol-cliente .nombrePlato:hover {
-  border-color: transparent;
-  transform: none;
-}
-
 .filaMenu{
   display:flex;
   gap:10px;
@@ -405,7 +390,6 @@ body.rol-cliente .nombrePlato:hover {
   background:#8B0000;
 }
 
-/* LOGIN & ROLES STYLES */
 .login-container {
   position: fixed;
   top: 0;
@@ -417,7 +401,6 @@ body.rol-cliente .nombrePlato:hover {
   justify-content: center;
   align-items: center;
   font-family: 'Segoe UI', sans-serif;
-  z-index: 2000;
 }
 
 .login-box {
@@ -477,61 +460,6 @@ body.rol-cliente .nombrePlato:hover {
   font-size: 13px;
 }
 
-/* ESTILOS SELECCIÓN DE ROL */
-.role-selector {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.role-btn {
-  padding: 30px;
-  font-size: 24px;
-  font-weight: bold;
-  border-radius: 15px;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s;
-  color: white;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.role-moso { background: #2c3e50; }
-.role-cliente { background: #27ae60; }
-
-.role-btn:hover { transform: scale(1.05); }
-
-/* ESTILOS NOTIFICACIONES (CAMPANITA MOSO) */
-#alertaMosoNotificacion {
-  position: fixed;
-  top: 70px;
-  right: 20px;
-  background: #ff0000;
-  color: white;
-  padding: 15px 20px;
-  border-radius: 10px;
-  font-weight: bold;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  cursor: pointer;
-  z-index: 1500;
-  display: none;
-  animation: parpadeo 1s infinite;
-  border: 2px solid white;
-}
-
-/* AVISO BLOQUEO CLIENTE */
-#avisoBloqueoCliente {
-  background: #fff3cd;
-  color: #856404;
-  padding: 15px;
-  border-radius: 8px;
-  margin-top: 15px;
-  border: 1px solid #ffeeba;
-  display: none;
-  text-align: center;
-  font-weight: bold;
-}
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -577,101 +505,33 @@ body.rol-cliente .nombrePlato:hover {
   padding-left: 15px;
 }
 
-/* UTILIDADES DE ROL (OCULTAR ELEMENTOS) */
-.solo-moso { display: none; }
-.solo-cliente { display: none; }
-
-body.rol-moso .solo-moso { display: block !important; }
-body.rol-moso .solo-moso-flex { display: flex !important; }
-body.rol-moso .solo-moso-inline { display: inline-block !important; }
-
-body.rol-cliente .solo-cliente { display: block !important; }
-body.rol-cliente .solo-cliente-flex { display: flex !important; }
-
-/* Restricciones Cliente */
-body.rol-cliente .colIni { display: none !important; }
-body.rol-cliente .header-ini-toggle { display: none !important; }
-body.rol-cliente .item-restringido-cliente { display: none !important; }
-body.rol-cliente .tipoSelector { display: none !important; }
-body.rol-cliente #cardTotal { display: none !important; }
-body.rol-cliente #cardDelivery { display: none !important; }
-body.rol-cliente #cardEnvases { display: none !important; }
-
-/* Contenedor para impresión del Cliente */
-#contenedorPedidosCliente {
-    display: none;
-}
-
-/* 🔥 NUEVO ESTILO PARA PEDIDO CLIENTE */
-.pedido-cliente {
-  border: 3px solid var(--morado-cliente) !important;
-  background: #fdf3ff;
-  position: relative;
-}
-.pedido-cliente::before {
-  content: "🟣 PEDIDO CLIENTE - SEGUNDO NIVEL";
-  display: block;
-  color: var(--morado-cliente);
-  font-weight: bold;
-  margin-bottom: 8px;
-  font-size: 14px;
-}
-
 </style>
 </head>
 
 <body>
 
-<!-- 🔥 PANTALLA LOGIN / ROLES -->
 <div id="loginPantalla" class="login-container">
-  
-  <!-- 1. Selección de Rol -->
-  <div id="pantallaRoles" class="role-selector">
-    <button class="role-btn role-moso" onclick="mostrarLoginMoso()">
-      👨‍💼 MOSO
-    </button>
-    <button class="role-btn role-cliente" onclick="mostrarLoginCliente()">
-      🍽 CLIENTE
-    </button>
-  </div>
+  <div class="login-box">
+    <h2>🔐 EL MISTI</h2>
+    <p class="subtitulo">Sistema de Gestión</p>
 
-  <!-- 2. Login Moso -->
-  <div id="loginMosoBox" class="login-box" style="display:none;">
-    <h2>👨‍💼 Acceso MOSO</h2>
-    <p class="subtitulo">Ingrese su contraseña principal</p>
-    <input type="password" id="inputClaveMoso" placeholder="Contraseña">
-    <button onclick="ingresarComoMoso()">Ingresar</button>
-    <button onclick="volverARoles()" style="background:#999; margin-top:10px;">Volver</button>
-    <p id="mensajeErrorMoso"></p>
-  </div>
+    <input type="password" id="inputClave" placeholder="Ingrese contraseña">
+    <button onclick="verificarClave()">Ingresar</button>
 
-  <!-- 3. Login Cliente -->
-  <div id="loginClienteBox" class="login-box" style="display:none;">
-    <h2>🍽️ Acceso CLIENTE</h2>
-    <p class="subtitulo">Segundo Nivel</p>
-    <input type="password" id="inputClaveCliente" placeholder="Contraseña de Cliente">
-    <button onclick="ingresarComoCliente()">Pedir</button>
-    <button onclick="volverARoles()" style="background:#999; margin-top:10px;">Volver</button>
-    <p id="mensajeErrorCliente"></p>
+    <p id="mensajeError"></p>
   </div>
-
 </div>
 
 <div id="sistema" style="display:none;">
 
 
-<header>
-  🍽️ EL MISTI - Registro de Pedidos
-  <div id="rolDisplay" style="font-size:12px; font-weight:normal; margin-top:5px;"></div>
-</header>
+<header>🍽️ EL MISTI - Registro de Pedidos</header>
 
 <div style="display:flex;gap:10px;padding:10px;justify-content:center">
 
   <button onclick="cambiarVista('meseros')">👨‍💼 Meseros</button>
   <button onclick="cambiarVista('cocina')">👨‍🍳 Cocina</button>
   <button onclick="cambiarVista('clientes')">👀 Pantalla Clientes</button>
-  <!-- Botón Salir solo para Moso -->
-  <button onclick="cerrarSesion()" class="btn solo-moso" style="margin-left:auto; font-size:12px;">🚪 Salir</button>
 
 </div>
 
@@ -681,17 +541,6 @@ body.rol-cliente #cardEnvases { display: none !important; }
 
 
           <section>
-
-          <!-- 🔧 CONFIGURACIÓN CLIENTE (Solo MOSO) -->
-          <section class="solo-moso card">
-            <h2>⚙️ Configuración Cliente</h2>
-            <p style="font-size:12px;color:#666">Establecer la contraseña para que los clientes del segundo nivel puedan pedir.</p>
-            <div style="display:flex; gap:10px; margin-top:10px;">
-              <input type="text" id="nuevaClaveCliente" placeholder="Nueva Contraseña Cliente" style="flex:1">
-              <button onclick="guardarConfigCliente()" class="btn">Guardar</button>
-            </div>
-            <p id="msgConfigCliente" style="font-size:12px; margin-top:5px; font-weight:bold; color:green;"></p>
-          </section>
 
           <div class="card">
           Tipo:
@@ -713,14 +562,6 @@ body.rol-cliente #cardEnvases { display: none !important; }
           <input id="mesa" style="width:100%">
           <div id="mesasBotones" style="margin-top:10px;display:none;"></div>
 
-          <!-- Botón Solicitar Atención (Solo CLIENTE) -->
-          <div class="solo-cliente" style="margin-top:20px; text-align:center;">
-            <p style="font-size:14px; color:#666; margin-bottom:5px;">¿Necesitas algo más?</p>
-            <button class="fab" style="margin:0 auto; width:60px; height:60px; background:var(--rojo);" onclick="solicitarAtencion()">
-              🔔
-            </button>
-          </div>
-
           </div>
 
           <div class="grid">
@@ -730,7 +571,7 @@ body.rol-cliente #cardEnvases { display: none !important; }
 
           <div style="display:flex;align-items:center;gap:4px;font-weight:bold;margin-bottom:6px">
 
-            <button onclick="toggleIni('entradas')" class="header-ini-toggle"
+            <button onclick="toggleIni('entradas')" 
                     style="padding:2px 6px;border-radius:6px">
               👁
             </button>
@@ -751,7 +592,7 @@ body.rol-cliente #cardEnvases { display: none !important; }
 
           <div style="display:flex;align-items:center;gap:4px;font-weight:bold;margin-bottom:6px">
 
-            <button onclick="toggleIni('segundos')" class="header-ini-toggle"
+            <button onclick="toggleIni('segundos')" 
                     style="padding:2px 6px;border-radius:6px">
               👁
             </button>
@@ -767,24 +608,11 @@ body.rol-cliente #cardEnvases { display: none !important; }
           </div>
 
           <div style="padding:10px">
-            <button id="btnRegistrarPedido" class="big" onclick="registrarPedido()">
+            <button class="big" onclick="registrarPedido()">
               ✅ Registrar pedido
             </button>
           </div>
 
-          <!-- AVISO BLOQUEO CLIENTE -->
-          <div id="avisoBloqueoCliente">
-            ⚠️ Solo se puede pedir una vez.<br>
-            Los pedidos adicionales luego del envío de la comanda demoran.<br>
-            No se aceptan modificaciones.
-          </div>
-
-          <!-- BOTÓN IMPRIMIR CLIENTE -->
-          <div class="solo-cliente" style="padding:10px;">
-              <button class="btn" style="width:100%; padding:15px; font-size:16px; background:#333;" onclick="verMiComanda()">
-                  🖨️ Ver / Imprimir mi Pedido
-              </button>
-          </div>
 
           </div>
 
@@ -795,13 +623,13 @@ body.rol-cliente #cardEnvases { display: none !important; }
           </div>
 
           <!-- ENVASES -->
-          <div class="card" id="cardEnvases">
+          <div class="card">
           <h2>🥡 Envases para llevar</h2>
           <div id="envases"></div>
           </div>
 
           <!-- DELIVERY -->
-          <div class="card" id="cardDelivery">
+          <div class="card">
           <h2>🚚 Delivery</h2>
           Costo adicional:
           <input type="number" id="deliveryCosto" value="0" min="0" step="0.5" style="width:80px"> soles
@@ -811,20 +639,24 @@ body.rol-cliente #cardEnvases { display: none !important; }
             💰 Total actual: <b id="totalPreview">S/ 0.00</b>
           </div>
 
-          <button class="btn solo-moso" onclick="resetearDisponibles()" style="margin-top:10px;width:100%">
+
+          <button class="big" onclick="registrarPedido()">✅ Registrar pedido</button>
+
+          <button class="btn" onclick="resetearDisponibles()" style="margin-top:10px;width:100%">
           🔄 Resetear DISP
           </button>
 
-          <button class="btn solo-moso" onclick="eliminarTodo()" 
+          <button class="btn" onclick="eliminarTodo()" 
           style="margin-top:10px;width:100%;background:black">
           🗑️ Eliminar TODOS los pedidos
           </button>
 
 
 
-          <h2 class="solo-moso">📋 Pedidos del día</h2>
+          <h2>📋 Pedidos del día</h2>
 
-          <div style="display:flex;gap:10px;margin-bottom:15px; flex-wrap:wrap;" class="solo-moso">
+          <div style="display:flex;gap:10px;margin-bottom:15px; flex-wrap:wrap;">
+            <!-- 🔥 NUEVO BOTÓN IMPRIMIR A LA IZQUIERDA -->
             <button onclick="mostrarSeccionPedidos('imprimir')" id="btnImprimirPedidos" class="btn">🖨️ Imprimir</button>
             
             <button onclick="mostrarSeccionPedidos('mesa')" id="btnMesaPedidos">🍽 Mesa</button>
@@ -840,8 +672,8 @@ body.rol-cliente #cardEnvases { display: none !important; }
               <div id="seccion_alistar"></div>
             </div>
 
-            <div id="contenedorPedidos" class="card solo-moso"></div>
-            <div id="contenedorPedidosCliente" class="card solo-cliente"></div>
+              <div id="contenedorPedidos" class="card"></div>
+
 
           </section>
 
@@ -855,263 +687,54 @@ body.rol-cliente #cardEnvases { display: none !important; }
           <script>
 
 const CLAVE_PRINCIPAL = "MISTI2026";
-let rolActual = null; // 'moso' o 'cliente'
-let clienteYaPidio = false;
 
-// Firebase Config
-const firebaseConfig = {
-  apiKey: "AIzaSyCakBN0YRTOGCKVQ7A5iLKksNh0cjF-JOg",
-  authDomain: "el-misti-pedidos.firebaseapp.com",
-  projectId: "el-misti-pedidos",
-  storageBucket: "el-misti-pedidos.firebasestorage.app",
-  messagingSenderId: "337950171428",
-  appId: "1:337950171428:web:7a8124d45ec9e44fbe13b1",
-  measurementId: "G-3VSKDP2KF9"
-};
+function verificarClave() {
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+  const clave = document.getElementById("inputClave").value;
 
-/* =================================================
-   🔥 LÓGICA DE LOGIN Y ROLES
-================================================= */
-
-function mostrarLoginMoso() {
-  document.getElementById("pantallaRoles").style.display = "none";
-  document.getElementById("loginMosoBox").style.display = "block";
-}
-
-function mostrarLoginCliente() {
-  document.getElementById("pantallaRoles").style.display = "none";
-  document.getElementById("loginClienteBox").style.display = "block";
-}
-
-function volverARoles() {
-  document.getElementById("pantallaRoles").style.display = "flex";
-  document.getElementById("loginMesoBox").style.display = "none";
-  document.getElementById("loginClienteBox").style.display = "none";
-  document.getElementById("mensajeErrorMoso").innerText = "";
-  document.getElementById("mensajeErrorCliente").innerText = "";
-}
-
-function ingresarComoMoso() {
-  const clave = document.getElementById("inputClaveMoso").value;
-  
   if (clave === CLAVE_PRINCIPAL) {
-    rolActual = 'moso';
-    iniciarSesion();
-  } else {
-    document.getElementById("mensajeErrorMoso").innerText = "Contraseña incorrecta";
-  }
-}
 
-function ingresarComoCliente() {
-  const claveIngresada = document.getElementById("inputClaveCliente").value;
-  
-  // Leer clave desde Firestore
-  db.collection("configuracion").doc("accesoCliente").get()
-    .then((doc) => {
-      if (!doc.exists || !doc.data().clave) {
-        alert("⚠️ El sistema no tiene una contraseña de cliente configurada. Solicite ayuda al personal.");
-        return;
-      }
-      
-      const claveCorrecta = doc.data().clave;
-      
-      if (claveIngresada === claveCorrecta) {
-        rolActual = 'cliente';
-        iniciarSesion();
-      } else {
-        document.getElementById("mensajeErrorCliente").innerText = "Contraseña incorrecta";
-      }
-    })
-    .catch((error) => {
-      console.error("Error validando cliente:", error);
-      alert("Error de conexión. Intente nuevamente.");
-    });
-}
+    const ahora = new Date();
+    const expiracion = new Date();
 
-function iniciarSesion() {
-  localStorage.setItem("sesionActiva", "true");
-  localStorage.setItem("rolActual", rolActual);
-  
-  aplicarRolUI();
-  mostrarSistema();
-}
+    expiracion.setHours(17, 0, 0, 0); // 5:00 PM
 
-function cerrarSesion() {
-  localStorage.removeItem("sesionActiva");
-  localStorage.removeItem("rolActual");
-  location.reload(); // Recargar para limpiar memoria del rol
-}
-
-function aplicarRolUI() {
-  document.body.classList.remove("rol-moso", "rol-cliente");
-  document.getElementById("rolDisplay").innerText = "";
-
-  if (rolActual === 'moso') {
-    document.body.classList.add("rol-moso");
-    document.getElementById("rolDisplay").innerText = "Modo: MESERO";
-    cargarConfigCliente(); 
-    escucharNotificaciones(); 
-  } else if (rolActual === 'cliente') {
-    document.body.classList.add("rol-cliente");
-    document.getElementById("rolDisplay").innerText = "Modo: CLIENTE (2do Nivel)";
-    vistaActual = "meseros";
-    cambiarTipo('mesa');
-    document.getElementById("tipo").disabled = true;
-  }
-}
-
-/* =================================================
-   🔥 VERIFICACIÓN DE SESIÓN (CORREGIDO)
-================================================= */
-window.onload = function() {
-  const sesion = localStorage.getItem("sesionActiva");
-  const expiraEn = localStorage.getItem("expiraEn");
-  const rolGuardado = localStorage.getItem("rolActual");
-
-  if (sesion === "true" && expiraEn) {
-    // 🔥 CORRECCIÓN CRÍTICA: Si rolGuardado no existe (porque era el sistema viejo), asumimos MOSO
-    // Esto arregla el error "Parece que lo rompiste".
-    const rol = rolGuardado || 'moso'; 
-
-    // Si asumimos 'moso' para sesiones viejas, forzamos la aplicación de UI
-    // y hacemos que el rolActual coincida.
-    if (!rolGuardado) {
-        // Solo guardamos si no existía, para futuros ingresos
-        localStorage.setItem("rolActual", 'moso');
+    if (ahora > expiracion) {
+      alert("Ya pasó la hora límite de acceso.");
+      return;
     }
-    
-    rolActual = rol; // Sincronizar variable global
-    aplicarRolUI();
+
+    localStorage.setItem("sesionActiva", "true");
+    localStorage.setItem("expiraEn", expiracion.getTime());
+
     mostrarSistema();
+
   } else {
-      // Limpieza total
-      localStorage.removeItem("sesionActiva");
-      localStorage.removeItem("rolActual");
-      localStorage.removeItem("expiraEn");
-  }
-};
-
-/* =================================================
-   🔥 CONFIGURACIÓN CLIENTE (MOSO)
-================================================= */
-function cargarConfigCliente() {
-  db.collection("configuracion").doc("accesoCliente").get()
-    .then(doc => {
-      if(doc.exists && doc.data().clave) {
-        document.getElementById("nuevaClaveCliente").value = doc.data().clave;
-        document.getElementById("msgConfigCliente").innerText = "Configuración cargada.";
-      } else {
-        document.getElementById("nuevaClaveCliente").value = "";
-        document.getElementById("msgConfigCliente").innerText = "Sin contraseña configurada.";
-      }
-    });
-}
-
-function guardarConfigCliente() {
-  const nuevaClave = document.getElementById("nuevaClaveCliente").value;
-  if(!nuevaClave) {
-    alert("Ingrese una contraseña");
-    return;
-  }
-
-  db.collection("configuracion").doc("accesoCliente").set({
-    clave: nuevaClave
-  })
-  .then(() => {
-    document.getElementById("msgConfigCliente").innerText = "¡Contraseña guardada correctamente!";
-    setTimeout(() => document.getElementById("msgConfigCliente").innerText = "", 3000);
-  })
-  .catch(e => {
-    console.error(e);
-    alert("Error al guardar");
-  });
-}
-
-/* =================================================
-   🔥 NOTIFICACIONES (CAMPANITA CON SONIDO Y VIBRACIÓN)
-================================================= */
-function solicitarAtencion() {
-  const mesa = document.getElementById("mesa").value;
-  if(!mesa) {
-    alert("Por favor seleccione su mesa primero.");
-    return;
-  }
-
-  db.collection("notificaciones").add({
-    mesa: mesa,
-    fecha: firebase.firestore.FieldValue.serverTimestamp(),
-    leida: false
-  })
-  .then(() => {
-    alert("✅ Atención solicitada al personal.");
-  })
-  .catch(e => {
-    console.error(e);
-    alert("Error al enviar solicitud.");
-  });
-}
-
-function escucharNotificaciones() {
-  db.collection("notificaciones")
-    .where("leida", "==", false)
-    .orderBy("fecha", "desc")
-    .limit(1)
-    .onSnapshot(snapshot => {
-      const alerta = document.getElementById("alertaMosoNotificacion");
-      const audio = document.getElementById("sonidoCampanita"); 
-      
-      if(!snapshot.empty) {
-        const data = snapshot.docs[0].data();
-        document.getElementById("textoNotificacion").innerText = `🔔 Cliente en ${data.mesa} solicita atención`;
-        alerta.style.display = "block";
-        alerta.dataset.id = snapshot.docs[0].id;
-
-        // 🔥 REPRODUCIR SONIDO Y VIBRAR
-        if(audio) {
-            audio.play().catch(e => console.log("Audio bloqueado por el navegador hasta que interactúe:", e));
-        }
-        if(navigator.vibrate) {
-            navigator.vibrate([200, 100, 200]); 
-        }
-
-      } else {
-        alerta.style.display = "none";
-        if(audio) {
-            audio.pause();
-            audio.currentTime = 0;
-        }
-      }
-    });
-}
-
-function atenderNotificacion() {
-  const alerta = document.getElementById("alertaMantallaNotificacion");
-  const id = alerta.dataset.id;
-  const audio = document.getElementById("sonidoCampanita");
-
-  if(id) {
-    db.collection("notificaciones").doc(id).update({ leida: true })
-      .then(() => {
-        alerta.style.display = "none";
-        if(audio) {
-            audio.pause();
-            audio.currentTime = 0;
-        }
-      });
+    document.getElementById("mensajeError").innerText = "Contraseña incorrecta";
   }
 }
 
-/* =================================================
-   🔥 SISTEMA EXISTENTE
-================================================= */
+            // 🔥 CONFIG FIREBASE
+          const firebaseConfig = {
+            apiKey: "AIzaSyCakBN0YRTOGCKVQ7A5iLKksNh0cjF-JOg",
+            authDomain: "el-misti-pedidos.firebaseapp.com",
+            projectId: "el-misti-pedidos",
+            storageBucket: "el-misti-pedidos.firebasestorage.app",
+            messagingSenderId: "337950171428",
+            appId: "1:337950171428:web:7a8124d45ec9e44fbe13b1",
+            measurementId: "G-3VSKDP2KF9"
+          };
+
+          // Inicializar Firebase
+          firebase.initializeApp(firebaseConfig);
+          const db = firebase.firestore();
+
 
 function mostrarSistema() {
   document.getElementById("loginPantalla").style.display = "none";
   document.getElementById("sistema").style.display = "block";
 
+  // 🔥 recuperar última vista guardada
   const vistaGuardada = localStorage.getItem("vistaActualMisti");
 
   if (vistaGuardada) {
@@ -1122,6 +745,50 @@ function mostrarSistema() {
 }
 
 
+// Verificar sesión al cargar página
+window.onload = function() {
+  const sesion = localStorage.getItem("sesionActiva");
+  const expiraEn = localStorage.getItem("expiraEn");
+
+  if (sesion === "true" && expiraEn) {
+    const ahora = new Date().getTime();
+
+    if (ahora < parseInt(expiraEn)) {
+      mostrarSistema();
+    } else {
+      localStorage.removeItem("sesionActiva");
+      localStorage.removeItem("expiraEn");
+    }
+  }
+};
+/* =================================================
+  🔥 NUEVA FUNCIÓN: ENVIAR A COLA DE IMPRESIÓN
+================================================= */
+async function enviarImpresion(index){
+  const pedido = pedidos[index];
+  if(!pedido) return;
+
+  const texto = obtenerTextoPlano(pedido);
+
+  try {
+    await db.collection("cola_impresion").add({
+      texto: texto,
+      estado: "pendiente",
+      fecha: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // 🔥 SIN ALERT
+    console.log("Pedido enviado a impresión");
+
+  } catch (error) {
+    console.error("Error al enviar a impresión:", error);
+  }
+}
+
+          /* =================================================
+            🔥 STOCK EN TIEMPO REAL DESDE FIRESTORE
+          ================================================= */
+
 function cambiarVista(vista){
 
   vistaActual = vista;
@@ -1129,7 +796,7 @@ function cambiarVista(vista){
 
   document.getElementById("vista_meseros").style.display = "none";
   document.getElementById("vista_cocina").style.display = "none";
-  documentCliente.style.display = "none";
+  document.getElementById("vista_clientes").style.display = "none";
 
   if(vista==="meseros")
     document.getElementById("vista_meseros").style.display = "block";
@@ -1160,6 +827,7 @@ function mostrarCocina(){
   let acumuladoEntradasLlevar = {};
   let acumuladoSegundosLlevar = {};
 
+  // Función auxiliar para procesar items
   const procesarItems = (lista, pedido, mapTotales, tipoGrupo) => {
     
     // Objeto temporal para agrupar notas
@@ -1261,9 +929,7 @@ function mostrarCocina(){
     // 🔥 LÓGICA DE COLORES
     let claseColor = ""; // Por defecto rojo (CSS)
     
-    if (p.origen === 'cliente') {
-        claseColor = "pedido-cliente";
-    } else if (p.tipo === "alistar" || p.convertidoDesde === "llevar") {
+    if (p.tipo === "alistar" || p.convertidoDesde === "llevar") {
       claseColor = "pedido-azul"; // Azul para llevar
     } else if (p.convertidoDesde === "reserva") {
       claseColor = "pedido-amarillo"; // Amarillo para reserva
@@ -1281,6 +947,7 @@ function mostrarCocina(){
       </div>
     `;
 
+    // Avisos de origen
     let avisos = "";
     if(p.convertidoDesde === "reserva" || p.nombreReserva){
       avisos += `<div style="color:#FFC107;font-weight:bold;margin-bottom:5px;font-size:18px">⚠️ RESERVA: ${p.nombreReserva}</div>`;
@@ -1290,7 +957,7 @@ function mostrarCocina(){
     }
 
     listaHtml+=`
-      <div class="${claseColor}" id="pedido_cocina_${contador}">
+      <div class="pedido ${claseColor}" id="pedido_cocina_${contador}">
 
         ${tituloHeader}
 
@@ -1433,6 +1100,7 @@ function marcarEntregado(pedidoIndex, tipo, itemIndex, cuadritoIndex){
 
 
 function dibujarItemsConCuadros(lista, indexPedido, tipo){
+
   if(!lista.length) return "";
 
   let agrupado = {};
@@ -1558,6 +1226,7 @@ function mostrarClientes(){
 
 
 function marcarServido(indexPedido, nombre, tipo){
+
   let pedido = pedidos[indexPedido];
 
   let lista = tipo==="entrada" 
@@ -1806,17 +1475,9 @@ function marcarServido(indexPedido, nombre, tipo){
 
             lista.forEach(i=>{
               const nombre=i.nombre||i;
-              
-              let claseExtra = "";
-              const permitidosCliente = ["Vaso adicional", "Medio vaso refresco"];
-              const esEnvase = (cont === "envases");
-              
-              if(!permitidosCliente.includes(nombre) || esEnvase) {
-                  claseExtra = "item-restringido-cliente";
-              }
 
               div.innerHTML+=`
-                <div class="item ${claseExtra}">
+                <div class="item">
                   ${nombre} ${i.precio?`(S/ ${i.precio})`:""}
                   <div class="controls">
                     <button onclick="cambiar('${nombre}',-1)">-</button>
@@ -1836,9 +1497,8 @@ function marcarServido(indexPedido, nombre, tipo){
           function cambiar(id,n){
             const el=document.getElementById(id);
             
-            // 🔥 SOLO EL MOSO VERIFICA EL STOCK. EL CLIENTE PUEDE PEDIR AUNQUE DIGA 0.
-            // Si es Cliente, permitimos aumentar sin restricción.
-            if(n > 0 && rolActual !== 'cliente'){
+            // 🔥 BLOQUEO SI ES SUMAR Y NO HAY STOCK
+            if(n > 0){
                 const idDisp = "disp_" + id;
                 const spanDisp = document.getElementById(idDisp);
                 if(spanDisp && parseInt(spanDisp.innerText) <= 0){
@@ -1946,62 +1606,42 @@ function marcarServido(indexPedido, nombre, tipo){
             const contenedor = document.getElementById("mesasBotones");
             contenedor.innerHTML = "";
 
-            // 🔥 Lógica DE ROLES PARA BOTONES DE MESA
-            if(rolActual === 'cliente') {
-              for(let i=1;i<=7;i++){
-                contenedor.innerHTML += `
-                  <button 
-                    type="button"
-                    onclick="seleccionarMesa('S${i}')"
-                    style="
-                      margin:4px;
-                      padding:12px 16px;
-                      border-radius:8px;
-                      background:#ddd;
-                      font-weight:bold;
-                      font-size:18px;
-                    ">
-                    S${i}
-                  </button>
-                `;
-              }
-            } else {
-              // MOSO: Todo el catálogo (1 al 14 y S1 al S7)
-              for(let i=1;i<=14;i++){
+            // Números 1 al 14
+            for(let i=1;i<=14;i++){
 
-                contenedor.innerHTML += `
-                  <button 
-                    type="button"
-                    onclick="seleccionarMesa(${i})"
-                    style="
-                      margin:4px;
-                      padding:8px 12px;
-                      border-radius:8px;
-                      background:#eee;
-                      font-weight:bold;
-                    ">
-                    ${i}
-                  </button>
-                `;
-              }
+              contenedor.innerHTML += `
+                <button 
+                  type="button"
+                  onclick="seleccionarMesa(${i})"
+                  style="
+                    margin:4px;
+                    padding:8px 12px;
+                    border-radius:8px;
+                    background:#eee;
+                    font-weight:bold;
+                  ">
+                  ${i}
+                </button>
+              `;
+            }
 
-              for(let i=1;i<=7;i++){
+            // Mesas S1 al S7
+            for(let i=1;i<=7;i++){
 
-                contenedor.innerHTML += `
-                  <button 
-                    type="button"
-                    onclick="seleccionarMesa('S${i}')"
-                    style="
-                      margin:4px;
-                      padding:8px 12px;
-                      border-radius:8px;
-                      background:#ddd;
-                      font-weight:bold;
-                    ">
-                    S${i}
-                  </button>
-                `;
-              }
+              contenedor.innerHTML += `
+                <button 
+                  type="button"
+                  onclick="seleccionarMesa('S${i}')"
+                  style="
+                    margin:4px;
+                    padding:8px 12px;
+                    border-radius:8px;
+                    background:#ddd;
+                    font-weight:bold;
+                  ">
+                  S${i}
+                </button>
+              `;
             }
           }
 
@@ -2051,20 +1691,9 @@ function marcarServido(indexPedido, nombre, tipo){
 
 
           /* =================================================
-            REGISTRAR (MODIFICADO PARA PERMITIR PEDIDOS SIN NOMBRE CONFIGURADO)
+            REGISTRAR (MISMA LÓGICA + solo cambio de lectura)
           ================================================= */
           function registrarPedido(){
-
-            if(rolActual === 'cliente' && clienteYaPidio) {
-                alert("Ya has realizado tu pedido. No puedes realizar modificaciones ni pedidos adicionales desde este dispositivo.");
-                return;
-            }
-
-            // 🔥 VALIDACIÓN DE MESA PARA CLIENTE
-            if(rolActual === 'cliente' && !document.getElementById("mesa").value) {
-                alert("Por favor seleccione su mesa (S1 - S7) antes de pedir.");
-                return;
-            }
 
             let total=0;
             let ent=0, seg=0;
@@ -2079,17 +1708,11 @@ function marcarServido(indexPedido, nombre, tipo){
               const nombre = document.querySelector(`input[data-nombre='E${i}']`)?.value;
               const c=+document.getElementById("E"+i).value;
 
-              // 🔥 CAMBIO CRÍTICO: Permitir registro si c > 0, aunque el nombre esté vacío
-              if(c > 0){
+              if(nombre && c>0){
 
                 const nota=document.getElementById("nota_E"+i)?.value || "";
 
-                // Si no hay nombre, usamos un genérico
-                let nombreFinal = nombre.trim();
-                if(!nombreFinal) nombreFinal = "Entrada " + (i+1);
-
-                let texto=`${c} - ${nombreFinal}`;
-                
+                let texto=`${c} - ${nombre}`;
                 db.collection("stock")
                   .doc("entradas")
                   .collection("items")
@@ -2112,16 +1735,11 @@ function marcarServido(indexPedido, nombre, tipo){
               const nombre = document.querySelector(`input[data-nombre='S${i}']`)?.value;
               const c=+document.getElementById("S"+i).value;
 
-              // 🔥 CAMBIO CRÍTICO
-              if(c > 0){
+              if(nombre && c>0){
 
                 const nota=document.getElementById("nota_S"+i)?.value || "";
 
-                let nombreFinal = nombre.trim();
-                if(!nombreFinal) nombreFinal = "Segundo " + (i+1);
-
-                let texto=`${c} - ${nombreFinal}`;
-                
+                let texto=`${c} - ${nombre}`;
                 db.collection("stock")
                   .doc("segundos")
                   .collection("items")
@@ -2145,6 +1763,7 @@ function marcarServido(indexPedido, nombre, tipo){
             total+=(seg-menus)*10;
             total+=(ent-menus)*5;
 
+            /* EXTRAS (IGUAL) */
             extrasComida.forEach(e=>{
               const c=+document.getElementById(e.nombre).value;
               if(c>0){
@@ -2153,6 +1772,7 @@ function marcarServido(indexPedido, nombre, tipo){
               }
             });
 
+            /* ENVASES (IGUAL) */
             envases.forEach(e=>{
               const c=+document.getElementById(e.nombre).value;
               if(c>0){
@@ -2169,11 +1789,14 @@ function marcarServido(indexPedido, nombre, tipo){
             return;
           }
 
+
           const tipoActual = document.getElementById("tipo").value;
 
           let horaExacta = null;
           let timestamp = null;
 
+          // Solo ponemos hora si es MESA o ALISTAR inmediato
+          // RESERVA y LLEVAR (programado) no tienen hora hasta activar
           if(tipoActual === "mesa" || tipoActual === "alistar"){
             const ahora = new Date();
             horaExacta = ahora.toLocaleTimeString("es-PE", {
@@ -2184,7 +1807,8 @@ function marcarServido(indexPedido, nombre, tipo){
             timestamp = Date.now();
           }
 
-          let pedidoObj = {
+
+          pedidos.push({
             tipo: tipoActual,
             mesa: document.getElementById("mesa").value,
             hora: horaExacta,
@@ -2196,115 +1820,21 @@ function marcarServido(indexPedido, nombre, tipo){
             detalleExtras: detalleExtras,
             detalleEnvases: detalleEnvases,
             total: total,
-          };
+          });
 
-          if(rolActual === 'cliente') {
-              pedidoObj.origen = "cliente";
-          }
-
-          pedidos.push(pedidoObj);
-
+            // 🔥 LIMPIAR NOMBRE/MESA DESPUÉS DE REGISTRAR
             document.getElementById("mesa").value = "";
 
 
             guardarHistorial();
             mostrar();
             reset();
-
-            if(rolActual === 'cliente') {
-                clienteYaPidio = true;
-                document.getElementById("btnRegistrarPedido").disabled = true;
-                document.getElementById("btnRegistrarPedido").innerText = "Pedido Enviado";
-                document.getElementById("btnRegistrarPedido").style.background = "#999";
-                document.getElementById("avisoBloqueoCliente").style.display = "block";
-                alert("✅ Pedido registrado con éxito. Puedes usar el botón 'Ver mi Pedido' para revisarlo.");
-            }
           }
 
-          /* =================================================
-            🔥 FUNCIÓN PARA QUE EL CLIENTE VEA SU COMANDA
-          ================================================== */
-          function verMiComanda() {
-              let miPedido = null;
-              for(let i = pedidos.length - 1; i >= 0; i--) {
-                  if(pedidos[i].origen === 'cliente') {
-                      miPedido = pedidos[i];
-                      break;
-                  }
-              }
-
-              if(!miPedido) {
-                  alert("Aún no has realizado un pedido.");
-                  return;
-              }
-
-              const indexReal = pedidos.indexOf(miPedido);
-              const contenido = generarHTMLComanda(miPedido, indexReal);
-
-              const divCliente = document.getElementById("contenedorPedidosCliente");
-              divCliente.innerHTML = `
-                  <h3>🖨️ Tu Pedido</h3>
-                  <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
-                  <br><br>
-                  ${contenido}
-              `;
-              
-              divCliente.style.display = "block";
-              divCliente.scrollIntoView({behavior: "smooth"});
-          }
-
-          function generarHTMLComanda(p, index) {
-              let html = `
-              <div class="imprimir-card">
-                  <div class="imprimir-header">
-                      <div>
-                          | MESA ${p.mesa.toUpperCase()} | ${p.hora || ''}
-                      </div>
-                  </div>                            
-                  <div class="imprimir-body">
-              `;
-
-              if(p.detalleEntradas.length > 0){
-                  html += `<div class="imprimir-section"><span class="imprimir-label">Entradas:</span><br>`;
-                  p.detalleEntradas.forEach(item => {
-                      let partes = item.split(" - ");
-                      let resto = partes[1] || "";
-                      let nota = "";
-                      if(resto.includes("| NOTA:")){
-                          let splitNota = resto.split("| NOTA:");
-                          resto = splitNota[0].trim();
-                          nota = splitNota[1].trim();
-                      }
-                      html += `${partes[0]} - ${resto}<br>`;
-                      if(nota) html += `Nota: ${nota}<br>`;
-                  });
-                  html += `</div>`;
-              }
-
-              if(p.detalleSegundos.length > 0){
-                  html += `<div class="imprimir-section"><span class="imprimir-label">Segundos:</span><br>`;
-                  p.detalleSegundos.forEach(item => {
-                      let partes = item.split(" - ");
-                      let resto = partes[1] || "";
-                      let nota = "";
-                      if(resto.includes("| NOTA:")){
-                          let splitNota = resto.split("| NOTA:");
-                          resto = splitNota[0].trim();
-                          nota = splitNota[1].trim();
-                      }
-                      html += `${partes[0]} - ${resto}<br>`;
-                      if(nota) html += `Nota: ${nota}<br>`;
-                  });
-                  html += `</div>`;
-              }
-
-              html += `</div></div>`;
-              return html;
-          }
 
           /* =================================================
             TODO LO DEMÁS IGUAL (MOSTRAR / ELIMINAR / ETC)
-          ================================================== */
+          ================================================= */
 
           function mostrar(){
 
@@ -2318,6 +1848,9 @@ function marcarServido(indexPedido, nombre, tipo){
               return;
             }
 
+
+            console.log("Array pedidos actual:", pedidos);
+
             let htmlMesa="";
             let htmlReserva="";
             let htmlLlevar="";
@@ -2327,6 +1860,7 @@ function marcarServido(indexPedido, nombre, tipo){
             let htmlAlistarPendientes = "";
             let htmlAlistarAtendidos = "";
 
+            // 🔥 ORDEN VISUAL SEGURO (sin tocar el array)
             const ordenIndices = [
               ...pedidos.map((p,i)=> !p.atendido ? i : null).filter(i=>i!==null),
               ...pedidos.map((p,i)=> p.atendido ? i : null).filter(i=>i!==null)
@@ -2336,19 +1870,8 @@ function marcarServido(indexPedido, nombre, tipo){
 
               const p = pedidos[i];
 
-              let clasePedido = "pedido";
-              let headerExtra = "";
-
-              if(p.origen === "cliente") {
-                  clasePedido = "pedido-cliente";
-              } else if (p.tipo === "alistar" || p.convertidoDesde === "llevar") {
-                clasePedido = "pedido-azul";
-              } else if (p.convertidoDesde === "reserva") {
-                clasePedido = "pedido-amarillo";
-              }
-
               let bloque=`
-              <div class="${clasePedido}" id="pedido_${i}">
+              <div class="pedido" id="pedido_${i}">
 
               <b>
               #${i+1} | ${p.tipo.toUpperCase()} | ${(p.mesa||"-").toUpperCase()}
@@ -2356,18 +1879,19 @@ function marcarServido(indexPedido, nombre, tipo){
               </b>
               `;
 
+              // Lógica para MESA y ALISTAR (ambos se atienden)
               if(p.tipo === "mesa" || p.tipo === "alistar"){
 
                 bloque += `
                 <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
 
                   ⏱ Tiempo: 
-    <span class="timer"
-        data-hora="${p.horaRegistro || ''}"
-        data-atendido="${p.atendido ? '1' : '0'}"
-        data-tiempofinal="${p.tiempoFinal || ''}"
-        style="font-weight:bold;color:#c40000">
-  ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
+<span class="timer"
+      data-hora="${p.horaRegistro || ''}"
+      data-atendido="${p.atendido ? '1' : '0'}"
+      data-tiempofinal="${p.tiempoFinal || ''}"
+      style="font-weight:bold;color:#c40000">
+ ${p.tiempoFinal ? p.tiempoFinal : "00:00"}
 </span>
 
                   ${!p.atendido ? `
@@ -2379,7 +1903,7 @@ function marcarServido(indexPedido, nombre, tipo){
                   <button onclick="toggleColapsado(${i})"
                     style="background:#6c757d;color:white">
                     ${p.colapsado ? "🔽 Ver" : "🔼 Ocultar"}
-                    </button>
+                  </button>
                   `}
 
                   <button onclick="editarPedido(${i})"
@@ -2397,6 +1921,7 @@ function marcarServido(indexPedido, nombre, tipo){
                 `;
 
               } else {
+                // Lógica para RESERVA y LLEVAR (programados)
 
                 if(p.tipo === "reserva"){
                   bloque += `
@@ -2407,7 +1932,7 @@ function marcarServido(indexPedido, nombre, tipo){
                   `;
                 }
 
-                if(p tipo === "llevar"){
+                if(p.tipo === "llevar"){
                   bloque += `
                     <button onclick="pasarAlistar(${i})"
                       style="background:#FF9800;color:white;margin-right:6px">
@@ -2435,6 +1960,7 @@ function marcarServido(indexPedido, nombre, tipo){
 
               }
 
+                // Avisos de conversión
                 if(p.convertidoDesde === "reserva" && p.nombreReserva){
                   bloque += `
                     <div style="
@@ -2459,7 +1985,7 @@ function marcarServido(indexPedido, nombre, tipo){
                       margin-top:6px;
                       font-weight:bold;
                       border-radius:4px;
-                      ">
+                    ">
                       🥡 PARA LLEVAR: ${p.nombreLlevar}
                     </div>
                   `;
@@ -2489,6 +2015,7 @@ function marcarServido(indexPedido, nombre, tipo){
 
               bloque+=`</div>`;
 
+                // Clasificación en secciones
                 if(p.tipo==="mesa"){
                   if(p.atendido){
                     htmlMesaAtendidos += bloque;
@@ -2539,7 +2066,7 @@ function marcarServido(indexPedido, nombre, tipo){
                 <div style="margin-top:20px;text-align:center">
                   <button onclick="toggleAtendidos('alistar')"
                     style="padding:8px 14px;border-radius:8px;background:#444;color:white">
-                    📂 Ver pedidos aestendidos
+                    📂 Ver pedidos atendidos
                   </button>
 
                   <div id="listaAtendidosAlistar" style="display:${mostrarAtendidosAlistar ? 'block' : 'none'};margin-top:15px">
@@ -2553,6 +2080,8 @@ function marcarServido(indexPedido, nombre, tipo){
             document.getElementById("seccion_reserva").innerHTML=htmlReserva;
             document.getElementById("seccion_llevar").innerHTML=htmlLlevar;
 
+            // Refrescar la vista actual si ya estamos en una sección
+            // Esto es para que el contenido se actualice si estamos mirando la lista
             const contenedor = document.getElementById("contenedorPedidos");
             const h3 = contenedor.querySelector("h3");
             if(h3){
@@ -2562,7 +2091,7 @@ function marcarServido(indexPedido, nombre, tipo){
               else if(h3.innerText.includes("Alistar")) mostrarSeccionPedidos('alistar');
               else if(h3.innerText.includes("Imprimir")) mostrarSeccionPedidos('imprimir');
             } else {
-                mostrarSeccionPedidos("mesa"); 
+                mostrarSeccionPedidos("mesa"); // Default
             }
 
           }
@@ -2585,6 +2114,7 @@ function obtenerTextoPlano(pedido){
         texto += `| RESERVA | ${nombre} | ${hora}\n`;
     }
 
+    // 2. Entradas
     if(pedido.detalleEntradas.length > 0){
         texto += "Entradas:\n";
         pedido.detalleEntradas.forEach(item => {
@@ -2592,6 +2122,7 @@ function obtenerTextoPlano(pedido){
             let qty = partes[0];
             let resto = partes[1] || "";
             
+            // Separar nombre y nota si existe
             let nota = "";
             if(resto.includes("| NOTA:")){
                 let splitNota = resto.split("| NOTA:");
@@ -2605,9 +2136,10 @@ function obtenerTextoPlano(pedido){
                 texto += `Nota: ${nota}\n`;
             }
         });
-        texto += "\n"; 
+        texto += "\n"; // Espacio entre secciones
     }
 
+    // 3. Segundos
     if(pedido.detalleSegundos.length > 0){
         texto += "Segundos:\n";
         pedido.detalleSegundos.forEach(item => {
@@ -2628,6 +2160,7 @@ function obtenerTextoPlano(pedido){
                 texto += `Nota: ${nota}\n`;
             }
         });
+        // 🔥 ELIMINADO: Ya no agregamos espacios ni puntos al final
     }
 
     return texto;
@@ -2650,588 +2183,691 @@ function copiarTextoPedido(index){
     });
 }
 
-function mostrarSeccionPedidos(tipo){
 
-  let titulo = "";
-  let contenido = "";
+          function mostrarSeccionPedidos(tipo){
 
-  if(tipo === 'imprimir'){
-      titulo = "🖨️ Imprimir (General)";
-      
-      const listaImprimir = pedidos
-          .filter(p => 
-              (p.tipo === 'mesa' || p.tipo === 'llevar' || p.tipo === 'reserva') && !p.atendido
-          )
-          .reverse(); 
+            let titulo = "";
+            let contenido = "";
 
-      if(listaImprimir.length === 0) {
-          contenido = "<p style='text-align:center; color:#777;'>No hay pedidos pendientes para imprimir.</p>";
-      } else {
-          listaImprimir.forEach((p, i) => {
-              const indexReal = pedidos.indexOf(p);
-              contenido += generarHTMLComanda(p, indexReal);
+            // 🔥 NUEVA LÓGICA PARA IMPRIMIR (AGRUPA MESA, LLEVAR, RESERVA)
+            if(tipo === 'imprimir'){
+                titulo = "🖨️ Imprimir (General)";
+                
+                // Filtrar pedidos activos de estos 3 tipos
+                // 🔥 AGREGADO .reverse() PARA QUE EL ÚLTIMO SEA EL PRIMERO
+                const listaImprimir = pedidos
+                    .filter(p => 
+                        (p.tipo === 'mesa' || p.tipo === 'llevar' || p.tipo === 'reserva') && !p.atendido
+                    )
+                    .reverse(); 
+
+                if(listaImprimir.length === 0) {
+                    contenido = "<p style='text-align:center; color:#777;'>No hay pedidos pendientes para imprimir.</p>";
+                } else {
+                    listaImprimir.forEach((p, i) => {
+                        // Buscamos el índice real en el array principal para la función copiar
+                        const indexReal = pedidos.indexOf(p);
+
+                        contenido += `
+                        <div class="imprimir-card">
+                              <!-- DENTRO DE if(tipo === 'imprimir') ... dentro del loop listaImprimir.forEach ... -->
+                              <!-- Busca el div con clase "imprimir-header" y pega esto ahí: -->
+
+                              <div class="imprimir-header" style="display:flex; justify-content:space-between; align-items:center;">
+                                  <div>
+                                      ${p.tipo === 'mesa' ? `| MESA ${p.mesa.toUpperCase()} |` : ''}
+                                      ${p.tipo === 'llevar' ? `| LLEVAR |` : ''}
+                                      ${p.tipo === 'reserva' ? `| RESERVA |` : ''}
+                                      ${p.mesa.toUpperCase()} | ${p.hora || ''}
+                                  </div>
+                                  
+                                  <div style="display:flex; gap:5px;">
+                                      <button class="imprimir-copy-btn" onclick="copiarTextoPedido(${indexReal})">📋 COPIAR</button>
+                                      <!-- 🔥 NUEVO BOTÓN ENVIAR -->
+                                      <button class="imprimir-copy-btn" 
+                                              onclick="enviarImpresion(${indexReal})" 
+                                              style="background:#2196F3;">
+                                              🖨️ IMPRIMIR
+                                      </button>
+                                  </div>
+                              </div>                            
+
+
+                          
+                            <div class="imprimir-body">
+                        `;
+
+                        // Entradas
+                        if(p.detalleEntradas.length > 0){
+                            contenido += `<div class="imprimir-section"><span class="imprimir-label">Entradas:</span><br>`;
+                            p.detalleEntradas.forEach(item => {
+                                let partes = item.split(" - ");
+                                let resto = partes[1] || "";
+                                let nota = "";
+                                if(resto.includes("| NOTA:")){
+                                    let splitNota = resto.split("| NOTA:");
+                                    resto = splitNota[0].trim();
+                                    nota = splitNota[1].trim();
+                                }
+                                contenido += `${partes[0]} - ${resto}<br>`;
+                                if(nota) contenido += `Nota: ${nota}<br>`;
+                            });
+                            contenido += `</div>`;
+                        }
+
+                        // Segundos
+                        if(p.detalleSegundos.length > 0){
+                            contenido += `<div class="imprimir-section"><span class="imprimir-label">Segundos:</span><br>`;
+                            p.detalleSegundos.forEach(item => {
+                                let partes = item.split(" - ");
+                                let resto = partes[1] || "";
+                                let nota = "";
+                                if(resto.includes("| NOTA:")){
+                                    let splitNota = resto.split("| NOTA:");
+                                    resto = splitNota[0].trim();
+                                    nota = splitNota[1].trim();
+                                }
+                                contenido += `${partes[0]} - ${resto}<br>`;
+                                if(nota) contenido += `Nota: ${nota}<br>`;
+                            });
+                            contenido += `</div>`;
+                        }
+
+                        contenido += `</div></div>`; // Cerrar body y card
+                    });
+                }
+
+            } else if(tipo === "mesa"){
+              titulo = "🍽️ Mesa";
+              contenido = document.getElementById("seccion_mesa").innerHTML;
+            }
+            else if(tipo === "alistar"){
+              titulo = "👨‍🍳 Alistar";
+              contenido = document.getElementById("seccion_alistar").innerHTML;
+            }
+            else if(tipo === "reserva"){
+              titulo = "📅 Reserva";
+              contenido = document.getElementById("seccion_reserva").innerHTML;
+            }
+            else if(tipo === "llevar"){
+              titulo = "🥡 Llevar (Programado)";
+              contenido = document.getElementById("seccion_llevar").innerHTML;
+            }
+
+            document.getElementById("contenedorPedidos").innerHTML = `
+              <h3>
+                ${titulo}
+                ${tipo === 'imprimir' ? '' : `<button class="btn" onclick="descargarWordTipo('${tipo}')">📄 Imprimir Word</button>`}
+              </h3>
+              ${contenido}
+            `;
+
+            // activar botón visual
+            document.querySelectorAll("#btnMesaPedidos,#btnReservaPedidos,#btnLlevarPedidos,#btnAlistarPedidos,#btnImprimirPedidos")
+              .forEach(b=>b.classList.remove("activo"));
+
+            if(tipo==="mesa") document.getElementById("btnMesaPedidos").classList.add("activo");
+            if(tipo==="reserva") document.getElementById("btnReservaPedidos").classList.add("activo");
+            if(tipo==="llevar") document.getElementById("btnLlevarPedidos").classList.add("activo");
+            if(tipo==="alistar") document.getElementById("btnAlistarPedidos").classList.add("activo");
+            if(tipo==="imprimir") document.getElementById("btnImprimirPedidos").classList.add("activo");
+
+          }
+
+
+          function eliminar(index){
+            if(confirm("¿Eliminar este pedido?")){
+              pedidos.splice(index,1);
+              guardarHistorial();
+              mostrar();
+            }
+          }
+
+          function editarPedido(index){
+
+            const p = pedidos[index];
+
+            if(!confirm("Editar este pedido?")) return;
+
+            // 🔥 1. DEVOLVER STOCK
+            p.detalleEntradas.forEach(item=>{
+              const partes = item.split(" - ");
+              const cantidad = parseInt(partes[0]);
+              const nombre = partes[1]?.split("|")[0].trim();
+
+              for(let i=0;i<TOTAL_ENTRADAS;i++){
+                const inputNombre = document.querySelector(`input[data-nombre='E${i}']`);
+                if(inputNombre && inputNombre.value === nombre){
+                  db.collection("stock")
+                    .doc("entradas")
+                    .collection("items")
+                    .doc("E"+i)
+                    .set({
+                      vendido: firebase.firestore.FieldValue.increment(-cantidad)
+                    }, { merge:true });
+                }
+              }
+            });
+
+            p.detalleSegundos.forEach(item=>{
+              const partes = item.split(" - ");
+              const cantidad = parseInt(partes[0]);
+              const nombre = partes[1]?.split("|")[0].trim();
+
+              for(let i=0;i<TOTAL_SEGUNDOS;i++){
+                const inputNombre = document.querySelector(`input[data-nombre='S${i}']`);
+                if(inputNombre && inputNombre.value === nombre){
+                  db.collection("stock")
+                    .doc("segundos")
+                    .collection("items")
+                    .doc("S"+i)
+                    .set({
+                      vendido: firebase.firestore.FieldValue.increment(-cantidad)
+                    }, { merge:true });
+                }
+              }
+            });
+
+          // 🔥 1. limpiar primero
+          reset();
+
+          // 🔥 2. luego cargar datos
+          document.getElementById("tipo").value = p.tipo;
+          document.getElementById("mesa").value = p.mesa;
+
+          // activar botones visuales
+          guardarTipo();
+          actualizarBotonesTipo();
+
+            // rellenar entradas
+            p.detalleEntradas.forEach(item=>{
+              const partes = item.split(" - ");
+              const cantidad = parseInt(partes[0]);
+              const nombre = partes[1]?.split("|")[0].trim();
+
+              for(let i=0;i<TOTAL_ENTRADAS;i++){
+                const inputNombre = document.querySelector(`input[data-nombre='E${i}']`);
+                if(inputNombre && inputNombre.value === nombre){
+                  document.getElementById("E"+i).value = cantidad;
+                }
+              }
+            });
+
+            // rellenar segundos
+            p.detalleSegundos.forEach(item=>{
+              const partes = item.split(" - ");
+              const cantidad = parseInt(partes[0]);
+              const nombre = partes[1]?.split("|")[0].trim();
+
+              for(let i=0;i<TOTAL_SEGUNDOS;i++){
+                const inputNombre = document.querySelector(`input[data-nombre='S${i}']`);
+                if(inputNombre && inputNombre.value === nombre){
+                  document.getElementById("S"+i).value = cantidad;
+                }
+              }
+            });
+
+            // 🔥 3. ELIMINAR PEDIDO ORIGINAL
+            pedidos.splice(index,1);
+            guardarHistorial();
+            mostrar();
+
+            calcularPreview();
+          }
+
+
+          function guardarHistorial(){
+            db.collection("pedidos").doc("diaActual").set({
+              lista: pedidos
+            });
+          }
+
+          function reset(){
+
+            // 🔥 Solo reiniciar cantidades del pedido
+            document.querySelectorAll(".qty").forEach(e=>e.value=0);
+
+            // limpiar notas
+            document.querySelectorAll("[id^='nota_E']").forEach(e=>e.value="");
+            document.querySelectorAll("[id^='nota_S']").forEach(e=>e.value="");
+
+            // NO tocar nombres
+            // NO tocar INICIAL
+            // NO tocar stock
+
+            deliveryCosto.value=0;
+
+            calcularPreview();
+          }
+
+          function resetearDisponibles(){
+
+            if(!confirm("¿Resetear todos los DISPONIBLES?")) return;
+
+            for(let i=0;i<TOTAL_ENTRADAS;i++){
+              db.collection("stock")
+                .doc("entradas")
+                .collection("items")
+                .doc("E"+i)
+                .set({ vendido:0 }, { merge:true });
+            }
+
+            for(let i=0;i<TOTAL_SEGUNDOS;i++){
+              db.collection("stock")
+                .doc("segundos")
+                .collection("items")
+                .doc("S"+i)
+                .set({ vendido:0 }, { merge:true });
+            }
+
+          }
+
+
+
+
+          function calcularTiempoFinal(inicio){
+
+            const ahora = Date.now();
+            const diff = ahora - inicio;
+
+            const minutos = Math.floor(diff / 60000);
+            const segundos = Math.floor((diff % 60000) / 1000);
+
+            return `${minutos.toString().padStart(2,"0")}:${segundos.toString().padStart(2,"0")}`;
+          }
+
+          function marcarAtendido(index){
+
+            const ahora = Date.now();
+            const inicio = pedidos[index].horaRegistro;
+
+            const diff = ahora - inicio;
+
+            const minutos = Math.floor(diff / 60000);
+            const segundos = Math.floor((diff % 60000) / 1000);
+
+            pedidos[index].tiempoFinal =
+              `${minutos.toString().padStart(2,"0")}:`+
+              `${segundos.toString().padStart(2,"0")}`;
+
+            pedidos[index].atendido = true;
+            pedidos[index].colapsado = true;
+
+            // Redibujar localmente ANTES de guardar en Firebase
+            mostrar(); 
+
+            // Luego guardar en Firebase para sincronizar con otros dispositivos
+            guardarHistorial();
+          }
+
+
+
+
+          function toggleColapsado(index){
+            pedidos[index].colapsado = !pedidos[index].colapsado;
+            guardarHistorial();
+            mostrar();
+          }
+
+            function toggleAtendidos(tipo){
+                if(tipo === 'mesa') mostrarAtendidosMesa = !mostrarAtendidosMesa;
+                if(tipo === 'alistar') mostrarAtendidosAlistar = !mostrarAtendidosAlistar;
+                mostrar();
+            }
+
+
+          function pasarAMesa(index){
+
+            const numeroMesa = prompt("Número de mesa:");
+            if(!numeroMesa) return;
+
+            const ahora = new Date();
+            const horaExacta = ahora.toLocaleTimeString("es-PE", {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            });
+
+            // 🔥 GUARDAR EL NOMBRE ORIGINAL CORRECTAMENTE
+            pedidos[index].convertidoDesde = "reserva";
+            pedidos[index].nombreReserva = pedidos[index].mesa;
+
+            // 🔥 CAMBIAR A MESA
+            pedidos[index].tipo = "mesa";
+            pedidos[index].mesa = numeroMesa;
+            pedidos[index].hora = horaExacta;
+            pedidos[index].horaRegistro = Date.now();
+            pedidos[index].atendido = false;
+            pedidos[index].colapsado = false;
+
+            guardarHistorial();
+            mostrar();
+          }
+
+          /* =================================================
+            NUEVO: PASAR A ALISTAR (Llevar -> Alistar)
+          ================================================= */
+          function pasarAlistar(index){
+
+            if(!confirm("¿Iniciar preparación para llevar?")) return;
+
+            const ahora = new Date();
+            const horaExacta = ahora.toLocaleTimeString("es-PE", {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            });
+
+            // 🔥 GUARDAR NOMBRE ORIGINAL DEL CLIENTE
+            pedidos[index].convertidoDesde = "llevar";
+            pedidos[index].nombreLlevar = pedidos[index].mesa;
+
+            // 🔥 CAMBIAR A ALISTAR
+            pedidos[index].tipo = "alistar";
+            // Mantenemos el nombre del cliente en 'mesa' para referencia, pero el tipo cambia
+            pedidos[index].hora = horaExacta;
+            pedidos[index].horaRegistro = Date.now();
+            pedidos[index].atendido = false;
+            pedidos[index].colapsado = false;
+
+            guardarHistorial();
+            mostrar();
+            
+            // 👉 FORZAR EL CAMBIO DE VISTA A "ALISTAR" PARA QUE EL USUARIO VEA EL CAMBIO
+            mostrarSeccionPedidos('alistar');
+          }
+
+
+          function actualizarInicialFirestore(prefijo,id,valor){
+
+            const seccion = prefijo === "E" ? "entradas" : "segundos";
+
+            db.collection("stock")
+              .doc(seccion)
+              .collection("items")
+              .doc(id)
+              .set({
+                inicial: parseInt(valor) || 0
+              }, { merge:true });
+
+          }
+
+
+          function actualizarNombreFirestore(input){
+
+            const id = input.dataset.nombre;
+            const seccion = input.dataset.seccion;
+            const valor = input.value;
+
+            db.collection("stock")
+              .doc(seccion)
+              .collection("items")
+              .doc(id)
+              .set({
+                nombre: valor
+              }, { merge:true });
+
+          }
+
+
+          /* =================================================
+            INIT
+          ================================================= */
+          crearMenuEditable(TOTAL_ENTRADAS,"entradas","E");
+          crearMenuEditable(TOTAL_SEGUNDOS,"segundos","S");
+
+          escucharStock("entradas", TOTAL_ENTRADAS, "E");
+          escucharStock("segundos", TOTAL_SEGUNDOS, "S");
+
+          // 🔥 aplicar estado guardado
+          ["entradas","segundos"].forEach(seccion=>{
+            const oculto = localStorage.getItem("iniOculto_"+seccion);
+            if(oculto === "1"){
+              toggleIni(seccion);
+            }
           });
-      }
 
-  } else if(tipo === "mesa"){
-    titulo = "🍽️ Mesa";
-    contenido = document.getElementById("seccion_mesa").innerHTML;
-  }
-  else if(tipo === "alistar"){
-    titulo = "👨‍🍳 Alistar";
-    contenido = document.getElementById("seccion_alistar").innerHTML;
-  }
-  else if(tipo === "reserva"){
-    titulo = "📅 Reserva";
-    contenido = document.getElementById("seccion_reserva").innerHTML;
-  }
-  else if(tipo === "llevar"){
-    titulo = "🥡 Llevar (Programado)";
-    contenido = document.getElementById("seccion_llevar").innerHTML;
-  }
 
-  document.getElementById("contenedorPedidos").innerHTML = `
-    <h3>
-      ${titulo}
-      ${tipo === 'imprimir' ? '' : `<button class="btn" onclick="descargarWordTipo('${tipo}')">📄 Imprimir Word</button>`}
-    </h3>
-    ${contenido}
-  `;
+          crearItems(extrasComida,"extrasComida");
+          crearItems(envases,"envases");
 
-  document.querySelectorAll("#btnMesaPedidos,#btnReservaPedidos,#btnLlevarPedidos,#btnAlistarPedidos,#btnImprimirPedidos")
-    .forEach(b=>b.classList.remove("activo"));
+          mostrar();
+          actualizarBotonesTipo();
 
-  if(tipo==="mesa") document.getElementById("btnMesaPedidos").classList.add("activo");
-  if(tipo==="reserva") document.getElementById("btnReservaPedidos").classList.add("activo");
-  if(tipo==="llevar") document.getElementById("btnLlevarPedidos").classList.add("activo");
-  if(tipo==="alistar") document.getElementById("btnAlistarPedidos").classList.add("activo");
-  if(tipo==="imprimir") document.getElementById("btnImprimirPedidos").classList.add("activo");
 
-}
-
-function eliminar(index){
-  if(confirm("¿Eliminar este pedido?")){
-    pedidos.splice(index,1);
-    guardarHistorial();
-    mostrar();
-  }
-}
-
-function editarPedido(index){
-
-  const p = pedidos[index];
-
-  if(!confirm("Editar este pedido?")) return;
-
-  p.detalleEntradas.forEach(item=>{
-    const partes = item.split(" - ");
-    const cantidad = parseInt(partes[0]);
-    const nombre = partes[1]?.split("|")[0].trim();
-
-    for(let i=0;i<TOTAL_ENTRADAS;i++){
-      const inputNombre = document.querySelector(`input[data-nombre='E${i}']`);
-      if(inputNombre && inputNombre.value === nombre){
-        db.collection("stock")
-          .doc("entradas")
-          .collection("items")
-          .doc("E"+i)
-          .set({
-            vendido: firebase.firestore.FieldValue.increment(-cantidad)
-          }, { merge:true });
-      }
-    }
-  });
-
-  p.detalleSegundos.forEach(item=>{
-    const partes = item.split(" - ");
-    const cantidad = parseInt(partes[0]);
-    const nombre = partes[1]?.split("|")[0].trim();
-
-    for(let i=0;i<TOTAL_SEGUNDOS;i++){
-      const inputNombre = document.querySelector(`input[data-nombre='S${i}']`);
-      if(inputNombre && inputNombre.value === nombre){
-        db.collection("stock")
-          .doc("segundos")
-          .collection("items")
-          .doc("S"+i)
-          .set({
-            vendido: firebase.firestore.FieldValue.increment(-cantidad)
-          }, { merge:true });
-      }
-    }
-  });
-
-  reset();
-
-  document.getElementById("tipo").value = p.tipo;
-  document.getElementById("mesa").value = p.mesa;
-
-  guardarTipo();
-  actualizarBotonesTipo();
-
-    p.detalleEntradas.forEach(item=>{
-      const partes = item.split(" - ");
-      const cantidad = parseInt(partes[0]);
-      const nombre = partes[1]?.split("|")[0].trim();
-
-      for(let i=0;i<TOTAL_ENTRADAS;i++){
-        const inputNombre = document.querySelector(`input[data-nombre='E${i}']`);
-        if(inputNombre && inputNombre.value === nombre){
-          document.getElementById("E"+i).value = cantidad;
-        }
-      }
-    });
-
-    p.detalleSegundos.forEach(item=>{
-      const partes = item.split(" - ");
-      const cantidad = parseInt(partes[0]);
-      const nombre = partes[1]?.split("|")[0].trim();
-
-      for(let i=0;i<TOTAL_SEGUNDOS;i++){
-        const inputNombre = document.querySelector(`input[data-nombre='S${i}']`);
-        if(inputNombre && inputNombre.value === nombre){
-          document.getElementById("S"+i).value = cantidad;
-        }
-      }
-    });
-
-    pedidos.splice(index,1);
-    guardarHistorial();
-    mostrar();
-
-    calcularPreview();
-}
-
-function guardarHistorial(){
-  db.collection("pedidos").doc("diaActual").set({
-    lista: pedidos
-  });
-}
-
-function reset(){
-
-  document.querySelectorAll(".qty").forEach(e=>e.value=0);
-
-  document.querySelectorAll("[id^='nota_E']").forEach(e=>e.value="");
-  document.querySelectorAll("[id^='nota_S']").forEach(e=>e.value="");
-
-  const delivery = document.getElementById("deliveryCosto");
-  if(delivery) delivery.value=0;
-
-  calcularPreview();
-}
-
-function resetearDisponibles(){
-
-  if(!confirm("¿Resetear todos los DISPONIBLES?")) return;
-
-  for(let i=0;i<TOTAL_ENTRADAS;i++){
-    db.collection("stock")
-      .doc("entradas")
-      .collection("items")
-      .doc("E"+i)
-      .set({ vendido:0 }, { merge:true });
-  }
-
-  for(let i=0;i<TOTAL_SEGUNDOS;i++){
-    db.collection("stock")
-      .doc("segundos")
-      .collection("items")
-      .doc("S"+i)
-      .set({ vendido:0 }, { merge:true });
-  }
-
-}
-
-function calcularTiempoFinal(inicio){
-
-  const ahora = Date.now();
-  const diff = ahora - inicio;
-
-  const minutos = Math.floor(diff / 60000);
-  const segundos = Math.floor((diff % 60000) / 1000);
-
-  return `${minutos.toString().padStart(2,"0")}:${segundos.toString().padStart(2,"0")}`;
-}
-
-function marcarAtendido(index){
-
-  const ahora = Date.now();
-  const inicio = pedidos[index].horaRegistro;
-
-  const diff = ahora - inicio;
-
-  const minutos = Math.floor(diff / 60000);
-  const segundos = Math.floor((diff % 60000) / 1000);
-
-  pedidos[index].tiempoFinal =
-    `${minutos.toString().padStart(2,"0")}:`+
-    `${segundos.toString().padStart(2,"0")}`;
-
-  pedidos[index].atendido = true;
-  pedidos[index].colapsado = true;
-
-  mostrar(); 
-
-  guardarHistorial();
-}
-
-function toggleColapsado(index){
-  pedidos[index].colapsado = !pedidos[index].colapsado;
-  guardarHistorial();
-  mostrar();
-}
-
-function toggleAtendidos(tipo){
-    if(tipo === 'mesa') mostrarAtendidosMesa = !mostrarAtendidosMesa;
-    if(tipo === 'alistar') mostrarAtendidosAlistar = !mostrarAtendidosAlistar;
-    mostrar();
-}
-
-function pasarAMesa(index){
-
-  const numeroMesa = prompt("Número de mesa:");
-  if(!numeroMesa) return;
-
-  const ahora = new Date();
-  const horaExacta = ahora.toLocaleTimeString("es-PE", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
-  });
-
-  pedidos[index].convertidoDesde = "reserva";
-  pedidos[index].nombreReserva = pedidos[index].mesa;
-
-  pedidos[index].tipo = "mesa";
-  pedidos[index].mesa = numeroMesa;
-  pedidos[index].hora = horaExacta;
-  pedidos[index].horaRegistro = Date.now();
-  pedidos[index].atendido = false;
-  pedidos[index].colapsado = false;
-
-  guardarHistorial();
-  mostrar();
-}
-
-/* =================================================
-  🔥 NUEVO: PASAR A ALISTAR (Llevar -> Alistar)
-================================================= */
-function pasarAlistar(index){
-
-  if(!confirm("¿Iniciar preparación para llevar?")) return;
-
-  const ahora = new Date();
-  const horaExacta = ahora.toLocaleTimeString("es-PE", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
-  });
-
-  pedidos[index].convertidoDesde = "llevar";
-  pedidos[index].nombreLlevar = pedidos[index].mesa;
-
-  pedidos[index].tipo = "alistar";
-  // Mantenemos el nombre del cliente en 'mesa' para referencia, pero el tipo cambia
-  pedidos[index].hora = horaExacta;
-  pedidos[index].horaRegistro = Date.now();
-  pedidos[index].atendido = false;
-  pedidos[index].colapsado = false;
-
-  guardarHistorial();
-  mostrar();
-  
-  mostrarSeccionPedidos('alistar');
-}
-
-function actualizarInicialFirestore(prefijo,id,valor){
-
-  const seccion = prefijo === "E" ? "entradas" : "segundos";
-
-  db.collection("stock")
-    .doc(seccion)
-    .collection("items")
-    .doc(id)
-    .set({
-      inicial: parseInt(valor) || 0
-    }, { merge:true });
-
-}
-
-function actualizarNombreFirestore(input){
-
-  const id = input.dataset.nombre;
-  const seccion = input.dataset.seccion;
-  const valor = input.value;
-
-  db.collection("stock")
-    .doc(seccion)
-    .collection("items")
-    .doc(id)
-    .set({
-      nombre: valor
-    }, { merge:true });
-
-}
-
-/* =================================================
-  INIT
-================================================= */
-crearMenuEditable(TOTAL_ENTRADAS,"entradas","E");
-crearMenuEditable(TOTAL_SEGUNDOS,"segundos","S");
-
-escucharStock("entradas", TOTAL_ENTRADAS, "E");
-escucharStock("segundos", TOTAL_SEGUNDOS, "S");
-
-["entradas","segundos"].forEach(seccion=>{
-  const oculto = localStorage.getItem("iniOculto_"+seccion);
-  if(oculto === "1"){
-    toggleIni(seccion);
-  }
-});
-
-
-crearItems(extrasComida,"extrasComida");
-crearItems(envases,"envases");
-
-mostrar();
-actualizarBotonesTipo();
-
-
-// 🔥 TEMPORIZADOR GLOBAL (actualiza cada segundo)
+          // 🔥 TEMPORIZADOR GLOBAL (actualiza cada segundo)
 setInterval(() => {
 
-document.querySelectorAll(".timer").forEach(timer => {
+  document.querySelectorAll(".timer").forEach(timer => {
 
-  const hora = timer.dataset.hora;
-  const atendido = timer.dataset.atendido;
+    const hora = timer.dataset.hora;
+    const atendido = timer.dataset.atendido;
 
-  if (atendido === "1") {
+    if (atendido === "1") {
 
-  const final = timer.dataset.tiempofinal;
-  if (final) {
-    timer.textContent = final;
-  }
-
-  return;
-}
-
-if (!hora) return;
-
-  const diff = Date.now() - Number(hora);
-
-const minutos = Math.floor(diff / 60000);
-const segundos = Math.floor((diff % 60000) / 1000);
-
-const tiempo =
-  minutos.toString().padStart(2,"0") + ":" +
-  segundos.toString().padStart(2,"0");
-
-timer.textContent = tiempo;
-
-// 🔥 PINTAR EL CUADRITO SEGÚN URGENCIA
-  const pedidoBox = timer.closest(".pedido");
-
-  if (pedidoBox) {
-
-    if (minutos < 5) {
-      pedidoBox.style.background = "#C8E6C9";   
-    } 
-    else if (minutos < 10) {
-      pedidoBox.style.background = "#FFF9C4";   
-    } 
-    else {
-      pedidoBox.style.background = "#FFCDD2";   
+    const final = timer.dataset.tiempofinal;
+    if (final) {
+      timer.textContent = final;
     }
 
-    pedidoBox.style.color = "black";  // mantener letras negras
+    return;
   }
 
-});
+  if (!hora) return;
+
+    const diff = Date.now() - Number(hora);
+
+    const minutos = Math.floor(diff / 60000);
+    const segundos = Math.floor((diff % 60000) / 1000);
+
+    const tiempo =
+      minutos.toString().padStart(2,"0") + ":" +
+      segundos.toString().padStart(2,"0");
+
+    timer.textContent = tiempo;
+
+    // 🔥 PINTAR EL CUADRITO SEGÚN URGENCIA
+      const pedidoBox = timer.closest(".pedido");
+
+      if (pedidoBox) {
+
+        if (minutos < 5) {
+          pedidoBox.style.background = "#C8E6C9";   // verde suave
+        } 
+        else if (minutos < 10) {
+          pedidoBox.style.background = "#FFF9C4";   // amarillo suave
+        } 
+        else {
+          pedidoBox.style.background = "#FFCDD2";   // rojo suave
+        }
+
+        pedidoBox.style.color = "black";  // mantener letras negras
+      }
+
+  });
 
 }, 1000);
 
 
-// 🔥 restaurar tipo guardado
-const tipoGuardado = localStorage.getItem("tipoSeleccionado");
-if(tipoGuardado){
-  document.getElementById("tipo").value = tipoGuardado;
-}
+          // 🔥 restaurar tipo guardado
+          const tipoGuardado = localStorage.getItem("tipoSeleccionado");
+          if(tipoGuardado){
+            document.getElementById("tipo").value = tipoGuardado;
+          }
 
-guardarTipo();
-actualizarBotonesTipo();
+          guardarTipo();
+          actualizarBotonesTipo();
 
-// 🔥 restaurar vista guardada
-const vistaGuardada = localStorage.getItem("vistaActualMisti");
-if(vistaGuardada){
-  vistaActual = vistaGuardada;
-}
+          // 🔥 restaurar vista guardada
+          const vistaGuardada = localStorage.getItem("vistaActualMisti");
+          if(vistaGuardada){
+            vistaActual = vistaGuardada;
+          }
 
-cambiarVista(vistaActual);
+          cambiarVista(vistaActual);
 
-const deliveryCosto = document.getElementById("deliveryCosto");
-if(deliveryCosto) deliveryCosto.addEventListener("input",calcularPreview);
+          deliveryCosto.addEventListener("input",calcularPreview);
 
-async function descargarWordTipo(tipoFiltrado){
+          async function descargarWordTipo(tipoFiltrado){
 
-  let listaImprimir = [];
+            let listaImprimir = [];
 
-  if(tipoFiltrado === "alistar" || tipoFiltrado === "mesa"){
-     listaImprimir = pedidos.filter(p=> (p.tipo === "mesa" || p.tipo === "alistar") && !p.atendido);
-  } else {
-     listaImprimir = pedidos.filter(p=>p.tipo===tipoFiltrado);
-  }
+            if(tipoFiltrado === "alistar" || tipoFiltrado === "mesa"){
+               // Combinamos ambos para imprimir la tanda de cocina
+               listaImprimir = pedidos.filter(p=> (p.tipo === "mesa" || p.tipo === "alistar") && !p.atendido);
+            } else {
+               listaImprimir = pedidos.filter(p=>p.tipo===tipoFiltrado);
+            }
 
-  if(listaImprimir.length===0){
-    alert("No hay pedidos en esta sección");
-    return;
-  }
+            if(listaImprimir.length===0){
+              alert("No hay pedidos en esta sección");
+              return;
+            }
 
-  const {
-    Document,
-    Packer,
-    Paragraph,
-    TextRun,
-    Table,
-    TableRow,
-    TableCell,
-    WidthType,
-    BorderStyle
-  } = docx;
+            const {
+              Document,
+              Packer,
+              Paragraph,
+              TextRun,
+              Table,
+              TableRow,
+              TableCell,
+              WidthType,
+              BorderStyle
+            } = docx;
 
-  const COLUMNAS = 6;
+            const COLUMNAS = 6;
 
-  let columnasPedidos = Array.from({length:COLUMNAS},()=>[]);
+            let columnasPedidos = Array.from({length:COLUMNAS},()=>[]);
 
-  listaImprimir.forEach((p,i)=>{
-    columnasPedidos[i % COLUMNAS].push(p);
-  });
+            listaImprimir.forEach((p,i)=>{
+              columnasPedidos[i % COLUMNAS].push(p);
+            });
 
-  const filas = [];
-  const maxFilas = Math.max(...columnasPedidos.map(c=>c.length));
+            const filas = [];
+            const maxFilas = Math.max(...columnasPedidos.map(c=>c.length));
 
-  for(let f=0; f<maxFilas; f++){
+            for(let f=0; f<maxFilas; f++){
 
-    const rowCells = [];
+              const rowCells = [];
 
-    for(let c=0; c<COLUMNAS; c++){
+              for(let c=0; c<COLUMNAS; c++){
 
-      const pedido = columnasPedidos[c][f];
+                const pedido = columnasPedidos[c][f];
 
-      if(pedido){
+                if(pedido){
 
-        const contenido = [];
+                  const contenido = [];
 
-        contenido.push(
-          new Paragraph({
-            children:[
-              new TextRun({
-                text:(pedido.mesa||"SIN NOMBRE").toUpperCase(),
-                bold:true,
-                size:30
-              })
-            ],
-            spacing:{ after:100 }
-          })
-        );
+                  contenido.push(
+                    new Paragraph({
+                      children:[
+                        new TextRun({
+                          text:(pedido.mesa||"SIN NOMBRE").toUpperCase(),
+                          bold:true,
+                          size:30
+                        })
+                      ],
+                      spacing:{ after:100 }
+                    })
+                  );
 
-        contenido.push(
-           new Paragraph({
-            children:[
-              new TextRun({
-                text:pedido.tipo.toUpperCase(),
-                color:"999999",
-                size:20
-              })
-            ],
-            spacing:{ after:100 }
-          })
-        );
+                  // Añadir tipo para diferenciar en impresión
+                  contenido.push(
+                     new Paragraph({
+                      children:[
+                        new TextRun({
+                          text:pedido.tipo.toUpperCase(),
+                          color:"999999",
+                          size:20
+                        })
+                      ],
+                      spacing:{ after:100 }
+                    })
+                  );
 
-        pedido.detalleEntradas.forEach(l=>{
-          contenido.push(
-            new Paragraph({
-              children:[ new TextRun({ text:l, size:24 }) ]
-            })
-          );
-        });
+                  pedido.detalleEntradas.forEach(l=>{
+                    contenido.push(
+                      new Paragraph({
+                        children:[ new TextRun({ text:l, size:24 }) ]
+                      })
+                    );
+                  });
 
-        pedido.detalleSegundos.forEach(l=>{
-          contenido.push(
-            new Paragraph({
-              children:[ new TextRun({ text:l, size:24 }) ]
-            })
-          );
-        });
+                  pedido.detalleSegundos.forEach(l=>{
+                    contenido.push(
+                      new Paragraph({
+                        children:[ new TextRun({ text:l, size:24 }) ]
+                      })
+                    );
+                  });
 
-        rowCells.push(
-          new TableCell({
-            width:{ size:100/COLUMNAS, type:WidthType.PERCENTAGE },
-            margins:{ top:100, bottom:100, left:150, right:150 },
-            borders:{
-              left:{style:BorderStyle.SINGLE, size:4, color:"cccccc"},
-              right:{style:BorderStyle.SINGLE, size:4, color:"cccccc"},
-              top:{style:BorderStyle.NONE},
-              bottom:{style:BorderStyle.NONE}
-            },
-            children:contenido
-          })
-        );
+                  rowCells.push(
+                    new TableCell({
+                      width:{ size:100/COLUMNAS, type:WidthType.PERCENTAGE },
+                      margins:{ top:100, bottom:100, left:150, right:150 },
+                      borders:{
+                        left:{style:BorderStyle.SINGLE, size:4, color:"cccccc"},
+                        right:{style:BorderStyle.SINGLE, size:4, color:"cccccc"},
+                        top:{style:BorderStyle.NONE},
+                        bottom:{style:BorderStyle.NONE}
+                      },
+                      children:contenido
+                    })
+                  );
 
-      } else {
+                } else {
 
-        rowCells.push(
-          new TableCell({
-            width:{ size:100/COLUMNAS, type:WidthType.PERCENTAGE },
-            children:[new Paragraph("")]
-          })
-        );
+                  rowCells.push(
+                    new TableCell({
+                      width:{ size:100/COLUMNAS, type:WidthType.PERCENTAGE },
+                      children:[new Paragraph("")]
+                    })
+                  );
 
-      }
+                }
 
-      filas.push(new TableRow({ children: rowCells }));
+              }
 
-  }
+              filas.push(new TableRow({ children: rowCells }));
 
-  const tabla = new Table({
-    width:{ size:100, type:WidthType.PERCENTAGE },
-    rows: filas
-  });
+            }
 
-  const doc = new Document({
-    sections:[{
-      properties:{
-        page:{
-          size:{ orientation:"landscape" },
-          margin:{ top:250, right:250, bottom:250, left:250 }
-        }
-      },
-      children:[tabla]
-    }]
-  });
+            const tabla = new Table({
+              width:{ size:100, type:WidthType.PERCENTAGE },
+              rows: filas
+            });
 
-  const blob = await Packer.toBlob(doc);
+            const doc = new Document({
+              sections:[{
+                properties:{
+                  page:{
+                    size:{ orientation:"landscape" },
+                    margin:{ top:250, right:250, bottom:250, left:250 }
+                  }
+                },
+                children:[tabla]
+              }]
+            });
 
-  const link=document.createElement("a");
-  link.href=URL.createObjectURL(blob);
-  link.download="Pedidos-"+tipoFiltrado+"-ElMisti.docx";
-  link.click();
-}
+            const blob = await Packer.toBlob(doc);
+
+            const link=document.createElement("a");
+            link.href=URL.createObjectURL(blob);
+            link.download="Pedidos-"+tipoFiltrado+"-ElMisti.docx";
+            link.click();
+          }
 
 
-  </script>
+
+
+          </script>
 
 </div>
 
-<!-- 🔥 AGREGADO: TAG DE AUDIO PARA EL TIMBRE -->
-<audio id="sonidoCampanita" loop preload="auto">
-    <source src="https://assets.mixkit.co/active_storage/sfx/2574/2574-preview.mp3" type="audio/mpeg">
-    Tu navegador no soporta audio.
-</audio>
-
-<!-- BOTONES FLOTANTES -->
+<!-- 🔥 BOTONES FLOTANTES -->
 <div class="fab-container">
-    <button class="fab fab-up" onclick="window.scrollTo({top:0, behavior:'smooth'})>
+    <button class="fab fab-up" onclick="window.scrollTo({top:0, behavior:'smooth'})">
         ⬆️
     </button>
     <button class="fab fab-down" onclick="document.getElementById('contenedorPedidos').scrollIntoView({behavior:'smooth'})">
@@ -3240,7 +2876,7 @@ async function descargarWordTipo(tipoFiltrado){
 </div>
 
 <div id="vista_cocina" style="display:none">
-  <h2 style="background:#222;color:white;padding:15px;margin:0;border-bottom:5px solid #FFC107">👨‍🍳 COCINA - PEDIDOS ACTIVOS
+  <h2 style="background:#222;color:white;padding:15px;margin:0;border-bottom:5px solid #FFC107">👨‍🍳 COCINA - PEDIDOS ACTIVOS</h2>
   <div id="cocina_contenido"></div>
 </div>
 
@@ -3250,5 +2886,5 @@ async function descargarWordTipo(tipoFiltrado){
 </div>
 
 </div>
-</body>
-</html>
+          </body>
+          </html>
