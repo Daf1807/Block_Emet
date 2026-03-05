@@ -10,7 +10,6 @@
 :root{
   --rojo:#8B0000;
   --amarillo:#FFC107;
-  --morado:#9C27B0; /* Color para Cliente */
   --bg:#f4f6f9;
   --card:#ffffff;
   --gris-suave:#f8f9fa;
@@ -162,25 +161,6 @@ button:hover{
 /* COLORES ESPECIALES PARA COCINA */
 .pedido-azul { border-left-color: #2196F3 !important; } /* Llevar/Alistar */
 .pedido-amarillo { border-left-color: #FFC107 !important; } /* Reserva */
-
-/* 🔥 ESTILOS NUEVOS CLIENTE */
-.pedido-cliente {
-  border-left: 6px solid var(--morado) !important;
-  background: #fbf7fd;
-}
-.pedido-cliente-header {
-  color: var(--morado);
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-}
-
-.input-deshabilitado {
-    background-color: #e0e0e0;
-    color: #888;
-    cursor: not-allowed;
-}
 
 /* ESTILOS PARA VISTA IMPRIMIR */
 .imprimir-card {
@@ -410,14 +390,6 @@ button:hover{
   background:#8B0000;
 }
 
-/* 🔥 PANTALLA INICIAL (Selección Rol) */
-.pantalla-inicial {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-  background: linear-gradient(135deg,#f4f6f9,#e9edf3);
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
-  z-index: 2000;
-}
-
 .login-container {
   position: fixed;
   top: 0;
@@ -425,11 +397,10 @@ button:hover{
   width: 100%;
   height: 100vh;
   background: linear-gradient(135deg, #7b2ff7, #f107a3);
-  display: none; /* Oculto por defecto */
+  display: flex;
   justify-content: center;
   align-items: center;
   font-family: 'Segoe UI', sans-serif;
-  z-index: 2001;
 }
 
 .login-box {
@@ -539,21 +510,14 @@ button:hover{
 
 <body>
 
-<!-- 🔥 PANTALLA INICIAL (NUEVA) -->
-<div id="pantallaInicial" class="pantalla-inicial">
-  <h1 style="color:var(--rojo); margin-bottom:40px;">🔐 EL MISTI</h1>
-  <button onclick="seleccionarRol('MOSO')" style="width:250px; padding:30px; margin:15px; font-size:24px; font-weight:bold; border-radius:20px; background:var(--rojo); color:white; border:none; cursor:pointer;">👨‍💼 MOSO</button>
-  <button onclick="seleccionarRol('CLIENTE')" style="width:250px; padding:30px; margin:15px; font-size:24px; font-weight:bold; border-radius:20px; background:var(--morado); color:white; border:none; cursor:pointer;">🍽 CLIENTE</button>
-</div>
-
-<!-- PANTALLA LOGIN (EXISTENTE) -->
 <div id="loginPantalla" class="login-container">
   <div class="login-box">
-    <h2 id="tituloLogin">🔐 EL MISTI</h2>
-    <p class="subtitulo" id="subtituloLogin">Sistema de Gestión</p>
+    <h2>🔐 EL MISTI</h2>
+    <p class="subtitulo">Sistema de Gestión</p>
+
     <input type="password" id="inputClave" placeholder="Ingrese contraseña">
-    <button onclick="validarAcceso()">Ingresar</button>
-    <button onclick="cancelarLogin()" style="background:none; color:#999; margin-top:10px; text-decoration:underline; font-size:12px; border:none; cursor:pointer;">Volver</button>
+    <button onclick="verificarClave()">Ingresar</button>
+
     <p id="mensajeError"></p>
   </div>
 </div>
@@ -574,15 +538,7 @@ button:hover{
 
 <div id="vista_meseros">
 
-          <!-- 🔥 CONFIGURACIÓN CLAVE CLIENTE (Solo visible para Moso) -->
-          <div id="configClienteMoso" class="card ocultar" style="border: 2px dashed var(--morado); background: #fff5f8;">
-            <h3 style="color:var(--morado); margin-top:0;">⚙️ Configuración Cliente</h3>
-            <div style="display:flex; gap:10px; align-items:center;">
-              <input type="password" id="nuevaClaveCliente" placeholder="Nueva clave para Cliente" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:6px;">
-              <button onclick="guardarClaveCliente()" class="btn" style="background:var(--morado);">Guardar</button>
-            </div>
-            <p style="font-size:12px; color:#666; margin:5px 0 0 0;">Establezca la contraseña para que los clientes del Segundo Nivel puedan ingresar.</p>
-          </div>
+
 
           <section>
 
@@ -601,8 +557,6 @@ button:hover{
             <button type="button" onclick="cambiarTipo('reserva')" id="btnReserva">Reserva</button>
           </div>
 
-          <!-- 🔥 TITULO CLIENTE (Oculto para Moso) -->
-          <h3 id="tituloClienteMesa" class="ocultar" style="color:var(--rojo); margin:10px 0;">🍽 Pedido Segundo Nivel</h3>
 
           Mesa / Nombre:
           <input id="mesa" style="width:100%">
@@ -654,11 +608,9 @@ button:hover{
           </div>
 
           <div style="padding:10px">
-            <button id="btnRegistrar" class="big" onclick="registrarPedido()">
+            <button class="big" onclick="registrarPedido()">
               ✅ Registrar pedido
             </button>
-            <!-- 🔥 BOTÓN IMPRIMIR CLIENTE (Oculto para Moso) -->
-            <button id="btnImprimirTicket" class="big ocultar" onclick="imprimirTicketActual()" style="background:#2196F3; margin-top:10px;">🖨️ Imprimir Ticket</button>
           </div>
 
 
@@ -671,52 +623,59 @@ button:hover{
           </div>
 
           <!-- ENVASES -->
-          <div class="card" id="cardEnvases">
+          <div class="card">
           <h2>🥡 Envases para llevar</h2>
           <div id="envases"></div>
           </div>
 
           <!-- DELIVERY -->
-          <div class="card" id="cardDelivery">
+          <div class="card">
           <h2>🚚 Delivery</h2>
           Costo adicional:
           <input type="number" id="deliveryCosto" value="0" min="0" step="0.5" style="width:80px"> soles
           </div>
 
-          <div class="card" id="cardTotal" style="text-align:center;font-size:22px;font-weight:700;color:#2c3e50">
+          <div class="card" style="text-align:center;font-size:22px;font-weight:700;color:#2c3e50">
             💰 Total actual: <b id="totalPreview">S/ 0.00</b>
           </div>
 
 
           <button class="big" onclick="registrarPedido()">✅ Registrar pedido</button>
 
-          <button class="btn" id="btnResetear" onclick="resetearDisponibles()" style="margin-top:10px;width:100%">
+          <button class="btn" onclick="resetearDisponibles()" style="margin-top:10px;width:100%">
           🔄 Resetear DISP
           </button>
 
-          <button class="btn" id="btnEliminarTodo" onclick="eliminarTodo()" 
+          <button class="btn" onclick="eliminarTodo()" 
           style="margin-top:10px;width:100%;background:black">
           🗑️ Eliminar TODOS los pedidos
           </button>
 
-          <!-- HISTORIAL (Oculto para cliente) -->
-          <div id="seccionHistoria">
-            <h2>📋 Pedidos del día</h2>
-            <div style="display:flex;gap:10px;margin-bottom:15px; flex-wrap:wrap;">
-              <button onclick="mostrarSeccionPedidos('imprimir')" id="btnImprimirPedidos" class="btn">🖨️ Imprimir</button>
-              <button onclick="mostrarSeccionPedidos('mesa')" id="btnMesaPedidos">🍽 Mesa</button>
-              <button onclick="mostrarSeccionPedidos('reserva')" id="btnReservaPedidos">📅 Reserva</button>
-              <button onclick="mostrarSeccionPedidos('llevar')" id="btnLlevarPedidos">🥡 Llevar</button>
-              <button onclick="mostrarSeccionPedidos('alistar')" id="btnAlistarPedidos">👨‍🍳 Alistar</button>
-            </div>
+
+
+          <h2>📋 Pedidos del día</h2>
+
+          <div style="display:flex;gap:10px;margin-bottom:15px; flex-wrap:wrap;">
+            <!-- 🔥 NUEVO BOTÓN IMPRIMIR A LA IZQUIERDA -->
+            <button onclick="mostrarSeccionPedidos('imprimir')" id="btnImprimirPedidos" class="btn">🖨️ Imprimir</button>
+            
+            <button onclick="mostrarSeccionPedidos('mesa')" id="btnMesaPedidos">🍽 Mesa</button>
+            <button onclick="mostrarSeccionPedidos('reserva')" id="btnReservaPedidos">📅 Reserva</button>
+            <button onclick="mostrarSeccionPedidos('llevar')" id="btnLlevarPedidos">🥡 Llevar</button>
+            <button onclick="mostrarSeccionPedidos('alistar')" id="btnAlistarPedidos">👨‍🍳 Alistar</button>
+          </div>
+          
             <div style="display:none">
               <div id="seccion_mesa"></div>
               <div id="seccion_reserva"></div>
               <div id="seccion_llevar"></div>
               <div id="seccion_alistar"></div>
             </div>
-            <div id="contenedorPedidos" class="card"></div>
-          </div>
+
+              <div id="contenedorPedidos" class="card"></div>
+
+
+          </section>
 
           <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
 
@@ -728,89 +687,16 @@ button:hover{
           <script>
 
 const CLAVE_PRINCIPAL = "MISTI2026";
-let rolActual = ""; // 'MOSO' o 'CLIENTE'
-let clienteYaPidio = false;
 
-// 🔥 LÓGICA DE SELECCIÓN DE ROL (NUEVA)
-function seleccionarRol(rol) {
-  document.getElementById("pantallaInicial").style.display = "none";
-  document.getElementById("loginPantalla").style.display = "flex";
-
-  const titulo = document.getElementById("tituloLogin");
-  const sub = document.getElementById("subtituloLogin");
-  const input = document.getElementById("inputClave");
-
-  input.value = "";
-  document.getElementById("mensajeError").innerText = "";
-
-  if (rol === "MOSO") {
-    titulo.innerText = "Acceso Moso";
-    sub.innerText = "Sistema de Gestión";
-    input.placeholder = "Contraseña principal";
-    document.getElementById("loginPantalla").dataset.rolIntento = "MOSO";
-  } else {
-    titulo.innerText = "Acceso Cliente";
-    sub.innerText = "Segundo Nivel";
-    input.placeholder = "Contraseña de cliente";
-    document.getElementById("loginPantalla").dataset.rolIntento = "CLIENTE";
-  }
-}
-
-function cancelarLogin() {
-  document.getElementById("loginPantalla").style.display = "none";
-  document.getElementById("pantallaInicial").style.display = "flex";
-}
-
-async function validarAcceso() {
-  const clave = document.getElementById("inputClave").value;
-  const rolIntento = document.getElementById("loginPantalla").dataset.rolIntento;
-
-  if (rolIntento === "MOSO") {
-    if (clave === CLAVE_PRINCIPAL) {
-      iniciarSesion("MOSO");
-    } else {
-      document.getElementById("mensajeError").innerText = "Contraseña incorrecta";
-    }
-  } else if (rolIntento === "CLIENTE") {
-    try {
-      const doc = await db.collection("configuracion").doc("accesoCliente").get();
-      if (doc.exists) {
-        const data = doc.data();
-        if (data.clave && data.clave === clave) {
-          iniciarSesion("CLIENTE");
-        } else {
-          document.getElementById("mensajeError").innerText = "Contraseña incorrecta";
-        }
-      } else {
-        alert("No hay clave configurada. Contacte al personal.");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Error de conexión.");
-    }
-  }
-}
-
-function guardarClaveCliente() {
-  const pass = document.getElementById("nuevaClaveCliente").value;
-  if(!pass) return alert("Ingrese una contraseña");
-  
-  db.collection("configuracion").doc("accesoCliente").set({ clave: pass })
-  .then(() => {
-    alert("✅ Contraseña guardada.");
-    document.getElementById("nuevaClaveCliente").value = "";
-  })
-  .catch(e => alert("Error: " + e));
-}
-
-// 🔥 MODIFICACIÓN DE TU FUNCIÓN ORIGINAL VERIFICAR CLAVE
-// Ahora delega en seleccionarRol o iniciarSesion dependiendo del flujo.
 function verificarClave() {
+
   const clave = document.getElementById("inputClave").value;
 
   if (clave === CLAVE_PRINCIPAL) {
+
     const ahora = new Date();
     const expiracion = new Date();
+
     expiracion.setHours(17, 0, 0, 0); // 5:00 PM
 
     if (ahora > expiracion) {
@@ -820,7 +706,6 @@ function verificarClave() {
 
     localStorage.setItem("sesionActiva", "true");
     localStorage.setItem("expiraEn", expiracion.getTime());
-    localStorage.setItem("rolGuardado", "MOSO"); // Guardamos rol
 
     mostrarSistema();
 
@@ -829,7 +714,7 @@ function verificarClave() {
   }
 }
 
-            // 🔥 CONFIG FIREBASE (TUYO, SIN TOCAR)
+            // 🔥 CONFIG FIREBASE
           const firebaseConfig = {
             apiKey: "AIzaSyCakBN0YRTOGCKVQ7A5iLKksNh0cjF-JOg",
             authDomain: "el-misti-pedidos.firebaseapp.com",
@@ -841,83 +726,13 @@ function verificarClave() {
           };
 
           // Inicializar Firebase
-          if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-          }
+          firebase.initializeApp(firebaseConfig);
           const db = firebase.firestore();
 
 
-function iniciarSesion(rol) {
-    rolActual = rol;
-    // Guardar sesión simple para cliente también
-    localStorage.setItem("sesionActiva", "true");
-    localStorage.setItem("rolGuardado", rol);
-    mostrarSistema();
-}
-
 function mostrarSistema() {
   document.getElementById("loginPantalla").style.display = "none";
-  document.getElementById("pantallaInicial").style.display = "none";
   document.getElementById("sistema").style.display = "block";
-
-  // 🔥 RECUPERAR ROL SI REFRESCA
-  const rolGuardado = localStorage.getItem("rolGuardado");
-  if(rolGuardado) rolActual = rolGuardado;
-
-  // 🔥 AJUSTES UI SEGÚN ROL
-  if (rolActual === "CLIENTE") {
-    document.getElementById("navContainer").style.display = "none";
-    document.getElementById("configClienteMoso").style.display = "none";
-    document.getElementById("tituloClienteMesa").style.display = "block";
-    
-    // Ocultar cosas prohibidas
-    document.getElementById("cardEnvases").style.display = "none";
-    document.getElementById("cardDelivery").style.display = "none";
-    document.getElementById("cardTotal").style.display = "none";
-    document.getElementById("seccionHistoria").style.display = "none";
-    document.getElementById("btnResetear").style.display = "none";
-    document.getElementById("btnEliminarTodo").style.display = "none";
-    document.querySelectorAll(".colIni").forEach(e => e.style.display = "none");
-    
-    // Mostrar botón imprimir
-    document.getElementById("btnImprimirTicket").classList.remove("ocultar");
-    
-    // Bloquear inputs
-    document.querySelectorAll(".nombrePlato").forEach(e => {
-        e.readOnly = true;
-        e.classList.add("input-deshabilitado");
-    });
-
-    // Filtrar extras
-    crearItems(extrasComida, "extrasComida");
-    
-    // Forzar tipo MESA
-    cambiarTipo('mesa');
-    document.getElementById("tipo").value = "mesa";
-    generarBotonesMesas();
-    
-  } else {
-    // MOSO (Default)
-    document.getElementById("navContainer").style.display = "flex";
-    document.getElementById("configClienteMoso").style.display = "block";
-    document.getElementById("tituloClienteMesa").style.display = "none";
-    document.getElementById("cardEnvases").style.display = "block";
-    document.getElementById("cardDelivery").style.display = "block";
-    document.getElementById("cardTotal").style.display = "block";
-    document.getElementById("seccionHistoria").style.display = "block";
-    document.getElementById("btnResetear").style.display = "block";
-    document.getElementById("btnEliminarTodo").style.display = "block";
-    document.getElementById("btnImprimirTicket").classList.add("ocultar");
-    document.querySelectorAll(".colIni").forEach(e => e.style.display = "");
-    
-    document.querySelectorAll(".nombrePlato").forEach(e => {
-        e.readOnly = false;
-        e.classList.remove("input-deshabilitado");
-    });
-    
-    crearItems(extrasComida, "extrasComida");
-    generarBotonesMesas();
-  }
 
   // 🔥 recuperar última vista guardada
   const vistaGuardada = localStorage.getItem("vistaActualMisti");
@@ -935,27 +750,17 @@ window.onload = function() {
   const sesion = localStorage.getItem("sesionActiva");
   const expiraEn = localStorage.getItem("expiraEn");
 
-  // Si hay sesión activa y (si es moso) no ha expirado
-  // Nota: Para cliente no exponemos la hora de expiración estricta en este ejemplo para no bloquearlos,
-  // pero podrías agregar lógica si lo deseas.
-  
-  if (sesion === "true") {
-    const rol = localStorage.getItem("rolGuardado");
-    if(rol === "MOSO" && expiraEn) {
-        const ahora = new Date().getTime();
-        if (ahora > parseInt(expiraEn)) {
-            localStorage.removeItem("sesionActiva");
-            localStorage.removeItem("expiraEn");
-            localStorage.removeItem("rolGuardado");
-            return; // Muestra pantalla inicial
-        }
-    }
-    // Si todo OK, mostrar sistema
-    mostrarSistema();
-  }
-  // Si no hay sesión, mostrar pantalla inicial (que ya está visible por defecto en HTML)
-};
+  if (sesion === "true" && expiraEn) {
+    const ahora = new Date().getTime();
 
+    if (ahora < parseInt(expiraEn)) {
+      mostrarSistema();
+    } else {
+      localStorage.removeItem("sesionActiva");
+      localStorage.removeItem("expiraEn");
+    }
+  }
+};
 /* =================================================
   🔥 NUEVA FUNCIÓN: ENVIAR A COLA DE IMPRESIÓN
 ================================================= */
@@ -1129,10 +934,6 @@ function mostrarCocina(){
     } else if (p.convertidoDesde === "reserva") {
       claseColor = "pedido-amarillo"; // Amarillo para reserva
     }
-    
-    // Si el pedido viene de un cliente, color morado
-    if(p.origen === "cliente") claseColor = "pedido-cliente";
-    const headerCliente = p.origen === "cliente" ? `<div class="pedido-cliente-header">🟣 PEDIDO CLIENTE - SEGUNDO NIVEL</div>` : "";
 
     const subtitulo = (p.mesa || "").toUpperCase();
 
@@ -1157,7 +958,7 @@ function mostrarCocina(){
 
     listaHtml+=`
       <div class="pedido ${claseColor}" id="pedido_cocina_${contador}">
-        ${headerCliente}
+
         ${tituloHeader}
 
         <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
@@ -1179,6 +980,8 @@ function mostrarCocina(){
         
         ${p.detalleExtras.length ? "<b>Extras:</b><br>"+p.detalleExtras.join("<br>")+"<br><br>" : ""}
         ${p.detalleEnvases.length ? "<b>Envases:</b><br>"+p.detalleEnvases.join("<br>") : ""}
+
+        <!-- SIN MONTO TOTAL SEGÚN REQUERIMIENTO -->
 
     </div>
   `;
@@ -1669,15 +1472,9 @@ function marcarServido(indexPedido, nombre, tipo){
           ================================================= */
           function crearItems(lista, cont){
             const div=document.getElementById(cont);
-            div.innerHTML = "";
+
             lista.forEach(i=>{
               const nombre=i.nombre||i;
-              
-              // 🔥 FILTRO CLIENTE
-              if(rolActual === "CLIENTE") {
-                  const permitidos = ["Vaso adicional", "Medio vaso refresco"];
-                  if(!permitidos.includes(nombre)) return;
-              }
 
               div.innerHTML+=`
                 <div class="item">
@@ -1718,8 +1515,6 @@ function marcarServido(indexPedido, nombre, tipo){
 
 
           function calcularPreview(){
-
-            if(rolActual === "CLIENTE") return; // Cliente no calcula precios
 
             let total=0;
             let ent=0, seg=0;
@@ -1774,8 +1569,6 @@ function marcarServido(indexPedido, nombre, tipo){
           /* 🔥 FUNCIÓN PARA MOSTRAR / OCULTAR COLUMNA INI */
           function toggleIni(seccion){
 
-            if(rolActual === "CLIENTE") return;
-
             const container = document.getElementById(seccion);
             const card = container.closest(".card");
             const columnas = card.querySelectorAll(".colIni");
@@ -1813,19 +1606,6 @@ function marcarServido(indexPedido, nombre, tipo){
             const contenedor = document.getElementById("mesasBotones");
             contenedor.innerHTML = "";
 
-            if (rolActual === "CLIENTE") {
-                // Cliente solo ve S1-S7
-                for(let i=1;i<=7;i++){
-                    contenedor.innerHTML += `
-                    <button type="button" onclick="seleccionarMesa('S${i}')"
-                    style="margin:4px; padding:8px 12px; border-radius:8px; background:var(--morado); color:white; font-weight:bold; border:none;">
-                    S${i}
-                    </button>`;
-                }
-                return;
-            }
-
-            // Moso ve todo
             // Números 1 al 14
             for(let i=1;i<=14;i++){
 
@@ -1886,8 +1666,6 @@ function marcarServido(indexPedido, nombre, tipo){
 
           function cambiarTipo(valor){
 
-            if(rolActual === "CLIENTE") return; // Cliente no puede cambiar tipo
-
             const select = document.getElementById("tipo");
             select.value = valor;
 
@@ -1916,16 +1694,6 @@ function marcarServido(indexPedido, nombre, tipo){
             REGISTRAR (MISMA LÓGICA + solo cambio de lectura)
           ================================================= */
           function registrarPedido(){
-
-            // 🔥 LÓGICA CLIENTE
-            if(rolActual === "CLIENTE") {
-                if(clienteYaPidio) {
-                    alert("⚠️ Solo se puede pedir una vez.\n\nLos pedidos adicionales luego del envío de la comanda demoran.\nNo se aceptan modificaciones.");
-                    return;
-                }
-                const mesa = document.getElementById("mesa").value;
-                if(!mesa || !mesa.startsWith("S")) { alert("Debe seleccionar una mesa (S1 - S7)."); return; }
-            }
 
             let total=0;
             let ent=0, seg=0;
@@ -2004,18 +1772,17 @@ function marcarServido(indexPedido, nombre, tipo){
               }
             });
 
-            /* ENVASES (OCULTO PARA CLIENTE) */
-            if(rolActual !== "CLIENTE") {
-                envases.forEach(e=>{
-                  const c=+document.getElementById(e.nombre).value;
-                  if(c>0){
-                    detalleEnvases.push(`${c} - ${e.nombre}`);
-                    total+=c*e.precio;
-                  }
-                });
-                const delivery=+deliveryCosto.value;
-                total+=delivery;
-            }
+            /* ENVASES (IGUAL) */
+            envases.forEach(e=>{
+              const c=+document.getElementById(e.nombre).value;
+              if(c>0){
+                detalleEnvases.push(`${c} - ${e.nombre}`);
+                total+=c*e.precio;
+              }
+            });
+
+            const delivery=+deliveryCosto.value;
+            total+=delivery;
 
           if(detalleEntradas.length===0 && detalleSegundos.length===0){
             alert("No hay platos en el pedido");
@@ -2040,7 +1807,8 @@ function marcarServido(indexPedido, nombre, tipo){
             timestamp = Date.now();
           }
 
-          const nuevoPedido = {
+
+          pedidos.push({
             tipo: tipoActual,
             mesa: document.getElementById("mesa").value,
             hora: horaExacta,
@@ -2052,23 +1820,11 @@ function marcarServido(indexPedido, nombre, tipo){
             detalleExtras: detalleExtras,
             detalleEnvases: detalleEnvases,
             total: total,
-            origen: rolActual // 🔥 AGREGAR ORIGEN
-          };
-
-          pedidos.push(nuevoPedido);
+          });
 
             // 🔥 LIMPIAR NOMBRE/MESA DESPUÉS DE REGISTRAR
             document.getElementById("mesa").value = "";
-            
-            // 🔥 BLOQUEAR CLIENTE
-            if(rolActual === "CLIENTE") {
-                clienteYaPidio = true;
-                const btn = document.getElementById("btnRegistrar");
-                btn.disabled = true; 
-                btn.innerText = "Pedido Enviado ✅";
-                btn.style.background = "#ccc";
-                alert("⚠️ Pedido enviado a cocina.\nPor favor espere su pedido.");
-            }
+
 
             guardarHistorial();
             mostrar();
@@ -2092,7 +1848,6 @@ function marcarServido(indexPedido, nombre, tipo){
               return;
             }
 
-            if(rolActual === "CLIENTE") return; // Cliente no ve lista de pedidos
 
             console.log("Array pedidos actual:", pedidos);
 
@@ -2114,13 +1869,10 @@ function marcarServido(indexPedido, nombre, tipo){
             ordenIndices.forEach((i)=>{
 
               const p = pedidos[i];
-              const esCliente = p.origen === "cliente";
-              const claseCliente = esCliente ? "pedido-cliente" : "";
-              const headerCliente = esCliente ? `<div class="pedido-cliente-header">🟣 PEDIDO CLIENTE - SEGUNDO NIVEL</div>` : "";
 
               let bloque=`
-              <div class="pedido ${claseCliente}" id="pedido_${i}">
-                ${headerCliente}
+              <div class="pedido" id="pedido_${i}">
+
               <b>
               #${i+1} | ${p.tipo.toUpperCase()} | ${(p.mesa||"-").toUpperCase()}
               ${p.hora ? ` | 🕒 ${p.hora}` : ""}
@@ -2856,11 +2608,6 @@ function copiarTextoPedido(index){
               }, { merge:true });
 
           }
-          
-          // 🔥 Función auxiliar para imprimir ticket cliente
-          function imprimirTicketActual() {
-              alert("Función de impresión disponible para el cliente.");
-          }
 
 
           /* =================================================
@@ -2957,8 +2704,7 @@ setInterval(() => {
             vistaActual = vistaGuardada;
           }
 
-          if(rolActual !== "CLIENTE") cambiarVista(vistaActual);
-          else generarBotonesMesas();
+          cambiarVista(vistaActual);
 
           deliveryCosto.addEventListener("input",calcularPreview);
 
