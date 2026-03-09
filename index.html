@@ -706,19 +706,23 @@ button:hover{
 const CLAVE_PRINCIPAL = "MISTI2026";
 
 function verificarClave() {
-  const clave = document.getElementById("inputClave").value;
+const clave = document.getElementById("inputClave").value;
 
-  if (clave === CLAVE_PRINCIPAL) {
+if (clave === CLAVE_PRINCIPAL) {
 
-    localStorage.setItem("sesionActiva", "true");
+localStorage.setItem("sesionActiva", "true");
 
-    mostrarSistema();
+/* guardar expiración (1 año) */
+const ahora = new Date().getTime();
+const expira = ahora + (365 * 24 * 60 * 60 * 1000);
+localStorage.setItem("expiraEn", expira);
 
-  } else {
-    document.getElementById("mensajeError").innerText = "Contraseña incorrecta";
-  }
+mostrarSistema();
+
+} else {
+document.getElementById("mensajeError").innerText = "Contraseña incorrecta";
 }
-
+}
             // CONFIG FIREBASE
           const firebaseConfig = {
             apiKey: "AIzaSyCakBN0YRTOGCKVQ7A5iLKksNh0cjF-JOg",
