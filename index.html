@@ -706,23 +706,11 @@ button:hover{
 const CLAVE_PRINCIPAL = "MISTI2026";
 
 function verificarClave() {
-
   const clave = document.getElementById("inputClave").value;
 
   if (clave === CLAVE_PRINCIPAL) {
 
-    const ahora = new Date();
-    const expiracion = new Date();
-
-    expiracion.setHours(17, 0, 0, 0); // 5:00 PM
-
-    if (ahora > expiracion) {
-      alert("Ya pasó la hora límite de acceso.");
-      return;
-    }
-
     localStorage.setItem("sesionActiva", "true");
-    localStorage.setItem("expiraEn", expiracion.getTime());
 
     mostrarSistema();
 
