@@ -2047,7 +2047,6 @@ function obtenerTextoPlano(pedido){
     }
 
     if(pedido.detalleEntradas.length > 0){
-        texto += "Entradas:\n";
         pedido.detalleEntradas.forEach(item => {
             let partes = item.split(" - ");
             let qty = partes[0];
@@ -2070,7 +2069,6 @@ function obtenerTextoPlano(pedido){
     }
 
     if(pedido.detalleSegundos.length > 0){
-        texto += "Segundos:\n";
         pedido.detalleSegundos.forEach(item => {
             let partes = item.split(" - ");
             let qty = partes[0];
@@ -2093,7 +2091,6 @@ function obtenerTextoPlano(pedido){
 
     return texto;
 }
-
 /* FUNCIÓN PARA COPIAR AL PORTAPAPELES */
 function copiarTextoPedido(index){
     const pedido = pedidos[index];
